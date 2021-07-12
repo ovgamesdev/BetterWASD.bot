@@ -1,0 +1,1664 @@
+body {
+    align-items: stretch;
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: column;
+    height: 30rem;
+    margin: 0 auto;
+    padding: 1rem;
+    position: relative;
+    width: 25rem;
+    border: 2px solid white;
+}
+
+body {
+    font-family: Roboto-Regular,Arial,Helvetica Neue,Helvetica,sans-serif;
+    font-weight: 400;
+}
+
+body {
+    --wasd-color-black: #000000;
+    --wasd-color-black--rgb: 0, 0, 0;
+    --wasd-color-white: #ffffff;
+    --wasd-color-white--rgb: 255, 255, 255;
+    --wasd-color-corp-prime: #1A202C;
+    --wasd-color-corp-prime--rgb: 26, 32, 44;
+    --wasd-color-corp-gray: #848CA0;
+    --wasd-color-corp-gray--rgb: 132, 140, 160;
+    --wasd-color-dark-blue: #483cb8;
+    --wasd-color-corp-blue: #258fe5;
+    --wasd-color-corp-blue--rgb: 37, 143, 229;
+    --wasd-color-warning: #d85252;
+    --wasd-color-warning--rgb: 216, 82, 82;
+    --wasd-color-success: #6ba131;
+    --wasd-color-success--rgb: 107, 161, 49;
+    --wasd-color-event1: #913CA7;
+    --wasd-color-event2: #5BC3C1;
+    --wasd-color-event3: #F5A623;
+    --wasd-color-xp: #9013fe;
+    --wasd-color-bordo: #a5276d;
+    --wasd-color-prime: #1A202C;
+    --wasd-color-prime--rgb: 26, 32, 44;
+    --wasd-color-switch: #ffffff;
+    --wasd-color-switch--rgb: 255, 255, 255;
+    --wasd-color-second: #141820;
+    --wasd-color-third: #0c1014;
+    --wasd-color-gray1: #242830;
+    --wasd-color-gray2: #444858;
+    --wasd-color-gray3: #848ca0;
+    --wasd-color-text-prime: rgba(255, 255, 255, 1);
+    --wasd-color-text-second: rgba(255, 255, 255, 0.8);
+    --wasd-color-text-third: rgba(255, 255, 255, 0.64);
+    --wasd-color-text-fourth: rgba(255, 255, 255, 0.48);
+    --wasd-color-text-disabled: rgba(255, 255, 255, 0.24);
+    --wasd-color-bg-prime: #141820;
+    --wasd-color-bg-second: #0c1014;
+    --color-lowest-layer: rgba(0, 0, 0, 0.2);
+    --color-background: 20, 24, 32;
+    --color-first-layer: #1A212D;
+    --color-second-layer: #1D2736;
+    --color-upper-layer: #212D3F;
+    --color-switch: 246, 247, 248;
+    --color-shadow: 9, 9, 9;
+    --color-system-blue: 0, 143, 236;
+    --color-system-dark-blue: 13, 110, 200;
+    --color-system-white: 255, 255, 255;
+    --color-system-black: 0, 0, 0;
+    --color-system-warning: 252, 77, 100;
+    --color-system-attention: 243, 173, 56;
+    --color-system-success: 62, 189, 65;
+    --color-system-xp: 144, 19, 254;
+    --color-additional-yellow-light: #F0DF47;
+    --color-additional-yellow-dark: #DBC92A;
+    --color-additional-yellow-orange: #F8B23E;
+    --color-additional-orange: #E88021;
+    --color-additional-red: #D03F3F;
+    --color-additional-pink: #CD317C;
+    --color-additional-lilac: #952BA7;
+    --color-additional-violet: #6227E0;
+    --color-additional-blue: #2264E3;
+    --color-additional-blue-light: #27B4E0;
+    --color-additional-aquamarine: #00CBBF;
+    --color-additional-blue-green: #27E087;
+    --color-additional-green-acid: #2BE027;
+    --color-additional-green: #139520;
+    --color-additional-green-light: #A6D323;
+    --color-additional-gray: #898989;
+}
+
+
+
+
+
+
+
+#bscSettingsPanel {
+    position: fixed;
+    background-color: #141820;
+
+    color: rgba(255, 255, 255, 0.8);
+    font-family: Open Sans, Segoe UI, Helvetica Neue, Ubuntu, sans-serif;
+    font-size: 0.75rem;
+}
+
+
+/* header */
+#bscSettingsPanel header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: #1A202C;
+    border-bottom: 1px solid rgba(0,0,0,.5);
+    line-height: 42px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.08);
+    min-width: max-content;
+}
+
+#bscSettingsPanel .close {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#bscSettingsPanel .update {
+    flex: 0 0 auto;
+    font-size: 30px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+#bscSettingsPanel .nav {
+    display: flex;
+    flex: 1;
+    list-style: none;
+    vertical-align: middle;
+    padding: 0;
+}
+
+#bscSettingsPanel .nav>li {
+    color: #adafae;
+    cursor: pointer;
+}
+
+#bscSettingsPanel a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#bscSettingsPanel .nav > li.active a {
+    border-bottom: 1px solid rgba(255, 255, 255, 1);
+    color: #258fe5;
+}
+
+#bscSettingsPanel > header > ul.nav > li > a {
+    padding-bottom: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#bscSettingsPanel a:hover {
+    border-bottom: 1px solid rgba(255, 255, 255, 1);
+    color: rgba(37, 143, 229,.16);
+}
+
+
+main[data-tab="about"] > div.aboutHalf {
+    background-color: #1A202C;
+    border-radius: 3px;
+    display: inline-block;
+    float: left;
+    height: 383px;
+    margin: 12px;
+    padding: 5px;
+    text-align: center;
+    width: calc(50% - 24px);
+}
+
+main[data-tab="about"] > div.aboutHalf > img.aboutIcon {
+    margin-top: 90px;
+    vertical-align: top;
+}
+
+main[data-tab="about"] > div.aboutHalf > h1 {
+    font-size: 20px!important;
+    padding-top: 0!important;
+}
+
+main[data-tab="about"] > div.aboutHalf > h2 {
+    font-size: 16px!important;
+    padding-top: 0!important;
+}
+
+main[data-tab="backup"] {
+    display: flex;
+    justify-content: center;
+    align-items: center!important;
+    text-align: unset;
+}
+
+main[data-tab="backup"] > h4 {
+    padding-bottom: 0px!important;
+}
+input#importInput,
+button#backupButton {
+    cursor: pointer;
+}
+
+button#backupButton {
+    background-color: #EFEFEF!important;
+}
+
+/* main content */
+#bscSettingsPanel main {
+    overflow-y: auto;
+    display: none;
+    margin-bottom: 35px;
+    height: calc(100% - (43px + 28px));
+    overflow-x: hidden;
+
+}
+
+#bscSettingsPanel main.active {
+    display: block;
+    animation-duration: .4s;
+    animation-name: opentab;
+}
+
+#bscSettingsPanel main h1 {
+    font-size: 25px;
+    margin: 0;
+}
+
+#bscSettingsPanel main h2 {
+    padding-top: 15px;
+    font-size: 18px;
+    margin: unset;
+}
+
+#bscSettingsPanel main h1:first-child,
+#bscSettingsPanel main h2:first-child {
+    padding-top: 0;
+}
+
+#bscSettingsPanel main .option {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid rgba(0,0,0,.3)!important;
+    background-color: #141820;
+    line-height: normal;
+    min-height: 43px;
+}
+
+#bscSettingsPanel main .option:nth-child(2n) {
+    background-color: #1A202C;
+}
+
+#bscSettingsPanel main .option .labelField {
+    flex: 1;
+}
+
+#bscSettingsPanel main .option .formField {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    align-self: center;
+}
+
+#bscSettingsPanel main .option .labelField>.title {
+    font-weight: bold;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: normal;
+    position: relative;
+    display: block;
+}
+
+#bscSettingsPanel main .option .labelField>.titleline {
+    font-weight: bold;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+    text-align: center;
+}
+#bscSettingsPanel main .option .labelField>.titleline:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    height: 1px;
+    background: #000;
+    z-index: 1;
+    position: relative;
+    vertical-align: middle;
+    background-color: rgba(255, 255, 255 ,.08);
+}
+#bscSettingsPanel main .option .labelField>.titleline:after {
+    left: 15px;
+    margin: 0 -100% 0 0;
+}
+
+#bscSettingsPanel main .option .labelField>.description {
+    font-size: 12px;
+}
+
+#bscSettingsPanel ul,
+#bscSettingsPanel li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#bscSettingsPanel main.text {
+    padding: 10px;
+}
+
+#bscSettingsPanel .label {
+    border-radius: 2px;
+    padding: 2px 6px;
+    background: grey;
+    vertical-align: middle;
+    display: block;
+}
+
+#bscSettingsPanel .textlabel {
+    padding: 0px 6px;
+    vertical-align: middle;
+    display: block;
+}
+
+#bscSettingsPanel .label.red {
+    background: #d85252;
+}
+
+#bscSettingsPanel .label.green {
+    background: #6ba131;
+}
+
+#bscSettingsPanel .label.orange {
+    background: #F5A623;
+}
+
+#bscSettingsPanel button {
+    background: rgba(255, 255, 255, 1);
+    padding: 3px 10px;
+}
+
+#bscSettingsPanel #status {
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    transform: translateY(-100%);
+    transition: visibility 0.12s linear 0.12s, transform 0.12s linear, opacity 0.12s linear;
+    visibility: hidden;
+    width: 100%;
+    z-index: 460;
+}
+
+#bscSettingsPanel #status.active {
+    opacity: 1;
+    transform: translateY(0%);
+    transition-delay: 0s;
+    visibility: visible;
+}
+
+#bscSettingsPanel #status>p {
+    border-top-width: 0;
+    cursor: pointer;
+    display: table;
+    margin: 0 auto;
+    max-width: 80%;
+    pointer-events: auto;
+}
+
+#bscSettingsPanel .success {
+    background-color: rgba(223, 240, 216, 1);
+    border-color: rgba(208, 233, 198, 1);
+    color: #6ba131;
+    padding: 10px;
+}
+
+#bscSettingsPanel .error {
+    background-color: rgba(242, 222, 222, 1);
+    border-color: rgba(235, 204, 204, 1);
+    color: #d85252;
+    padding: 10px;
+}
+
+
+/* footer */
+#bscSettingsPanel footer {
+    position: absolute;
+    bottom: 0;
+    color: #777777;
+    background-color: #1A202C;
+    width: -webkit-fill-available;
+    padding: 5px;
+    border-top: 1px solid rgba(0,0,0,.5);
+    /*box-sizing: content-box;*/
+    z-index: inherit;
+
+    display: flex;
+    justify-content: space-between;
+    overflow: auto;
+}
+
+#bscSettingsPanel a {
+    color: rgba(255, 255, 255, 1);
+}
+
+#bscSettingsPanel > main[data-tab='wasdSettings'] .settingsSearch {
+    border: none;
+    outline: none;
+    padding-left: 40px!important;
+    width: 100%;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 30px;
+}
+
+.flexibleButtonGroup {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.flexibleButtonGroup>li {
+    display: flex;
+    flex: 0 0 auto;
+}
+
+.flexibleButtonGroup>li>input[type="radio"] {
+    left: -3000px;
+    opacity: 0;
+    position: absolute;
+}
+
+.flexibleButtonGroup>li>a,
+.flexibleButtonGroup>li>label {
+    cursor: pointer;
+    background-color: #cfd8dc;
+    border: 1px solid transparent;
+    color: #212121;
+    padding: 0 10px;
+    line-height: 26px;
+    height: 26px;
+    vertical-align: middle;
+}
+
+.flexibleButtonGroup>li>input[type="radio"]+label.green {
+    background-color: #242830;
+    color: #ffffff;
+}
+.flexibleButtonGroup>li>input[type="radio"]+label:hover.green {
+    background-color: #474B51; /* blue */
+    color: #ffffff;
+}
+
+.flexibleButtonGroup>li>input[type="radio"]:checked+label.green {
+    background-color: #258fe5;
+    color: #ffffff;
+}
+.flexibleButtonGroup>li>input[type="radio"]:checked+label:hover.green {
+    background-color: #48A1E9; /* gray1 */
+    color: #ffffff;
+}
+
+
+.flexibleButtonGroup>li>input[type="radio"]+label.red {
+    background-color: #242830;
+    color: #ffffff;
+}
+.flexibleButtonGroup>li>input[type="radio"]+label:hover.red {
+    background-color: #474B51;
+    color: #ffffff;
+}
+
+.flexibleButtonGroup>li>input[type="radio"]:checked+label.red {
+    background-color: #258fe5;
+    color: #ffffff;
+}
+.flexibleButtonGroup>li>input[type="radio"]:checked+label:hover.red {
+    background-color: #48A1E9;
+    color: #ffffff;
+}
+
+.flexibleButtonGroup>input[type="checkbox"].def {
+    width: 20px!important;
+    height: 20px!important;
+    min-width: auto!important;
+    margin-left: 20px!important;
+}
+
+
+
+body.trovo .message {
+    opacity: 0;
+}
+
+body.trovo .message.loaded {
+    opacity: 1;
+}
+
+body.trovo .message.loadedFade {
+    opacity: 1;
+    animation-name: BetterStreamChatFadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    animation-duration: 100ms;
+}
+
+@keyframes BetterStreamChatFadeInOpacity {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/***********************************************/
+
+main.active::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255 ,.48);
+    border-radius: .4rem .4rem .4rem .4rem;
+}
+
+main.active::-webkit-scrollbar {
+    width: .3rem;
+    height: .3rem;
+    background: rgba(255, 255, 255 ,.24);
+    border-radius: .4rem .4rem .4rem .4rem;
+}
+
+
+.helpTitleHover {
+    cursor: help !important;
+}
+
+@media screen and (min-width:800px) {
+    @keyframes hidebetterpanel {
+        0%   {overflow: hidden; padding: 0px; opacity: 1; width: 797.778px; height: 497.778px; margin: -250px 0px 0px -400px; }
+        100% {overflow: hidden; padding: 0px; opacity: 0; width: 50px; height: 50px; margin: -50px 0px 0px -50px;}
+    }
+    @keyframes showbetterpanel {
+        0% {overflow: hidden; padding: 0px; opacity: 0; width: 50px; height: 50px; margin: -50px 0px 0px -50px;}
+        100%   {overflow: hidden; padding: 0px; opacity: 1; width: 797.778px; height: 497.778px; margin: -250px 0px 0px -400px; }
+    }
+}
+
+@media screen and (max-width:800px) {
+    @keyframes hidebetterpanel {
+        0%   {overflow: hidden; padding: 0px; opacity: 1; }
+        100% {overflow: hidden; padding: 0px; opacity: 0; }
+    }
+    @keyframes showbetterpanel {
+        0% {overflow: hidden; padding: 0px; opacity: 0; }
+        100%   {overflow: hidden; padding: 0px; opacity: 1; }
+    }
+}
+
+@keyframes opentab {
+    0% {opacity: 0;}
+    100%   {opacity: 1;}
+}
+
+
+
+ul.burger-list > #selector-bm-ovg-settings {
+    isplay: block;
+    outline: none;
+}
+ul.burger-list > #selector-bm-ovg-settings > div {
+    display: flex;
+    align-items: center;
+}
+ul.burger-list > #selector-bm-ovg-settings > a {
+    display: flex;
+    position: relative;
+    padding: 2rem 2rem 2rem 2.4rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: 2rem;
+    line-height: 2.4rem;
+    color: rgba(255, 255, 255, 0.48);
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+ul.burger-list > #selector-bm-ovg-settings > a:hover {
+    color: rgba(255, 255, 255, 0.64)!important;
+    background: rgba(0,0,0,.08);
+}
+ul.burger-list > #selector-bm-ovg-settings > a:active {
+    color: rgba(255, 255, 255, 1)!important;
+    background: rgba(0,0,0,.16);
+}
+
+div#buttonOvG {
+    padding: 0;
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    height: 48px;
+    color: rgba(255, 255, 255 ,.64);
+}
+div#buttonOvG:hover {
+    background-color: rgba(255, 255, 255 ,.08);
+    color:#ffffff;
+}
+div#buttonOvG:active {
+    background-color: rgba(255, 255, 255 ,.16);
+    color:#ffffff;
+}
+div#buttonOvG > .menu__block__icon {
+    padding: 0 12px 0 24px;
+}
+div#buttonOvG > .menu__block__icon > i.icon {
+    font-size: 12px;
+}
+div#buttonOvG > .menu__block__text {
+    padding: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    font-size: 14px;
+    letter-spacing: normal;
+    line-height: normal;
+    user-select: none;
+}
+
+div.nofify-message-ovg.active {
+    display: block;
+}
+
+div.paid_title-ovg {
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: Roboto,sans-serif;
+}
+button.paid_title-ovg {
+    background: none;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    padding-left: 10px!important;
+    padding-right: 15px;
+    font-size: 16px!important;
+    font-family: Roboto,sans-serif!important;
+}
+
+wasd-button.flat-btn.ovg {
+    position: relative;
+    display: inline-block;
+    outline: none;
+}
+
+button.primary.medium.ovg.disabled {
+    background: #212528!important;
+    color: #949494!important;
+    cursor: no-drop;
+}
+button.primary.medium.ovg.disabled:hover  {
+    background: #212528!important;
+    color: #949494!important;
+    cursor: no-drop;
+}
+button.primary.medium.ovg.disabled:active {
+    background: #212528!important;
+    color: #949494!important;
+    cursor: no-drop;
+}
+
+button.primary.medium.ovg {
+    background: #258fe5!important;
+    color: #ffffff!important;
+    height: 32px;
+    padding: 0 16px;
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Roboto-Bold,sans-serif;
+    letter-spacing: .4px;
+    outline: none;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all .1s ease;
+    vertical-align: top;
+    white-space: nowrap;
+    margin: 0;
+    position: relative;
+    width: inherit;
+}
+button * {
+    pointer-events: none;
+}
+button *:before {
+    pointer-events: none;
+}
+button.primary.medium.ovg:hover {
+    background-color: #48A1E9!important;
+}
+button.primary.medium.ovg:active {
+    color: rgba(255, 255, 255 ,.8)!important;
+    background-color: #1F78C0!important;
+}
+button.primary.basic.ovg.disabled {
+    background: #212528!important;
+    color: #949494!important;
+    cursor: auto;
+    pointer-events: none;
+}
+button.primary.basic.ovg {
+    background: #242830!important;
+    color: #ffffff!important;
+    font-size: 12px;
+    height: 32px;
+    padding: 0 16px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Roboto-Bold,sans-serif;
+    letter-spacing: .4px;
+    margin: 0;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all .1s ease;
+    vertical-align: top;
+    white-space: nowrap;
+    width: inherit;
+}
+button.primary.basic.ovg:hover {
+    background-color: #474B51!important;
+}
+button.primary.basic.ovg:active {
+    color: rgba(255, 255, 255 ,.8)!important;
+    background-color: #1E2228!important;
+}
+i.wasd-icons-like.ovg {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+i.wasd-icons-favorite {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+div.tooltip.tooltip_position-bottomRight.tooltip_size-small.ovg {
+    width: 200px;
+    justify-content: flex-start;
+    margin-top: 8px;
+    left: 0;
+    top: 100%;
+    position: absolute;
+    transform: translateZ(0);
+    z-index: 3;
+    display: none;
+}
+div.tooltip.tooltip_position-bottomRight.tooltip_size-small.ovg:hover {
+    display: flex!important;
+}
+div.tooltip.tooltip_position-bottomRight.tooltip_size-small.ovg:after {
+    border: 4px solid transparent;
+    border-bottom: 4px solid rgb(246, 247, 248);
+    border-top: none;
+    bottom: 100%;
+    content: "";
+    height: 0;
+    position: absolute;
+    left: 8px;
+    transition: all .3s ease;
+}
+
+div.tooltip-content.tooltip-content_left.ovg {
+    padding: 4px 16px;
+    text-align: left;
+    background-color: rgb(246, 247, 248);
+    border-radius: 4px;
+    color: rgba(20, 24, 32 ,1);
+    font-family: Roboto,sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    line-height: normal;
+    position: relative;
+    word-break: break-word;
+}
+
+div.ovg.buttonsdiv {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    display: inline-flex;
+}
+
+.ovg-button-div {
+    line-height: 2rem;
+    vertical-align: middle;
+    user-select: none;
+    position: relative;
+    justify-content: center;
+    margin-left: 1rem!important;
+    margin-right: 1rem!important;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.ovg-button-span {
+    padding-right: 0;
+    display: inline-flex;
+    padding: .4rem .8rem;
+    transition-duration: .2s;
+    transition-property: opacity;
+}
+
+.ovg-button-span2 {
+    padding-left: .5rem;
+    transition-duration: .2s;
+    transition-property: opacity;
+    text-align: center;
+    position: relative;
+    padding: .5rem 1rem;
+}
+
+#bscSettingsPanel #bttvEmoteList,
+#bscSettingsPanel #ffzEmoteList {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5px 0 0;
+    padding: 0;
+    justify-content: center;
+}
+
+#bscSettingsPanel .emoteCard {
+    width: 13.63%;
+    height: 105px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: #1A202C;
+    border-radius: 5px;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    padding: 0px;
+    color: rgba(255, 255, 255, 0.8);
+    justify-content: center;
+    border: none!important;
+}
+
+#bscSettingsPanel .emoteCard:hover {
+    background-color: rgba(26, 32, 44 ,0.5);
+    z-index: 1;
+}
+
+#bscSettingsPanel .emoteCard:hover * {
+    pointer-events: none;
+}
+
+#bscSettingsPanel .emoteCard:hover span {
+    white-space: unset;
+}
+
+#bscSettingsPanel .emoteCard img {
+    width: auto;
+    height: 50px;
+    margin-bottom: 8px;
+    max-width: calc(100% - 5px);
+}
+#bscSettingsPanel .emoteCard:hover img {
+    max-width: unset!important;
+    background-color: rgba(26, 32, 44 ,0.5);
+}
+#bscSettingsPanel .emoteCard span {
+    font-size: 13px;
+    line-height: 16px;
+    word-break: break-all;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100% - 10px);
+}
+
+#bscSettingsPanel #bttvUserList,
+#bscSettingsPanel #ffzUserList {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+#bscSettingsPanel #bttvUserList a,
+#bscSettingsPanel #ffzUserList a {
+    font-size: 12px;
+    list-style: disc;
+}
+
+#bscSettingsPanel #bttvUserList li.bttvUser,
+#bscSettingsPanel #ffzUserList li.ffzUser {
+    display: flex;
+}
+
+.ovg-button {
+    background-color: #258fe5!important;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+div.sticker-item--img {
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 32px;
+    margin: 2px auto;
+    width: 32px;
+}
+
+.emoji__head__options > div.option {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    color: rgba(255, 255, 255 ,.72);
+    cursor: pointer;
+    font-family: Roboto-Bold,sans-serif;
+    font-size: 10px;
+    letter-spacing: .4px;
+    line-height: 1.2;
+    margin-right: 4px;
+    padding: 6px 8px;
+    position: relative;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.emoji__head__options > div.option.active {
+    background-color: #258fe5;
+    border-radius: 4px;
+    color: #ffffff;
+}
+
+div.emoji-ovg {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 186px;
+    overflow-y: auto;
+    padding: 10px 0 0 20px;
+    justify-content: center;
+}
+
+div.emoji-ovg::-webkit-scrollbar {
+    background-color: rgba(255, 255, 255 ,.08);
+    width: 4px;
+}
+div.emoji-ovg::-webkit-scrollbar-thumb {
+    background-color: #242830;
+    border-radius: 4px;
+    box-shadow: 0 0 2px 0 rgba(26, 32, 44 ,.32);
+}
+div.emoji-ovg::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255 ,.08);
+    border-radius: 4px;
+}
+
+img.emoji__item-ovg {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-size: 24px;
+    height: 24px;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-right: 24px;
+    user-select: none;
+}
+
+
+button.ovg {
+    background: #258fe5!important;
+    color: #ffffff!important;
+    font-size: 12px;
+    height: 32px;
+    padding: 0 16px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: Roboto-Bold,sans-serif;
+    letter-spacing: .4px;
+    margin: 0;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all .1s ease;
+    vertical-align: top;
+    white-space: nowrap;
+    width: inherit;
+}
+button.ovg:hover {
+    background-color: #48A1E9!important;
+}
+button.ovg:active {
+    color: rgba(255, 255, 255 ,.8)!important;
+}
+
+
+#bscSettingsPanel select,
+#bscSettingsPanel input {
+    color: rgba(255, 255, 255, 1);
+    font-family: Roboto,sans-serif;
+    font-size: 14px;
+    letter-spacing: normal;
+    line-height: 1.44;
+    min-height: 20px;
+    outline: none;
+    overflow: hidden;
+    resize: none;
+    width: inherit;
+    background-color: #1A202C;
+    border: none;
+    box-shadow: 0 0 2px 0 rgba(255, 255, 255 ,.32);
+    box-sizing: border-box;
+    min-width: 105px;
+}
+#bscSettingsPanel input {
+    cursor: text;
+}
+#bscSettingsPanel input[type="color"] {
+    cursor: pointer!important;
+    width: 105px;
+    vertical-align: middle;
+}
+#bscSettingsPanel select {
+    cursor: pointer!important;
+}
+
+div.item__links-ovg {
+    flex: none;
+    margin-right: 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+div.item__links-ovg > .link {
+    background-repeat: no-repeat;
+    background-size: contain;
+    border-radius: 4px;
+    margin: 0px 0px 0px 8px;
+}
+div.item__links-ovg > .link > img {
+    height: 32px;
+    width: 32px;
+}
+
+.message__info__text {
+    width: 100%!important;
+}
+
+.block-ovg {
+    font-family: Roboto,sans-serif;
+    font-size: 12px;
+    height: 100%;
+    letter-spacing: normal;
+    line-height: normal;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    background: #141820;
+    max-height: 0;
+    transition: max-height 0.2s ease-out;
+    cursor: n-resize;
+}
+.block-ovg::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255 ,.08);
+    border-radius: 4px;
+}
+.block-ovg::-webkit-scrollbar-thumb {
+    background-color: #242830;
+    border-radius: 4px;
+    box-shadow: 0 0 2px 0 rgba(26, 32, 44 ,.32);
+}
+.block-ovg::-webkit-scrollbar {
+    background-color: rgba(255, 255, 255 ,.08);
+    width: 4px;
+}
+.block__messages-ovg {
+    align-items: center;
+    display: flex;
+    flex-direction: column-reverse;
+    cursor: move;
+}
+
+.message__info__text-ovg > .sticker.small {
+    height: 56px;
+    width: 56px;
+}
+
+.message__info__text-ovg > .sticker {
+    display: block;
+    height: 128px;
+    margin-top: 8px;
+    width: 128px;
+}
+
+.stickers__div {
+    display: block;
+    width: 100%;
+}
+.stickers__info {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    width: calc(100% + 20px);
+    margin-left: -20px;
+}
+.stickers__line {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.stickers__info__line {
+    background-color:rgba(255, 255, 255 ,.16);
+    height:1px;
+    width:100%
+}
+.stickers__info__text {
+    color:rgba(255, 255, 255, 1);
+    font-size:10px;
+    line-height:1.2;
+    margin:0 16px;
+    white-space:nowrap
+}
+
+.ovg-bg-color-prime {
+    background-color: #1A202C;
+}
+
+.context-menu__block {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    height: 48px;
+}
+.context-menu__block:hover {
+    background-color: rgba(255, 255, 255 ,.08);
+}
+.context-menu__block:active {
+    background-color: rgba(255, 255, 255 ,.16);
+}
+.context-menu__block__icon {
+    color: rgba(255, 255, 255 ,.64);
+    font-size: 12px;
+    padding: 0 10px 0 12px;
+}
+.icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.context-menu__block__text {
+    color: rgba(255, 255, 255 ,.64);
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    font-size: 14px;
+    letter-spacing: normal;
+    line-height: normal;
+    padding: 0 12px 0 0;
+    user-select: none;
+}
+.context-menu {
+    z-index: 2!important;
+}
+
+.table-ovg {
+    width: 100%;
+    border-color: initial;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.thead-ovg {
+    display: table-header-group;
+}
+.table-heading-ovg {
+    padding: 1rem !important;
+    border-bottom-style: solid;
+    vertical-align: middle;
+    text-align: left;
+}
+.ovg-items {
+    display: table-row-group;
+}
+.table-menu__block td {
+    padding: 1rem !important;
+}
+.td-btn-remove {
+    text-align: center !important;
+    padding: 1rem !important;
+}
+.table-heading-ovg.remove {
+    text-align: center !important;
+}
+.td-btn-remove > div {
+    display: inline-flex !important;
+    position: relative !important;
+}
+
+
+@media screen and (max-width:480px) {
+    #bscSettingsPanel {
+        margin-top: 0px!important;
+        height: 100% !important;
+        top: 0px!important;
+        box-shadow: none!important;
+        border-color: rgba(0, 0, 0, 0)!important;
+    }
+    .visible--mobile {
+        width: 100%!important;
+    }
+    .theatre-mode-mobile {
+        position: fixed!important;
+        top: 48px;
+        z-index: 999;
+    }
+    .ovg-viewer-card {
+        width: calc(100% - 15px)!important;
+    }
+    .formField {
+        margin-right: 5px!important;
+        font-size: 12px;
+    }
+    .formField > ol {
+        padding-left: 5px;
+    }
+    .formField input, .formField select {
+        height: 26px!important;
+        width: 92.3px!important;
+        min-width: 92.3px!important;
+        font-size: 12px!important;
+    }
+    .formField .optionField.botevent {
+        margin-right: 5px!important;
+    }
+    .optionField.def {
+        margin-left: 5px !important;
+    }
+    #bscSettingsPanel .title {
+        font-size: 13px!important;
+    }
+    #bscSettingsPanel .aboutHalf {
+        width: calc(100% - 33px);
+        height: 38.5%;
+    }
+    #bscSettingsPanel .aboutIcon {
+        margin-top: 20px;
+    }
+    #bscSettingsPanel main h1 {
+        font-size: 20px;
+    }
+    #bscSettingsPanel main h2 {
+        font-size: 16px;
+    }
+    #bscSettingsPanel main h4 {
+        font-size: 13px;
+    }
+    #bscSettingsPanel #bttvUserList li,
+    #bscSettingsPanel #ffzUserList li {
+        font-size: 13px !important;
+    }
+    #bscSettingsPanel .emoteCard {
+        width: 23%;
+        height: 81px;
+    }
+    #bscSettingsPanel .emoteCard img {
+        height: 38px;
+    }
+    #bscSettingsPanel .emoteCard span {
+        font-size: 11px;
+    }
+    #bscSettingsPanel .table-heading-text-ovg {
+        font-size: 13px;
+    }
+    #bscSettingsPanel .nav li a {
+        font-size: 13px;
+    }
+    
+}
+
+@media screen and (max-width:350px) {
+    #bscSettingsPanel .title {
+        font-size: 11px!important;
+    }
+    #bscSettingsPanel footer {
+        font-size: 10px;
+    }
+}
+
+@media screen and (max-width:800px) {
+    #bscSettingsPanel {
+        width: 100%;
+        margin-left: 0px;
+        left: 0px;
+    }
+    #bscSettingsPanel .nav {
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+}
+
+#bscSettingsPanel .nav::-webkit-scrollbar {
+    background-color: rgba(255, 255, 255 ,.08);
+    height: 4px;
+}
+
+#bscSettingsPanel .nav::-webkit-scrollbar-thumb {
+    background-color: #242830;
+    border-radius: 4px;
+    box-shadow: 0 0 2px 0 rgba(26, 32, 44 ,.32);
+}
+
+#bscSettingsPanel .nav::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255 ,.08);
+    border-radius: 4px;
+}
+
+a:not(a) {
+    pointer-events: none;
+}
+
+
+
+.lds-ring {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+.icon-pending-ovg {
+    -webkit-animation: loading 3s linear infinite;
+    animation: loading 3s linear infinite;
+}
+
+.icon-pending-inner-ovg {
+    -webkit-animation: loading-circle 2s linear infinite;
+    animation: loading-circle 2s linear infinite;
+    fill: hsla(0,0%,100%,0);
+    stroke: #fff;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    stroke-miterlimit: 10;
+    stroke-width: 16;
+}
+
+.info__text__status-paid-ovg.button {
+    cursor: pointer;
+    border-radius: 2px;
+    margin-right: 4px;
+    padding: 0 4px;
+}
+.icon-ovg {
+    color: #ffffff;
+    display: inline-block;
+    font-size: 14px;
+}
+.icon-ovg:before {
+    margin-left: 0!important;
+    margin-right: 0!important;
+}
+
+.messageHover-ovg {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    z-index: -1;
+    border-radius: 4px;
+}
+
+div.sticker-card {
+    display: grid;
+}
+
+div.paidsubs-popup__stickers {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 5px 5px 0px 5px;
+}
+div.paidsubs-popup__stickers-item {
+    margin: 0 8px 8px 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 32px;
+    transition: transform .2s;
+}
+div.sticker-card:hover div.paidsubs-popup__stickers-item {
+    transform: scale(2.4) translateY(-4px);
+    background-color: #1A202C;
+    border-radius: 4px;
+    box-shadow: 0 0 4px 0 rgba(255, 255, 255 ,.16);
+}
+
+div.sticker-card wasd-tooltip {
+    position: relative;
+    bottom: -5px;
+}
+
+div.sticker-card wasd-tooltip .tooltip_position-bottom {
+    left: 50%;
+    margin-top: 8px;
+    top: 100%;
+    transform: translateX(-50%) translateZ(0);
+}
+
+div.sticker-card wasd-tooltip .tooltip {
+    /*display: none;*/
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    transform: translateZ(0);
+    z-index: 1;
+    left: -115px;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+}
+
+div.sticker-card wasd-tooltip .tooltip_size-small .tooltip-content {
+    padding: 4px 16px;
+}
+
+div.sticker-card wasd-tooltip .tooltip .tooltip-content_left {
+    text-align: left;
+}
+
+div.sticker-card wasd-tooltip .tooltip .tooltip-content {
+    background-color: rgb(246, 247, 248);
+    border-radius: 4px;
+    color: rgba(20, 24, 32 ,1);
+    font-family: Roboto,sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    line-height: normal;
+    position: relative;
+    word-break: break-word;
+}
+
+div.sticker-card wasd-tooltip .tooltip .tooltip-content:after {
+    border: 4px solid transparent;
+    border-bottom: 4px solid rgb(246, 247, 248);
+    border-top: none;
+    bottom: 100%;
+    content: "";
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    position: absolute;
+    transition: all .3s ease;
+}
+
+div.sticker-card:hover wasd-tooltip .tooltip {
+    opacity: 1;
+}
+
+.user_last_messages-ovg .accordion-header-wrap-ovg {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-size: 16px;
+    justify-content: space-between;
+    user-select: none;
+}
+.user_last_messages-ovg .accordion-header-ovg {
+    font-size: 16px;
+    line-height: 22px;
+}
+.user_last_messages-ovg .accordion-header-arrow-ovg {
+    transform: scaleY(-1);
+    transition: transform .3s;
+}
+.user_last_messages-ovg.active .accordion-header-arrow-ovg {
+    transform: scaleY(1);
+    transition: transform .3s;
+}
+.user_last_messages-ovg:hover .last_messages {
+    color: #258fe5;
+}
+.user_last_messages-ovg.active .accordion-marker-ovg {
+    display: block;
+    background: #258fe5;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    height: 24px;
+    left: 0;
+    position: absolute;
+    width: 4px;
+    top: 1px;
+}
+
+#bscSettingsPanel .option .tooltip-ovg {
+    background-color: rgb(246, 247, 248);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 16%);
+    color: rgba(20, 24, 32 ,1);
+    font-family: Roboto-Regular;
+    font-size: 12px;
+    right: 0;
+    letter-spacing: .4px;
+    line-height: 1.2;
+    padding: 5px 15px;
+    pointer-events: none;
+    position: absolute;
+    text-align: left;
+    transform: unset;
+    transition: opacity .2s ease;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    visibility: hidden;
+    white-space: nowrap;
+    z-index: 2000;
+    bottom: 100%;
+    margin-bottom: 8px;
+    top: auto;
+}
+#bscSettingsPanel .option .tooltip-ovg:before {
+    height: calc(100% + 8px);
+    left: -4px;
+    top: -4px;
+    width: calc(100% + 8px);
+    z-index: -1;
+    border: unset;
+    border-color: unset;
+    content: "";
+    margin: unset;
+    position: absolute;
+}
+#bscSettingsPanel .option .tooltip-ovg:after {
+    right: 6px;
+    left: auto;
+    top: auto;
+    bottom: -4px;
+    background-color: rgb(246, 247, 248);
+    height: 8px;
+    transform: rotate(45deg);
+    width: 8px;
+    z-index: -1;
+    content: "";
+    position: absolute;
+    border-radius: 0px 0px 2px;
+    border: unset;
+    border-color: unset;
+    margin: unset;
+}
+#bscSettingsPanel .option button:hover .tooltip-ovg {
+    visibility: visible;
+    opacity: 1;
+}
+
+#bscSettingsPanel .option button.def i {
+    color: rgba(255, 255, 255, 0.8);
+}
+#bscSettingsPanel .option button.def {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    float: left;
+    height: 24px;
+    outline: none;
+    padding: 4px;
+    position: relative;
+    width: 24px;
+}
+#bscSettingsPanel .option button.def:hover {
+    background: rgba(255, 255, 255 ,.08);
+    transition: background .3s;
+}
+#bscSettingsPanel .option button.def:active {
+    background: rgba(255, 255, 255 ,.1);
+}
+.formField .optionField.botevent {
+    margin-right: 15px;
+}
+
+
+.block__messages__item-ovg .is-moderator {
+    background-color: #444858;
+    border-radius: 2px;
+    color: #ffffff!important;
+    padding: 0 8px 0 4px;
+}
+.block__messages__item-ovg .is-moderator i.icon {
+    margin-right: 4px;
+    width: 14px;
+}
+.block__messages__item-ovg .wasd-icons-moderator:before {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.block__messages__item-ovg .is-owner {
+    background-color: #F5A623;
+    border-radius: 2px;
+    color: #ffffff!important;
+    padding: 0 8px 0 4px;
+}
+.block__messages__item-ovg .is-owner i.icon {
+    margin-right: 4px;
+    width: 14px;
+}
+.block__messages__item-ovg .wasd-icons-owner:before {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.block__messages__item-ovg .info__text__status-paid {
+    border-radius: 2px;
+    margin-right: 4px;
+    padding: 0 4px;
+}
+
+.block__messages__item-ovg .wasd-icons-star:before {
+    margin-left: 0;
+    margin-right: 0;
+}
