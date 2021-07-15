@@ -1,8 +1,21 @@
-let settings
+let settings;
+
+
+chrome.storage.sync.get((items) => {
+    if (typeof items.bot !== 'undefined') {
+        settings = items.bot
+        socket.getCurrent()
+        socket.setIntervals(settings)
+    }
+});
+
 chrome.storage.onChanged.addListener(function (changes, namespace) {
     settings = Object.entries(changes)[0][1].newValue
+    if (socket.socketd == null) socket.getCurrent()
     console.log('onChanged', settings)
+    socket.setIntervals(settings)
 });
+
 
 
 const socket = {
@@ -13,6 +26,7 @@ const socket = {
     current: null,
     stream_url: null,
     isBotInited: false,
+    intervals: [],
     getCurrent() {
         new Promise((resolve, reject) => {
         fetch(`https://wasd.tv/api/profiles/current`)
@@ -72,7 +86,7 @@ const socket = {
             .then((out) => {
                 socket.jwt = out.result
                 new Promise((resolve, reject) => {
-                    this.stream_url = `https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`
+                    socket.stream_url = `https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`
                     fetch(`https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`)
                     .then(res => res.json())
                     .then((out) => {
@@ -82,7 +96,7 @@ const socket = {
                             fetch(`https://wasd.tv/api/v2/profiles/current/broadcasts/closed-view-url`)
                             .then(res => res.json())
                             .then((out) => {
-                                this.stream_url = out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/')
+                                socket.stream_url = out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/')
                                 fetch(out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/') )
                                 .then(res => res.json())
                                 .then((out) => {
@@ -167,9 +181,9 @@ const socket = {
                             break;
                         case "event":
                             console.log(`[${JSData[0]}] ${JSData[1].event_type} - ${JSData[1].payload.user_login} ${JSData[1].message}`, JSData);
-                            if (settings.cmdFollowers[1][1] && JSData[1].event_type == 'NEW_FOLLOWER') {
-                                let text = settings.bot.eventFollow[1][0].replace('{user_login}', '@'+JSData[1].payload.user_login);
-                                Helper.socket.send(text)
+                            if (settings.eventFollow[1][1] && JSData[1].event_type == 'NEW_FOLLOWER') {
+                                let text = settings.eventFollow[1][0].replace('{user_login}', '@'+JSData[1].payload.user_login);
+                                socket.send(text)
                             }
                             break;
                         case "giftsV1":
@@ -183,11 +197,11 @@ const socket = {
                             break;
                         case "subscribe":
                             console.log(`[${JSData[0]}] ${JSData[1].user_login} - ${JSData[1].product_name}`, JSData);
-                            if (settings.cmdSubscribers[1][1]) {
-                                let text = settings.bot.eventSub[1][0].replace('{user_login}', '@'+JSData[1].user_login);
+                            if (settings.eventSub[1][1]) {
+                                let text = settings.eventSub[1][0].replace('{user_login}', '@'+JSData[1].user_login);
                                 prname = `${(JSData[1].product_name == '30') ? '1 месяц' : ''}${(JSData[1].product_name == '60') ? '2 месяца' : ''}`
                                 text.replace('{product_name}', prname);
-                                Helper.socket.send(text)
+                                socket.send(text)
                             }
                             break;
                         case "_system":
@@ -224,7 +238,7 @@ const socket = {
     },
     send(message) {
 
-        this.socketd.send(`42["message",{"hash":"${this.hash(25)}","streamId":${this.streamId},"channelId":${this.channelId},"jwt":"${this.jwt}","message":"${message}"}]`)
+        if (this.socketd) this.socketd.send(`42["message",{"hash":"${this.hash(25)}","streamId":${this.streamId},"channelId":${this.channelId},"jwt":"${this.jwt}","message":"${message}"}]`)
     },
     hash(length) {
         var result = '';
@@ -253,13 +267,20 @@ const socket = {
             return false
         }
     },
+    isSub(JSData) {
+        if (JSData) {
+            let role = false
+            for (let rol of JSData[1]?.other_roles) { if (rol == 'CHANNEL_SUBSCRIBER') role = true } //?
+            if (!role) role = JSData[1]?.user_channel_role == 'CHANNEL_SUBSCRIBER'
+            return role
+        } else {
+            return false
+        }
+    },
     onMessage(JSData) {
         let data1 = this.parseCmd(JSData[1].message, true, settings.cmdPrefixBotMod[1][0])
         let user_login = JSData[1].user_login
-        if (data1.cmd != null) console.log('data1', data1)
-
-        console.log(JSData[1]?.user_channel_role)
-
+        if (data1.cmd != null) console.log('bot mod', data1)
         if (data1.prefix == settings.cmdPrefixBotMod[1][0]) switch (data1.cmd) {
             case 'ban':
                 if (settings.cmdBan[1]) {
@@ -273,8 +294,7 @@ const socket = {
 
                                     if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
                                         finded = true;
-                                        fetch(this.stream_url)
-
+                                        fetch(socket.stream_url)
                                         .then(res => res.json())
                                         .then((out) => {
 
@@ -306,7 +326,7 @@ const socket = {
                         socket.send('Пользователь не найден')
                     }
                 }
-                break;
+                return;
             case 'unban':
                 if (settings.cmdBan[1]) {
                     if (this.isMod(JSData))  if (data1.data) for(let data of data1.data) {
@@ -318,7 +338,7 @@ const socket = {
                                     for (let value of out.result.rows) {
                                         if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
                                             finded = true;
-                                            fetch(this.stream_url)
+                                            if (socket.stream_url != null) fetch(socket.stream_url)
                                             .then(res => res.json())
                                             .then((out) => {
 
@@ -347,7 +367,7 @@ const socket = {
                             socket.send('Пользователь не найден')
                         }
                 }
-                break;
+                return;
             case 'mod':
                 if (settings.cmdMod[1]) {
                     if (this.isMod(JSData)) if (data1.data) {
@@ -361,7 +381,7 @@ const socket = {
 
                                         if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
                                             finded = true;
-                                            fetch(this.stream_url)
+                                            fetch(socket.stream_url)
                                             .then(res => res.json())
                                             .then((out) => {
 
@@ -395,7 +415,7 @@ const socket = {
                         socket.send('Пользователь не найден')
                     }
                 }
-                break;
+                return;
             case 'unmod':
                 if (settings.cmdMod[1]) {
                     if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
@@ -407,7 +427,7 @@ const socket = {
                                 for (let value of out.result.rows) {
                                     if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
                                         finded = true;
-                                        fetch(this.stream_url)
+                                        fetch(socket.stream_url)
                                         .then(res => res.json())
                                         .then((out) => {
 
@@ -441,13 +461,13 @@ const socket = {
                         socket.send('Пользователь не найден')
                     }
                 }
-                break;
+                return;
             case 'raid':
                 if (settings.cmdRaid[1]) {
                     if (this.isMod(JSData)) if (data1.data) {
                         url = data1.data[0].split('@').join('').toLowerCase().trim()
                         if (url.indexOf('://') == -1) { url = `https://wasd.tv/${url}` }
-                        fetch(this.stream_url)
+                        fetch(socket.stream_url)
                         .then(res => res.json())
                         .then((out) => {
                             fetch(`https://wasd.tv/api/v2/channels/${out.result.channel.channel_id}/raid?raid_channel=${url}`, {method: 'POST'})
@@ -470,7 +490,7 @@ const socket = {
                         socket.send('Пользователь не найден')
                     }
                 }
-                break;
+                return;
             case 'game':
                 if (settings.cmdGame[1]) {
                     data1 = this.parseCmd(JSData[1].message, false, '/')
@@ -517,7 +537,7 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
             case 'title':
                 if (settings.cmdTitle[1]) {
                     data1 = this.parseCmd(JSData[1].message, false, '/')
@@ -548,11 +568,11 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
             case 'followers':
                 if (settings.cmdFollowers[1]) {
                     if (this.isMod(JSData)) {
-                        fetch(this.stream_url)
+                        fetch(socket.stream_url)
                         .then(res => res.json())
                         .then((out) => {
 
@@ -574,11 +594,11 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
             case 'followersoff':
                 if (settings.cmdFollowers[1]) {
                     if (this.isMod(JSData)) {
-                        fetch(this.stream_url)
+                        fetch(socket.stream_url)
                         .then(res => res.json())
                         .then((out) => {
 
@@ -600,11 +620,11 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
             case 'subscribers':
                 if (settings.cmdSubscribers[1]) {
                     if (this.isMod(JSData)) {
-                        fetch(this.stream_url)
+                        fetch(socket.stream_url)
                         .then(res => res.json())
                         .then((out) => {
 
@@ -626,11 +646,11 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
             case 'subscribersoff':
                 if (settings.cmdSubscribers[1]) {
                     if (this.isMod(JSData)) {
-                        fetch(this.stream_url)
+                        fetch(socket.stream_url)
                         .then(res => res.json())
                         .then((out) => {
 
@@ -652,15 +672,15 @@ const socket = {
                         })
                     }
                 }
-                break;
+                return;
         }
 
         let data2 = this.parseCmd(JSData[1].message, false, settings.cmdPrefixBotUser[1][0])
-        if (data2.cmd != null) console.log('data2', data2)
+        if (data2.cmd != null) console.log('bot user', data2)
         if (data2.prefix == settings.cmdPrefixBotUser[1][0]) switch (data2.cmd) {
             case 'uptime':
                 if (settings.cmdUptime[1]) {
-                    fetch(this.stream_url)
+                    fetch(socket.stream_url)
                     .then(res => res.json())
                     .then((out) => {
                         if (typeof out.result.media_container.published_at !== 'undefined') {
@@ -671,7 +691,7 @@ const socket = {
                         }
                     })
                 }
-                break;
+                return;
             case 'game':
                 if (settings.cmdUserGame[1]) {
                     fetch(`https://wasd.tv/api/profiles/current/settings`)
@@ -684,7 +704,7 @@ const socket = {
                         }
                     })
                 }
-                break;
+                return;
             case 'title':
                 if (settings.cmdUserTitle[1]) {
                     fetch(`https://wasd.tv/api/profiles/current/settings`)
@@ -697,10 +717,46 @@ const socket = {
                         }
                     })
                 }
-                break;
+                return;
         }
+
+        settings.usercmds.forEach(function(item, index, array) {
+            let data3 = socket.parseCmd(JSData[1].message, false, item[0])
+
+            if (item[4] == 0 && socket.isMod(JSData)) {
+                if (data3.cmd == item[1] && data3.prefix == item[0]) {
+                    socket.send(item[3])
+                    return;
+                }
+            }
+
+            if (item[4] == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
+                if (data3.cmd == item[1] && data3.prefix == item[0]) {
+                    socket.send(item[3])
+                    return;
+                }
+            }
+
+            if (item[4] == 2) {
+                if (data3.cmd == item[1] && data3.prefix == item[0]) {
+                    socket.send(item[3])
+                    return;
+                }
+            }
+
+        });
     },
+    setIntervals(settings) {
+        socket.intervals.forEach((item) => {
+            clearInterval(item)
+        })
+        socket.intervals = []
+        for ( let int of settings.usercmdstimeout ) {
+            let interval = setInterval(() => {
+                socket.send(int[1])
+            }, int[2]*1000)
+
+            socket.intervals.push(interval)
+        }
+    }
 }
-
-socket.getCurrent()
-

@@ -17,13 +17,12 @@ const Helper = {
                 cmdUptime: [true, true],
                 cmdUserTitle: [true, true],
                 cmdUserGame: [true, true],
-                /*cmdFollowage: true,*/
-
-                cmdPrefix: [['/', true], ['/', true]],
-                cmdUser: [true, true],
 
                 eventFollow: [['{user_login} Спасибо за подписку!', false], ['{user_login} Спасибо за подписку!', false]],
                 eventSub: [['{user_login} Спасибо за платную подписку на {product_name}!', false], ['{user_login} Спасибо за платную подписку на {product_name}!', false]],
+                
+                usercmds: [],
+                usercmdstimeout: [] // ['name', 'message', 60, true]
             }
         };
     },
@@ -32,14 +31,20 @@ const Helper = {
             if (typeof chrome !== 'undefined') {
                 chrome.storage[storageType].get((items) => {
                     let defaultSettings = this.getDefaultSettings();
-                    items = items || {};
+                    if (typeof items.bot !== 'undefined') {
+                        items = items || {};
 
-                    for (let key in defaultSettings) {
-                        if (defaultSettings.hasOwnProperty(key)) {
-                            items[key] = Object.assign(defaultSettings[key], items[key] || {});
+                        for (let key in defaultSettings) {
+                            if (defaultSettings.hasOwnProperty(key)) {
+                                items[key] = Object.assign(defaultSettings[key], items[key] || {});
+                            }
                         }
+                        resolve(items);
+                    } else {
+                        chrome.storage[storageType].set(defaultSettings, () => {console.log('settings inited')});
+                        resolve(defaultSettings);
                     }
-                    resolve(items);
+
                 });
             } else {
                 reject('browser not supported?');
@@ -114,19 +119,6 @@ const Helper = {
                     title: '!followage - Эта команда позволяет узнать сколько пользователь отслеживает на ваш канал.',
                     type: 'boolean'
                 },*/
-
-                help: {
-                    title: 'БОТ (beta)',
-                    type: 'title'
-                },
-                cmdPrefix: {
-                    title: 'Префикс команд.',
-                    type: 'botevent'
-                },
-                cmdUser: {
-                    title: '/user - Эта команда открывает карточку профиля пользователя.',
-                    type: 'boolean'
-                },
 
                 event: {
                     title: 'Событие (beta)',
@@ -350,6 +342,109 @@ const Helper = {
             }
         },
     },
+
+    addUserCmd(data, index) {
+        console.log(data)
+        let html = document.querySelector('.usercmds.ovg-items')
+        let item = document.createElement('tr')
+        item.classList.add(`table-menu__block`)
+        item.style = 'justify-content: space-between;'
+        item.innerHTML = `<td><div><p>${data[0]}</p></div></td> <td><div><p>${data[1]}</p></div></td> <td><div><p>${data[2]}</p></div></td> <td><div><p>${data[3]}</p></div></td> <td><div><p>${data[4] == 0 ? 'Модератор' : ''}${data[4] == 1 ? 'Подписчик' : ''}${data[4] == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
+        item.setAttribute('index', index)
+        html.append(item)
+        item.querySelector('.remove').addEventListener('click', ({ target }) => {
+            let index = item.getAttribute('index')
+
+            console.log('1', settings.bot.usercmds)
+
+            settings.bot.usercmds = settings.bot.usercmds.splice(index, 0)
+
+            item.remove()
+            Helper.Settings.showMessage(`Команда ${index} удалена`, 'success')
+            console.log('2', settings.bot.usercmds)
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        })
+    },
+    addUserTimeout(data, index) {
+        console.log(data)
+        let html = document.querySelector('.usercmdstimeout.ovg-items')
+        let item = document.createElement('tr')
+        item.classList.add(`table-menu__block`)
+        item.style = 'justify-content: space-between;'
+        item.innerHTML = `<td><div><p>${data[0]}</p></div></td> <td><div><p>${data[1]}</p></div></td> <td><div><p>${data[2]}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
+        item.setAttribute('index', index)
+        html.append(item)
+        item.querySelector('.remove').addEventListener('click', ({ target }) => {
+            let index = item.getAttribute('index')
+
+            console.log('1', settings.bot.usercmdstimeout)
+
+            settings.bot.usercmdstimeout = settings.bot.usercmdstimeout.splice(index, 0)
+
+            item.remove()
+            Helper.Settings.showMessage(`Команда ${index} удалена`, 'success')
+            console.log('2', settings.bot.usercmdstimeout)
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        })
+    },
+    tryAddUserCmd(data) {
+        is = [false, 0]
+        if (data[0].trim() == '') {
+            Helper.Settings.showMessage('Null prefix')
+            return
+        }
+        if (data[1].trim() == '') {
+            Helper.Settings.showMessage('Null cmd')
+            return
+        }
+        if (data[3].trim() == '') {
+            Helper.Settings.showMessage('Null result')
+            return
+        }
+
+        settings.bot.usercmds.forEach(function(item, index, array) {
+            console.log(item, index, array)
+            is[0] = item[1].toLowerCase() == data[1].toLowerCase()
+            is[1] = index
+        });
+
+        if (!is[0]) {
+            Helper.addUserCmd(data, (settings.bot.usercmds.length+1))
+            console.log(settings.bot.usercmds.push(data))
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        } else {
+            Helper.Settings.showMessage('Команда существует');
+        }
+    },
+    tryAddUserTimeout(data) {
+       is = [false, 0]
+        if (data[0].trim() == '') {
+            Helper.Settings.showMessage('Null name')
+            return
+        }
+        if (data[1].trim() == '') {
+            Helper.Settings.showMessage('Null message')
+            return
+        }
+        if (data[2] < 5) {
+            Helper.Settings.showMessage('Interval < 5')
+            return
+        }
+
+        settings.bot.usercmdstimeout.forEach(function(item, index, array) {
+            console.log(item, index, array)
+            is[0] = item[0].toLowerCase() == data[0].toLowerCase()
+            is[1] = index
+        });
+
+        if (!is[0]) {
+            Helper.addUserTimeout(data, (settings.bot.usercmdstimeout.length+1))
+            console.log(settings.bot.usercmdstimeout.push(data))
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        } else {
+            Helper.Settings.showMessage('Команда существует');
+        }
+    }
 };
 
 let settings = Helper.getDefaultSettings();
@@ -366,6 +461,15 @@ const BetterStreamChat = {
             removed: '<span class="label" style="color: var(--wasd-color-text-prime);background: none;font-weight: 600;">Удалено</span>'
         };
         let changelogList = [{
+                version: '1.0.1',
+                date: '2021-07-13',
+                items: [{
+                    text: [
+                        `Основные ошибки.`
+                    ],
+                    label: 'fixed'
+                }]
+            },{
                 version: '1.0.0',
                 date: '2021-07-12',
                 items: [{
@@ -408,70 +512,147 @@ const BetterStreamChat = {
         settingsDiv.id = 'bscSettingsPanel';
         settingsDiv.innerHTML = `<div id="status">
             <p>
-        </p>
-        </div>
-        <header>
-            <ul class="nav">
-                <li><a data-tab="about">О нас</a></li>
-                <li class="active"><a data-tab="bot">БОТ</a></li>
-                <li><a data-tab="changelog">Журнал изменений</a></li>
-                <!--li><a data-tab="backup">Бэкап</a></li-->
-            </ul>
-        </header>
-
-        <main class="text" data-tab="about">
-            <div class="aboutHalf">
-                <img style="width: 50px;" class="aboutIcon" src="${chrome.extension.getURL("img/icon128.png")}">
-                <h2>BetterWASD.bot v${changelogList[0].version}</h2>
-                <h1>от ваших друзей в <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a></h1>
-                <br>
+            </p>
             </div>
-            <div class="aboutHalf">
-                <h1 style="margin-top: 25px;">Думаете, этот аддон классный?</h1>
-                <br><h1> Напишите отзыв на <a target="_blank" href="https://chrome.google.com/webstore/detail/fdgepfaignbakmmbiafocfjcnaejgldb">Chrome Webstore</a> </h1><br>
-            </div>
-        </main>
+            <header>
+                <ul class="nav">
+                    <li><a data-tab="about">О нас</a></li>
+                    <li class="active"><a data-tab="bot">БОТ</a></li>
+                    <li><a data-tab="cmdbot">cmd БОТ</a></li>
+                    <li><a data-tab="timeoutbot">timeout БОТ</a></li>
+                    <li><a data-tab="changelog">Журнал изменений</a></li>
+                    <!--li><a data-tab="backup">Бэкап</a></li-->
+                </ul>
+            </header>
 
-        <main class="active" id="bot" data-tab="bot">
-            <span style="display: block; padding: 10px;"> Бот отвечает от вашего имени </span>
-            ${Helper.Settings.build('bot')}
-        </main>
-
-        <main class="text" data-tab="backup">
-
-            <input id="importInput" type="file" accept=".backup" style="display: none;">
-            <span> Эта функция позволяет вам сохранить и восстановить ваши настройки BetterWASD.bot </span>
-            <div style="padding-top: 10px;">
-                <div class="ovg-button-div">
-                    <button class="primary medium ovg backup-download">
-                        <span class="primary medium ovg-button-span">
-                            <img style="width: 20px; height: 20px;" src="${chrome.extension.getURL("img/download.png")}">
-                        </span>
-                        <span> Сохранить </span>
-                    </button>
+            <main class="text" data-tab="about">
+                <div class="aboutHalf">
+                    <img style="width: 50px;" class="aboutIcon" src="${chrome.extension.getURL("img/icon128.png")}">
+                    <h2>BetterWASD.bot v${changelogList[0].version}</h2>
+                    <h1>от ваших друзей в <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a></h1>
+                    <br>
                 </div>
-
-                <div class="ovg-button-div">
-                    <button class="primary medium ovg backup-upload">
-                        <span class="primary medium ovg-button-span">
-                            <img style="width: 20px; height: 20px;" src="${chrome.extension.getURL("img/upload.png")}">
-                        </span>
-                        <span> Восстановить </span>
-                    </button>
+                <div class="aboutHalf">
+                    <h1 style="margin-top: 25px;">Думаете, этот аддон классный?</h1>
+                    <br><h1> Напишите отзыв на <a target="_blank" href="https://chrome.google.com/webstore/detail/fdgepfaignbakmmbiafocfjcnaejgldb">Chrome Webstore</a> </h1><br>
                 </div>
-            </div>
-        </main>
+            </main>
 
-        <main class="text" data-tab="changelog">
-            <h1>Журнал изменений</h1>
-            <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;margin-bottom: 0px;"> Информацию о будущих версиях можно найти <a href="https://wasd.tv/ovgames/posts">тут</a></h4>
-            ${changelogHtml}
-        </main>
+            <main class="active" id="bot" data-tab="bot">
+                <span style="display: block; padding: 10px;"> Бот отвечает от вашего имени </span>
+                ${Helper.Settings.build('bot')}
+            </main>
 
-        <footer>
-            <span>BetterWASD.bot ${changelogList[0].version} (${changelogList[0].date})</span>
-            <span> Offered by <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a> | <a href="https://wasd.tv/ovgames" target="_blank">WASD</a>
-            </span>`;
+            <main data-tab="cmdbot">
+                <h1 style="padding-left: 10px; padding-right: 10px;"> Пользовательские команды </h1>
+                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить команду </h4>
+                <div style="padding-left: 10px;">
+                    <input placeholder="prefix" id="userCmdPrefix" style="width: 40px;"/>
+                    <input placeholder="cmd" id="userCmdCmd" style="width: 80px;"/>
+                    <input placeholder="atributs" id="userCmdAtributes" style="width: 80px;"/>
+                    <input placeholder="result" id="userCmdResult" style="width: 175px;"/>
+                    <select id="userCmdPrivilege">
+                        <option value="0" > Модератор </option>
+                        <option value="1" > Подписчик </option>
+                        <option value="2" selected > Каждый </option>
+                    </select>
+                    <button id="addCmdBtn" class="ovg-button">+</button>
+                </div>
+                <table class="table-ovg">
+
+                    <thead class="thead-ovg">
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Префикс</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Команда</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Атрибут</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Ответ</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Привилегия</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Действия</div>
+                        </th>
+                    </thead>
+
+                    <tbody class="usercmds ovg-items">
+                    </tbody>
+                </table>
+            </main>
+
+            <main data-tab="timeoutbot">
+                <h1 style="padding-left: 10px; padding-right: 10px;"> Пользовательские команды </h1>
+                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить команду </h4>
+                <div style="padding-left: 10px;">
+                    <input placeholder="name" id="timeoutName" style="width: 40px;"/>
+                    <input placeholder="message" id="timeoutMessage" style="width: 80px;"/>
+                    <input type="number" value="300" min="5" placeholder="interval" id="timeoutInterval" style="width: 80px;"/>
+                    <button id="addTimeoutBtn" class="ovg-button">+</button>
+                </div>
+                <table class="table-ovg">
+
+                    <thead class="thead-ovg">
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Имя</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Сообщение</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Интервал</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Действия</div>
+                        </th>
+                    </thead>
+
+                    <tbody class="usercmdstimeout ovg-items">
+                    </tbody>
+                </table>
+            </main>
+
+
+            <main class="text" data-tab="backup">
+
+                <input id="importInput" type="file" accept=".backup" style="display: none;">
+                <span> Эта функция позволяет вам сохранить и восстановить ваши настройки BetterWASD.bot </span>
+                <div style="padding-top: 10px;">
+                    <div class="ovg-button-div">
+                        <button class="primary medium ovg backup-download">
+                            <span class="primary medium ovg-button-span">
+                                <img style="width: 20px; height: 20px;" src="${chrome.extension.getURL("img/download.png")}">
+                            </span>
+                            <span> Сохранить </span>
+                        </button>
+                    </div>
+
+                    <div class="ovg-button-div">
+                        <button class="primary medium ovg backup-upload">
+                            <span class="primary medium ovg-button-span">
+                                <img style="width: 20px; height: 20px;" src="${chrome.extension.getURL("img/upload.png")}">
+                            </span>
+                            <span> Восстановить </span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <main class="text" data-tab="changelog">
+                <h1>Журнал изменений</h1>
+                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;margin-bottom: 0px;"> Информацию о будущих версиях можно найти <a href="https://wasd.tv/ovgames/posts" target="_blank">тут</a></h4>
+                ${changelogHtml}
+            </main>
+
+            <footer>
+                <span>BetterWASD.bot ${changelogList[0].version} (${changelogList[0].date})</span>
+                <span> Offered by <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a> | <a href="https://wasd.tv/ovgames" target="_blank">WASD</a> 
+                </span>`;
         document.body.append(settingsDiv);
 
         // to def
@@ -541,11 +722,38 @@ const BetterStreamChat = {
                 Helper.Settings.save([event.target]);
             });
         }
+
+        settings.bot.usercmds.forEach(function(item, index, array) {
+            Helper.addUserCmd(item, index)
+        });
+
+        settings.bot.usercmdstimeout.forEach(function(item, index, array) {
+            Helper.addUserTimeout(item, index)
+        });
+
+        settingsDiv.querySelector('#addCmdBtn').addEventListener('click', () => {
+            let prefix = settingsDiv.querySelector('#userCmdPrefix').value.trim()
+            let cmd = settingsDiv.querySelector('#userCmdCmd').value.trim()
+            let attributes = settingsDiv.querySelector('#userCmdAtributes').value.trim()
+            let result = settingsDiv.querySelector('#userCmdResult').value.trim()
+            let privilege = settingsDiv.querySelector('#userCmdPrivilege').selectedIndex
+
+            let value = [prefix, cmd, attributes, result, privilege, true]
+
+            Helper.tryAddUserCmd(value)
+        })
+
+        settingsDiv.querySelector('#addTimeoutBtn').addEventListener('click', () => {
+            let name = settingsDiv.querySelector('#timeoutName').value.trim()
+            let message = settingsDiv.querySelector('#timeoutMessage').value.trim()
+            let interval = Number(settingsDiv.querySelector('#timeoutInterval').value)
+
+            let value = [name, message, interval, true]
+
+            Helper.tryAddUserTimeout(value)
+        })
     },
 };
-
-
-
 
 let initialize = async () => {
     try {
@@ -561,10 +769,4 @@ let initialize = async () => {
     Helper.Settings.loaded()
 }
 
-
-
-
-
-
 initialize();
-
