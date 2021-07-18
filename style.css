@@ -1,13 +1,16 @@
+html {
+    width: 800px;
+    height: 500px;
+}
+
 body {
     align-items: stretch;
     box-sizing: content-box;
     display: flex;
     flex-direction: column;
-    height: 30rem;
     margin: 0 auto;
     padding: 1rem;
     position: relative;
-    width: 50rem;
     border: 2px solid white;
 }
 
@@ -92,7 +95,15 @@ body {
 
     color: rgba(255, 255, 255, 0.8);
     font-family: Open Sans, Segoe UI, Helvetica Neue, Ubuntu, sans-serif;
-    font-size: 0.75rem;
+    font-size: 15px;
+
+    margin-top: 0px!important;
+    height: 100% !important;
+    top: 0px!important;
+    box-shadow: none!important;
+    border-color: rgba(0, 0, 0, 0)!important;
+    right: 0px;
+    width: 100%;
 }
 
 
@@ -115,6 +126,7 @@ body {
     list-style: none;
     vertical-align: middle;
     padding: 0;
+    font-size: 15px;
 }
 
 #bscSettingsPanel .nav>li {
@@ -153,7 +165,7 @@ main[data-tab="about"] > div.aboutHalf {
     margin: 12px;
     padding: 5px;
     text-align: center;
-    width: calc(50% - 24px);
+    width: calc(50% - 34px);
 }
 
 main[data-tab="about"] > div.aboutHalf > img.aboutIcon {
@@ -197,7 +209,10 @@ button#backupButton {
     margin-bottom: 35px;
     height: calc(100% - (43px + 28px));
     overflow-x: hidden;
+}
 
+#bscSettingsPanel main[data-tab="changelog"] {
+    height: calc(100% - (43px + 50px))!important;
 }
 
 #bscSettingsPanel main.active {
@@ -471,35 +486,6 @@ button#backupButton {
     margin-left: 20px!important;
 }
 
-
-
-body.trovo .message {
-    opacity: 0;
-}
-
-body.trovo .message.loaded {
-    opacity: 1;
-}
-
-body.trovo .message.loadedFade {
-    opacity: 1;
-    animation-name: BetterStreamChatFadeInOpacity;
-    animation-iteration-count: 1;
-    animation-timing-function: linear;
-    animation-duration: 100ms;
-}
-
-@keyframes BetterStreamChatFadeInOpacity {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-
 /***********************************************/
 
 main.active::-webkit-scrollbar-thumb {
@@ -543,7 +529,7 @@ main.active::-webkit-scrollbar {
 
 @keyframes opentab {
     0% {opacity: 0;}
-    100%   {opacity: 1;}
+    100% {opacity: 1;}
 }
 
 
@@ -1086,7 +1072,13 @@ div.item__links-ovg > .link > img {
     display: table-row-group;
 }
 .table-menu__block td {
-    padding: 1rem !important;
+    padding: 10px !important;
+}
+.table-menu__block:nth-child(2n) {
+    background-color: var(--wasd-color-prime);
+}
+.table-menu__block td div p {
+    margin: 8px 0 8px 0;
 }
 .td-btn-remove {
     text-align: center !important;
@@ -1102,26 +1094,8 @@ div.item__links-ovg > .link > img {
 
 
 
-    #bscSettingsPanel {
-        margin-top: 0px!important;
-        height: 100% !important;
-        top: 0px!important;
-        box-shadow: none!important;
-        border-color: rgba(0, 0, 0, 0)!important;
-        right: 0px;
-        width: 100%;
-    }
-    .visible--mobile {
-        width: 100%!important;
-    }
-    .theatre-mode-mobile {
-        position: fixed!important;
-        top: 48px;
-        z-index: 999;
-    }
-    .ovg-viewer-card {
-        width: calc(100% - 15px)!important;
-    }
+
+/*
     .formField {
         margin-right: 5px!important;
         font-size: 12px;
@@ -1142,13 +1116,6 @@ div.item__links-ovg > .link > img {
     }
     #bscSettingsPanel .title {
         font-size: 13px!important;
-    }
-    #bscSettingsPanel .aboutHalf {
-        width: calc(100% - 33px);
-        height: 38.5%;
-    }
-    #bscSettingsPanel .aboutIcon {
-        margin-top: 20px;
     }
     #bscSettingsPanel main h1 {
         font-size: 20px;
@@ -1179,7 +1146,7 @@ div.item__links-ovg > .link > img {
     #bscSettingsPanel .nav li a {
         font-size: 13px;
     }
-    
+*/
 
 #bscSettingsPanel .nav::-webkit-scrollbar {
     background-color: rgba(255, 255, 255 ,.08);

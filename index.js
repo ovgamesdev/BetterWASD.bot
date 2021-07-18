@@ -21,8 +21,8 @@ const Helper = {
                 eventFollow: [['{user_login} Спасибо за подписку!', false], ['{user_login} Спасибо за подписку!', false]],
                 eventSub: [['{user_login} Спасибо за платную подписку на {product_name}!', false], ['{user_login} Спасибо за платную подписку на {product_name}!', false]],
                 
-                usercmds: [],
-                usercmdstimeout: [] // ['name', 'message', 60, true]
+                usercmds: {},
+                usercmdstimeout: {}
             }
         };
     },
@@ -343,24 +343,23 @@ const Helper = {
         },
     },
 
-    addUserCmd(data, index) {
+    addUserCmd(data) {
         console.log(data)
         let html = document.querySelector('.usercmds.ovg-items')
         let item = document.createElement('tr')
         item.classList.add(`table-menu__block`)
         item.style = 'justify-content: space-between;'
-        item.innerHTML = `<td><div><p>${data[0]}</p></div></td> <td><div><p>${data[1]}</p></div></td> <td><div><p>${data[2]}</p></div></td> <td><div><p>${data[3]}</p></div></td> <td><div><p>${data[4] == 0 ? 'Модератор' : ''}${data[4] == 1 ? 'Подписчик' : ''}${data[4] == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
-        item.setAttribute('index', index)
+        item.innerHTML = `<td><div><p>${data.prefix}</p></div></td> <td><div><p>${data.cmd}</p></div></td> <!--td><div><p>${data.attributes}</p></div></td--> <td><div><p>${data.result}</p></div></td> <td><div><p>${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
         html.append(item)
         item.querySelector('.remove').addEventListener('click', ({ target }) => {
-            let index = item.getAttribute('index')
-
             console.log('1', settings.bot.usercmds)
 
-            settings.bot.usercmds = settings.bot.usercmds.splice(index, 0)
+            let deleted = settings.bot.usercmds[data.cmd]
+            delete settings.bot.usercmds[data.cmd]
 
             item.remove()
-            Helper.Settings.showMessage(`Команда ${index} удалена`, 'success')
+            Helper.Settings.showMessage(`Команда ${deleted.cmd} удалена`, 'success')
+
             console.log('2', settings.bot.usercmds)
             Helper.Settings.save([document.querySelector('.optionField')]);
         })
@@ -371,79 +370,66 @@ const Helper = {
         let item = document.createElement('tr')
         item.classList.add(`table-menu__block`)
         item.style = 'justify-content: space-between;'
-        item.innerHTML = `<td><div><p>${data[0]}</p></div></td> <td><div><p>${data[1]}</p></div></td> <td><div><p>${data[2]}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
-        item.setAttribute('index', index)
+        item.innerHTML = `<td><div><p>${data.name}</p></div></td> <td><div><p>${data.message}</p></div></td> <td><div><p>${data.interval}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
         html.append(item)
         item.querySelector('.remove').addEventListener('click', ({ target }) => {
-            let index = item.getAttribute('index')
-
             console.log('1', settings.bot.usercmdstimeout)
 
-            settings.bot.usercmdstimeout = settings.bot.usercmdstimeout.splice(index, 0)
+            let deleted = settings.bot.usercmdstimeout[data.name]
+            delete settings.bot.usercmdstimeout[data.name]
 
             item.remove()
-            Helper.Settings.showMessage(`Команда ${index} удалена`, 'success')
+            Helper.Settings.showMessage(`Команда ${deleted.name} удалена`, 'success')
+
             console.log('2', settings.bot.usercmdstimeout)
             Helper.Settings.save([document.querySelector('.optionField')]);
         })
     },
     tryAddUserCmd(data) {
-        is = [false, 0]
-        if (data[0].trim() == '') {
+        if (data.prefix.trim() == '') {
             Helper.Settings.showMessage('Null prefix')
             return
         }
-        if (data[1].trim() == '') {
+        if (data.cmd.trim() == '') {
             Helper.Settings.showMessage('Null cmd')
             return
         }
-        if (data[3].trim() == '') {
+        if (data.result.trim() == '') {
             Helper.Settings.showMessage('Null result')
             return
         }
 
-        settings.bot.usercmds.forEach(function(item, index, array) {
-            console.log(item, index, array)
-            is[0] = item[1].toLowerCase() == data[1].toLowerCase()
-            is[1] = index
-        });
-
-        if (!is[0]) {
-            Helper.addUserCmd(data, (settings.bot.usercmds.length+1))
-            console.log(settings.bot.usercmds.push(data))
+        if (!settings.bot.usercmds[data.cmd]) {
+            settings.bot.usercmds[data.cmd] = data
+            Helper.addUserCmd(data)
             Helper.Settings.save([document.querySelector('.optionField')]);
         } else {
             Helper.Settings.showMessage('Команда существует');
         }
+
     },
     tryAddUserTimeout(data) {
-       is = [false, 0]
-        if (data[0].trim() == '') {
+        if (data.name.trim() == '') {
             Helper.Settings.showMessage('Null name')
             return
         }
-        if (data[1].trim() == '') {
+        if (data.message.trim() == '') {
             Helper.Settings.showMessage('Null message')
             return
         }
-        if (data[2] < 5) {
+        if (data.interval < 5) {
             Helper.Settings.showMessage('Interval < 5')
             return
         }
 
-        settings.bot.usercmdstimeout.forEach(function(item, index, array) {
-            console.log(item, index, array)
-            is[0] = item[0].toLowerCase() == data[0].toLowerCase()
-            is[1] = index
-        });
-
-        if (!is[0]) {
-            Helper.addUserTimeout(data, (settings.bot.usercmdstimeout.length+1))
-            console.log(settings.bot.usercmdstimeout.push(data))
+        if (!settings.bot.usercmdstimeout[data.name]) {
+            settings.bot.usercmdstimeout[data.name] = data
+            Helper.addUserTimeout(data)
             Helper.Settings.save([document.querySelector('.optionField')]);
         } else {
             Helper.Settings.showMessage('Команда существует');
         }
+
     }
 };
 
@@ -461,6 +447,40 @@ const BetterStreamChat = {
             removed: '<span class="label" style="color: var(--wasd-color-text-prime);background: none;font-weight: 600;">Удалено</span>'
         };
         let changelogList = [{
+                version: '1.0.3.1',
+                date: '2021-07-17',
+                items: [{
+                    text: [
+                        `Переменная user().`
+                    ],
+                    label: 'added'
+                }]
+            },{
+                version: '1.0.3',
+                date: '2021-07-17',
+                items: [{
+                    text: [
+                        `Переменные.`
+                    ],
+                    label: 'added'
+                },{
+                    text: [
+                        `Пользовательские команды.`,
+                        `Таймер бота`
+                    ],
+                    label: 'changed'
+                }]
+            },{
+                version: '1.0.2',
+                date: '2021-07-16',
+                items: [{
+                    text: [
+                        `Пользовательские команды.`,
+                        `Таймер бота`
+                    ],
+                    label: 'added'
+                }]
+            },{
                 version: '1.0.1',
                 date: '2021-07-13',
                 items: [{
@@ -517,9 +537,10 @@ const BetterStreamChat = {
             <header>
                 <ul class="nav">
                     <li><a data-tab="about">О нас</a></li>
-                    <li class="active"><a data-tab="bot">БОТ</a></li>
-                    <li><a data-tab="cmdbot">cmd БОТ</a></li>
-                    <li><a data-tab="timeoutbot">timeout БОТ</a></li>
+                    <li class="active"><a data-tab="bot">Команды чата</a></li>
+                    <li><a data-tab="cmdbot">Пользовательские команды</a></li>
+                    <li><a data-tab="timeoutbot">Таймеры бота</a></li>
+                    <li><a data-tab="variables">Переменные</a></li>
                     <li><a data-tab="changelog">Журнал изменений</a></li>
                     <!--li><a data-tab="backup">Бэкап</a></li-->
                 </ul>
@@ -527,14 +548,16 @@ const BetterStreamChat = {
 
             <main class="text" data-tab="about">
                 <div class="aboutHalf">
-                    <img style="width: 50px;" class="aboutIcon" src="${chrome.extension.getURL("img/icon128.png")}">
-                    <h2>BetterWASD.bot v${changelogList[0].version}</h2>
-                    <h1>от ваших друзей в <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a></h1>
+                    <img class="aboutIcon" src="${chrome.extension.getURL("img/icon128.png")}">
+                    <h1>BetterWASD.bot v${changelogList[0].version}</h1>
+                    <h2>от ваших друзей в <a href="https://ovgamesdev.github.io/ru/" target="_blank">OvGames</a></h2>
                     <br>
                 </div>
                 <div class="aboutHalf">
-                    <h1 style="margin-top: 25px;">Думаете, этот аддон классный?</h1>
-                    <br><h1> Напишите отзыв на <a target="_blank" href="https://chrome.google.com/webstore/detail/fdgepfaignbakmmbiafocfjcnaejgldb">Chrome Webstore</a> </h1><br>
+                    <h1 style="margin-top: 100px;">Думаете, этот аддон классный?</h1>
+                    <br><br><h2>
+                    Напишите отзыв на <a target="_blank" href="https://chrome.google.com/webstore/detail/fdgepfaignbakmmbiafocfjcnaejgldb">Chrome Webstore</a>
+                    </h2><br>
                 </div>
             </main>
 
@@ -547,11 +570,11 @@ const BetterStreamChat = {
                 <h1 style="padding-left: 10px; padding-right: 10px;"> Пользовательские команды </h1>
                 <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить команду </h4>
                 <div style="padding-left: 10px;">
-                    <input placeholder="prefix" id="userCmdPrefix" style="width: 40px;"/>
-                    <input placeholder="cmd" id="userCmdCmd" style="width: 80px;"/>
-                    <input placeholder="atributs" id="userCmdAtributes" style="width: 80px;"/>
-                    <input placeholder="result" id="userCmdResult" style="width: 175px;"/>
-                    <select id="userCmdPrivilege">
+                    <input placeholder="Префикс" id="userCmdPrefix" style="width: 65px;margin-right: 2px;"/>
+                    <input placeholder="Команда" id="userCmdCmd" style="width: 80px;margin-right: 2px;"/>
+                    <!--input placeholder="Атрибут" id="userCmdAtributes" style="width: 80px;"/-->
+                    <input placeholder="Ответ на команду. (Поддерживает переменные)" id="userCmdResult" style="width: 318px;margin-right: 2px;"/>
+                    <select id="userCmdPrivilege" style="margin-right: 2px;">
                         <option value="0" > Модератор </option>
                         <option value="1" > Подписчик </option>
                         <option value="2" selected > Каждый </option>
@@ -567,9 +590,9 @@ const BetterStreamChat = {
                         <th class="table-heading-ovg">
                             <div class="table-heading-text-ovg">Команда</div>
                         </th>
-                        <th class="table-heading-ovg">
+                        <!--th class="table-heading-ovg">
                             <div class="table-heading-text-ovg">Атрибут</div>
-                        </th>
+                        </th-->
                         <th class="table-heading-ovg">
                             <div class="table-heading-text-ovg">Ответ</div>
                         </th>
@@ -587,12 +610,12 @@ const BetterStreamChat = {
             </main>
 
             <main data-tab="timeoutbot">
-                <h1 style="padding-left: 10px; padding-right: 10px;"> Пользовательские команды </h1>
-                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить команду </h4>
+                <h1 style="padding-left: 10px; padding-right: 10px;"> Таймеры бота </h1>
+                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить таймер </h4>
                 <div style="padding-left: 10px;">
-                    <input placeholder="name" id="timeoutName" style="width: 40px;"/>
-                    <input placeholder="message" id="timeoutMessage" style="width: 80px;"/>
-                    <input type="number" value="300" min="5" placeholder="interval" id="timeoutInterval" style="width: 80px;"/>
+                    <input placeholder="Имя" id="timeoutName" style="width: 80px;margin-right: 2px;"/>
+                    <input placeholder="Сообщение (Поддерживает переменные)" id="timeoutMessage" style="width: 275px;margin-right: 2px;"/>
+                    <input type="number" value="300" min="5" placeholder="interval" id="timeoutInterval" style="width: 80px;margin-right: 2px;"/>
                     <button id="addTimeoutBtn" class="ovg-button">+</button>
                 </div>
                 <table class="table-ovg">
@@ -605,7 +628,7 @@ const BetterStreamChat = {
                             <div class="table-heading-text-ovg">Сообщение</div>
                         </th>
                         <th class="table-heading-ovg">
-                            <div class="table-heading-text-ovg">Интервал</div>
+                            <div class="table-heading-text-ovg">Интервал (сек)</div>
                         </th>
                         <th class="table-heading-ovg">
                             <div class="table-heading-text-ovg">Действия</div>
@@ -617,6 +640,52 @@ const BetterStreamChat = {
                 </table>
             </main>
 
+            <main data-tab="variables">
+                <h1 style="padding-left: 10px; padding-right: 10px;"> Переменные команд </h1>
+                <table class="table-ovg">
+
+                    <thead class="thead-ovg">
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Переменная</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Описание</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Пример</div>
+                        </th>
+                        <th class="table-heading-ovg">
+                            <div class="table-heading-text-ovg">Результат</div>
+                        </th>
+                    </thead>
+                        <tr class="table-menu__block" style="justify-content: space-between;">
+                            <td><div><p> randomInt(0,100) </p></div></td>
+                            <td><div><p> Отображает случайное число от 1 до 100 </p></div></td>
+                            <td><div><p> randomInt(50,80) </p></div></td>
+                            <td><div><p> 62 </p></div></td>
+                        </tr>
+                        <tr class="table-menu__block" style="justify-content: space-between;">
+                            <td><div><p> randomUser() </p></div></td>
+                            <td><div><p> Отображает имя случайного пользователя, просматривающего канал в данный момент </p></div></td>
+                            <td><div><p> randomUser() </p></div></td>
+                            <td><div><p> @OvGames </p></div></td>
+                        </tr>
+                        <tr class="table-menu__block" style="justify-content: space-between;">
+                            <td><div><p> randomVar(...arg) </p></div></td>
+                            <td><div><p> Отображает случайный аргумент, отправленный в скобках через запятую </p></div></td>
+                            <td><div><p> randomVar(1,24,56,3 банана,кто,нет) </p></div></td>
+                            <td><div><p> 3 банана </p></div></td>
+                        </tr>
+                        <tr class="table-menu__block" style="justify-content: space-between;">
+                            <td><div><p> user() </p></div></td>
+                            <td><div><p> Отображает имя пользователя, который вызвал команду </p></div></td>
+                            <td><div><p> user() </p></div></td>
+                            <td><div><p> @OvGames </p></div></td>
+                        </tr>
+                    <tbody class="ovg-items">
+                    </tbody>
+                </table>
+            </main>
 
             <main class="text" data-tab="backup">
 
@@ -723,22 +792,22 @@ const BetterStreamChat = {
             });
         }
 
-        settings.bot.usercmds.forEach(function(item, index, array) {
-            Helper.addUserCmd(item, index)
-        });
+        for (let cmd in settings.bot.usercmds) {
+            Helper.addUserCmd(settings.bot.usercmds[cmd])
+        }
 
-        settings.bot.usercmdstimeout.forEach(function(item, index, array) {
-            Helper.addUserTimeout(item, index)
-        });
+        for (let cmd in settings.bot.usercmdstimeout) {
+            Helper.addUserTimeout(settings.bot.usercmdstimeout[cmd])
+        }
 
         settingsDiv.querySelector('#addCmdBtn').addEventListener('click', () => {
             let prefix = settingsDiv.querySelector('#userCmdPrefix').value.trim()
             let cmd = settingsDiv.querySelector('#userCmdCmd').value.trim()
-            let attributes = settingsDiv.querySelector('#userCmdAtributes').value.trim()
+            // let attributes = settingsDiv.querySelector('#userCmdAtributes').value.trim()
             let result = settingsDiv.querySelector('#userCmdResult').value.trim()
             let privilege = settingsDiv.querySelector('#userCmdPrivilege').selectedIndex
 
-            let value = [prefix, cmd, attributes, result, privilege, true]
+            let value = {prefix: prefix, cmd: cmd, attributes: '', result: result, privilege: privilege, enabled: true}
 
             Helper.tryAddUserCmd(value)
         })
@@ -748,7 +817,7 @@ const BetterStreamChat = {
             let message = settingsDiv.querySelector('#timeoutMessage').value.trim()
             let interval = Number(settingsDiv.querySelector('#timeoutInterval').value)
 
-            let value = [name, message, interval, true]
+            let value = {name: name, message: message, interval: interval, enabled: true}
 
             Helper.tryAddUserTimeout(value)
         })

@@ -16,13 +16,12 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
     socket.setIntervals(settings)
 });
 
-
-
 const socket = {
     socketd: null,
     streamId: 0,
     channelId: 0,
     intervalcheck: null,
+    intervalusers: null,
     current: null,
     stream_url: null,
     isBotInited: false,
@@ -112,13 +111,16 @@ const socket = {
 
                     var data = `42["join",{"streamId":${socket.streamId},"channelId":${socket.channelId},"jwt":"${socket.jwt}","excludeStickers":true}]`;
                     socket.socketd.send(data);
-                            
+
+                    socket.onOpen()
+
                     socket.intervalcheck = setInterval(() => {
                         if (socket.socketd) {
                             try {
                                 socket.socketd.send('2')
                             } catch {
                                 clearInterval(socket.intervalcheck)
+                                clearInterval(socket.intervalusers)
                                 socket.socketd = null
                                 console.log('[catch]', socket.socketd)
                                 socket.start()
@@ -127,12 +129,12 @@ const socket = {
                     }, 5000)
 
                 })
-                
             })
         };
 
         this.socketd.onclose = function(e) {
             clearInterval(socket.intervalcheck)
+            clearInterval(socket.intervalusers)
             socket.socketd = null
             if (e.code == 404) {
                 console.log(`[close] Соединение закрыто чисто, код= ${e.code} причина= ${e.reason}`);
@@ -226,13 +228,15 @@ const socket = {
 
         this.socketd.onerror = function(error) {
             clearInterval(socket.intervalcheck)
+            clearInterval(socket.intervalusers)
             socket.socketd = null
             console.log(`[error] ${error}`);
             //socket.start()
         };
     },
     stop(code, reason) {
-        clearInterval(this.intervalcheck)
+        clearInterval(socket.intervalcheck)
+        clearInterval(socket.intervalusers)
         this.socketd.close(code, reason)
         this.socketd = null
     },
@@ -308,9 +312,9 @@ const socket = {
                                             .then((out) => {
                                                 //console.log(out)
                                                 if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
-                                                    socket.send(`${user_login} Пользователь @${value.user_login} уже заблокирован`);
+                                                    socket.send(`@${user_login} Пользователь @${value.user_login} уже заблокирован`);
                                                 } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
-                                                    socket.send(`${user_login} Вы не можете этого сделать`);
+                                                    socket.send(`@${user_login} Вы не можете этого сделать`);
                                                 }
                                             })
                                         })
@@ -349,9 +353,9 @@ const socket = {
                                                 .then(res => res.json())
                                                 .then((out) => {
                                                     if (out.error.code == 'STREAMER_BAN_NOT_FOUND') {
-                                                        socket.send(`${user_login} Пользователь @${value.user_login} не забанен`)
+                                                        socket.send(`@${user_login} Пользователь @${value.user_login} не забанен`)
                                                     } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
-                                                        socket.send(`${user_login} Вы не можете этого сделать`);
+                                                        socket.send(`@${user_login} Вы не можете этого сделать`);
                                                     }
                                                 })
                                             })
@@ -586,7 +590,7 @@ const socket = {
                             .then(res => res.json())
                             .then((out) => {
                                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
-                                    socket.send(`${user_login} Вы не можете этого сделать`)
+                                    socket.send(`@${user_login} Вы не можете этого сделать`)
                                 } else if (out.error) if (out.error.code == "VALIDATION") {
                                     socket.send('Неизвестная ошибка')
                                 }
@@ -612,7 +616,7 @@ const socket = {
                             .then(res => res.json())
                             .then((out) => {
                                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
-                                    socket.send(`${user_login} Вы не можете этого сделать`)
+                                    socket.send(`@${user_login} Вы не можете этого сделать`)
                                 } else if (out.error) if (out.error.code == "VALIDATION") {
                                     socket.send('Неизвестная ошибка')
                                 }
@@ -638,7 +642,7 @@ const socket = {
                             .then(res => res.json())
                             .then((out) => {
                                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
-                                    socket.send(`${user_login} Вы не можете этого сделать`)
+                                    socket.send(`@${user_login} Вы не можете этого сделать`)
                                 } else if (out.error) if (out.error.code == "VALIDATION") {
                                     socket.send('Неизвестная ошибка')
                                 }
@@ -664,7 +668,7 @@ const socket = {
                             .then(res => res.json())
                             .then((out) => {
                                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
-                                    socket.send(`${user_login} Вы не можете этого сделать`)
+                                    socket.send(`@${user_login} Вы не можете этого сделать`)
                                 } else if (out.error) if (out.error.code == "VALIDATION") {
                                     socket.send('Неизвестная ошибка')
                                 }
@@ -720,43 +724,111 @@ const socket = {
                 return;
         }
 
-        settings.usercmds.forEach(function(item, index, array) {
-            let data3 = socket.parseCmd(JSData[1].message, false, item[0])
+        for (let cmd in settings.usercmds) {
+            let item = settings.usercmds[cmd]
 
-            if (item[4] == 0 && socket.isMod(JSData)) {
-                if (data3.cmd == item[1] && data3.prefix == item[0]) {
-                    socket.send(item[3])
+            let data3 = socket.parseCmd(JSData[1].message, false, item.prefix)
+
+            let res = wasd.replacetext(item.result, JSData)
+
+            if (item.privilege == 0 && socket.isMod(JSData)) {
+                if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
+                    socket.send(res)
                     return;
                 }
             }
 
-            if (item[4] == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
-                if (data3.cmd == item[1] && data3.prefix == item[0]) {
-                    socket.send(item[3])
+            if (item.privilege == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
+                if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
+                    socket.send(res)
                     return;
                 }
             }
 
-            if (item[4] == 2) {
-                if (data3.cmd == item[1] && data3.prefix == item[0]) {
-                    socket.send(item[3])
+            if (item.privilege == 2) {
+                if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
+                    socket.send(res)
                     return;
                 }
             }
+        }
+    },
+    onOpen() {
+        intervalusers = setInterval(() => {
+            wasd.saveUserList()
+        }, 30000)
 
-        });
+        wasd.saveUserList()
     },
     setIntervals(settings) {
         socket.intervals.forEach((item) => {
             clearInterval(item)
         })
         socket.intervals = []
-        for ( let int of settings.usercmdstimeout ) {
+        for ( let int in settings.usercmdstimeout ) {
             let interval = setInterval(() => {
-                socket.send(int[1])
-            }, int[2]*1000)
+
+                let res = wasd.replacetext(settings.usercmdstimeout[int].message)
+
+                socket.send(res)
+            }, settings.usercmdstimeout[int].interval*1000)
 
             socket.intervals.push(interval)
         }
+    }
+}
+
+const wasd = {
+    users: null,
+    saveUserList() {
+        fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=10000&offset=0`)
+        .then(res => res.json())
+        .then((out) => {
+            wasd.users = out.result
+            console.log('saveUserList', out.result)
+        }).catch((error) => {
+            console.log(error)
+        })
+    },
+    getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+    },
+    getRndUser() {
+        if (wasd.users) {
+            return '@'+wasd.users[wasd.getRndInteger(0, wasd.users.length-1)].user_login
+        } else {
+            return '@undefined'
+        }
+    },
+    replacetext(text, JSData) {
+        let res = text
+
+        res  = res.replace(/(randomInt\(([^)]+[^ ]))/ig, (match) => {
+            match = match.replace('randomInt', '').replace(/([()])/ig, '').split(',')
+            if (match[0] && match[1]) {
+                return wasd.getRndInteger(parseInt(match[0].trim()), parseInt(match[1].trim()))
+            } else {
+                return '0'
+            }
+        })
+
+        res = res.replace('randomUser()', (match) => {
+            return wasd.getRndUser()
+        })
+        
+        res = res.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
+            match = match.replace('randomVar', '').replace(/([()])/ig, '').split(',')
+            return match[wasd.getRndInteger(0, match.length-1)]
+        })
+
+        res = res.replace('user()', (match) => {
+            if (JSData) {
+                return '@' + JSData[1].user_login
+            } else {
+                return '@undefined'
+            }
+        })
+        
+        return res
     }
 }
