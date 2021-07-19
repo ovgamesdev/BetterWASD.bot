@@ -677,6 +677,55 @@ const socket = {
                     }
                 }
                 return;
+            case 'timeout':
+                if (settings.cmdTimeout[1]) {
+                    if (this.isMod(JSData)) if (data1.data) {
+                        let data = data1.data[0]
+                        let duration = Number(data1?.data?.[1])
+                        if (isNaN(duration)) duration = 10
+                        if (duration != 1 && duration != 10 && duration != 60) { duration = 10 }
+                        fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
+                        .then(res => res.json())
+                        .then((out) => {
+                            if (out.result) {
+                                var finded = false;
+                                for (let value of out.result.rows) {
+
+                                    if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
+                                        finded = true;
+                                        fetch(socket.stream_url)
+                                        .then(res => res.json())
+                                        .then((out) => {
+
+                                            let response = {
+                                                method: 'PUT',
+                                                body: `{"user_id":${value.user_id},"stream_id":${out.result.media_container.media_container_streams[0].stream_id}, "keep_messages": true, "duration": ${duration}}`,
+                                                headers: {'Content-Type': 'application/json'},
+                                            }
+                                            fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users`, response)
+                                            .then(res => res.json())
+                                            .then((out) => {
+                                                //console.log(out)
+                                                if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+                                                    socket.send(`@${user_login} Пользователь @${value.user_login} уже заблокирован`);
+                                                } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+                                                    socket.send(`@${user_login} Вы не можете этого сделать`);
+                                                }
+                                            })
+                                        })
+                                        break;
+                                    }
+                                }
+                                if (!finded) {
+                                    socket.send('Пользователь не найден')
+                                }
+                            }
+                        })
+                    } else {
+                        socket.send('Пользователь не найден')
+                    }
+                }
+                return;
         }
 
         let data2 = this.parseCmd(JSData[1].message, false, settings.cmdPrefixBotUser[1][0])

@@ -1080,16 +1080,12 @@ div.item__links-ovg > .link > img {
 .table-menu__block td div p {
     margin: 8px 0 8px 0;
 }
-.td-btn-remove {
-    text-align: center !important;
-    padding: 1rem !important;
-}
+
 .table-heading-ovg.remove {
     text-align: center !important;
 }
-.td-btn-remove > div {
+.td-btns > div {
     display: inline-flex !important;
-    position: relative !important;
 }
 
 

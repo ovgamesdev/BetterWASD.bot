@@ -12,6 +12,7 @@ const Helper = {
                 cmdGame: [true, true],
                 cmdFollowers: [true, true],
                 cmdSubscribers: [true, true],
+                cmdTimeout: [true, true],
 
                 cmdPrefixBotUser: [['!', true], ['!', true]],
                 cmdUptime: [true, true],
@@ -66,23 +67,23 @@ const Helper = {
                     type: 'botevent'
                 },
                 cmdBan: {
-                    title: '/ban/unban - Забанить/Разбанить пользователя в чате.',
+                    title: '/ban/unban {USERNAME} - Забанить/Разбанить пользователя в чате.',
                     type: 'boolean'
                 },
                 cmdMod: {
-                    title: '/mod/unmod - Повысить пользователя до модератора канала, что даст ему доступ к командам и функциям и наоборот.',
+                    title: '/mod/unmod {USERNAME} - Повысить пользователя до модератора канала, что даст ему доступ к командам и функциям и наоборот.',
                     type: 'boolean'
                 },
                 cmdRaid: {
-                    title: '/raid  - Эта команда отправит зрителя на другой канал в прямом эфире.',
+                    title: '/raid {CHANNELNAME} - Эта команда отправит зрителя на другой канал в прямом эфире.',
                     type: 'boolean'
                 },
                 cmdTitle: {
-                    title: '/title - Изменить название стрима.',
+                    title: '/title [TEXT] - Изменить название стрима.',
                     type: 'boolean'
                 },
                 cmdGame: {
-                    title: '/game - Обновить игру канала (без ошибок).',
+                    title: '/game [GAMENAME] - Обновить игру канала (без ошибок).',
                     type: 'boolean'
                 },
                 cmdFollowers: {
@@ -91,6 +92,10 @@ const Helper = {
                 },
                 cmdSubscribers: {
                     title: '/subscribers/subscribersoff - Эта команда включает/отключает режим чата только для платных подписчиков.',
+                    type: 'boolean'
+                },
+                cmdTimeout: {
+                    title: '/timeout {USERNAME} [1/10/60] - Эта команда позволяет вам временно заблокировать кого-либо из чата по умолчанию на 10 минут.',
                     type: 'boolean'
                 },
 
@@ -349,8 +354,18 @@ const Helper = {
         let item = document.createElement('tr')
         item.classList.add(`table-menu__block`)
         item.style = 'justify-content: space-between;'
-        item.innerHTML = `<td><div><p>${data.prefix}</p></div></td> <td><div><p>${data.cmd}</p></div></td> <!--td><div><p>${data.attributes}</p></div></td--> <td><div><p>${data.result}</p></div></td> <td><div><p>${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
+        item.innerHTML = `<td><div><p prefix="${data.prefix}">${data.prefix}</p></div></td> <td><div><p cmd="${data.cmd}">${data.cmd}</p></div></td> <!--td><div><p attributes="${data.attributes}">${data.attributes}</p></div></td--> <td><div><p result="${data.result}">${data.result}</p></div></td> <td><div><p privilege="${data.privilege}">${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btns"><div> <button style="margin-right: 10px;" class="change primary ovg basic" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> </div></td>`;
+        item.setAttribute("itemcmd", data.cmd)
         html.append(item)
+
+        item.querySelector('.change').addEventListener('click', ({ target }) => {
+            let changed = settings.bot.usercmds[data.cmd]
+            document.querySelector('[id="userCmdPrefix"]').value = changed.prefix
+            document.querySelector('[id="userCmdCmd"]').value = changed.cmd
+            document.querySelector('[id="userCmdResult"]').value = changed.result
+            document.querySelector('[id="userCmdPrivilege"]').selectedIndex = changed.privilege
+        })
+
         item.querySelector('.remove').addEventListener('click', ({ target }) => {
             console.log('1', settings.bot.usercmds)
 
@@ -370,8 +385,18 @@ const Helper = {
         let item = document.createElement('tr')
         item.classList.add(`table-menu__block`)
         item.style = 'justify-content: space-between;'
-        item.innerHTML = `<td><div><p>${data.name}</p></div></td> <td><div><p>${data.message}</p></div></td> <td><div><p>${data.interval}</p></div></td> <td class="td-btn-remove"><div><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button></div></td>`;
+        item.innerHTML = `<td><div><p name="${data.name}">${data.name}</p></div></td> <td><div><p message="${data.message}">${data.message}</p></div></td> <td><div><p interval="${data.interval}">${data.interval}</p></div></td> <td class="td-btns"><div> <button style="margin-right: 10px;" class="change primary ovg basic" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button><button class="remove primary ovg basic" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> </div></td>`;
+        item.setAttribute("itemtime", data.cmd)
         html.append(item)
+
+        item.querySelector('.change').addEventListener('click', ({ target }) => {
+            let changed = settings.bot.usercmdstimeout[data.name]
+            console.log(changed)
+            document.querySelector('[id="timeoutName"]').value = changed.name
+            document.querySelector('[id="timeoutMessage"]').value = changed.message
+            document.querySelector('[id="timeoutInterval"]').value = changed.interval
+        })
+
         item.querySelector('.remove').addEventListener('click', ({ target }) => {
             console.log('1', settings.bot.usercmdstimeout)
 
@@ -404,9 +429,17 @@ const Helper = {
             Helper.addUserCmd(data)
             Helper.Settings.save([document.querySelector('.optionField')]);
         } else {
-            Helper.Settings.showMessage('Команда существует');
-        }
+            settings.bot.usercmds[data.cmd] = data
 
+            let item = document.querySelector(`[itemcmd="${data.cmd}"]`)
+
+            item.querySelector('[prefix]').textContent = data.prefix
+            item.querySelector('[cmd]').textContent = data.cmd
+            item.querySelector('[result]').textContent = data.result
+            item.querySelector('[privilege]').textContent = `${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}`
+
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        }
     },
     tryAddUserTimeout(data) {
         if (data.name.trim() == '') {
@@ -427,9 +460,16 @@ const Helper = {
             Helper.addUserTimeout(data)
             Helper.Settings.save([document.querySelector('.optionField')]);
         } else {
-            Helper.Settings.showMessage('Команда существует');
-        }
+            settings.bot.usercmdstimeout[data.name] = data
 
+            let item = document.querySelector(`[itemtime="${data.cmd}"]`)
+
+            item.querySelector('[name]').textContent = data.name
+            item.querySelector('[message]').textContent = data.message
+            item.querySelector('[interval]').textContent = data.interval
+
+            Helper.Settings.save([document.querySelector('.optionField')]);
+        }
     }
 };
 
@@ -447,6 +487,24 @@ const BetterStreamChat = {
             removed: '<span class="label" style="color: var(--wasd-color-text-prime);background: none;font-weight: 600;">Удалено</span>'
         };
         let changelogList = [{
+                version: '1.0.5',
+                date: '2021-07-19',
+                items: [{
+                    text: [
+                        `Изменить для "Пользовательские команды" и "Таймеры бота".`
+                    ],
+                    label: 'added'
+                }]
+            },{
+                version: '1.0.4',
+                date: '2021-07-19',
+                items: [{
+                    text: [
+                        `Команды чата - timeout.`
+                    ],
+                    label: 'added'
+                }]
+            },{
                 version: '1.0.3.1',
                 date: '2021-07-17',
                 items: [{
@@ -562,13 +620,22 @@ const BetterStreamChat = {
             </main>
 
             <main class="active" id="bot" data-tab="bot">
-                <span style="display: block; padding: 10px;"> Бот отвечает от вашего имени </span>
+                <p style="margin: 10px 0px 5px 10px;">Обратите внимание что...</p>
+                <ul type="square" style="padding: 0 20px 15px 20px;">
+                    <li style="list-style: inside;"> Бот отвечает от вашего имени </li>
+                    <li style="list-style: inside; padding-top: 10px;"> Слова, заключенные в фигурные скобки, символы "{" и "}" указывают на обязательное значение, например: USERNAME потребует имя пользователя (например, "Justin"). </li>
+                    <li style="list-style: inside; padding-top: 10px;"> Слово, заключенное в квадратные скобки "[" и "]", указывает на необязательное значение, например: SECONDS можно не указывать или заменить числом секунд (например, 10). </li>
+                    <li style="list-style: inside; padding-top: 10px;"> Сами символы ([,], {и}) не должны включаться в текстовое поле при вводе вашей команды. </li>
+                </ul>
+
+                <div class="option" style="display: none;"> </div>
+
                 ${Helper.Settings.build('bot')}
             </main>
 
             <main data-tab="cmdbot">
                 <h1 style="padding-left: 10px; padding-right: 10px;"> Пользовательские команды </h1>
-                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить команду </h4>
+                <h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;"> Добавить/Изменить команду </h4>
                 <div style="padding-left: 10px;">
                     <input placeholder="Префикс" id="userCmdPrefix" style="width: 65px;margin-right: 2px;"/>
                     <input placeholder="Команда" id="userCmdCmd" style="width: 80px;margin-right: 2px;"/>
@@ -810,6 +877,11 @@ const BetterStreamChat = {
             let value = {prefix: prefix, cmd: cmd, attributes: '', result: result, privilege: privilege, enabled: true}
 
             Helper.tryAddUserCmd(value)
+
+            document.querySelector('[id="userCmdPrefix"]').value = ''
+            document.querySelector('[id="userCmdCmd"]').value = ''
+            document.querySelector('[id="userCmdResult"]').value = ''
+            document.querySelector('[id="userCmdPrivilege"]').selectedIndex = 2
         })
 
         settingsDiv.querySelector('#addTimeoutBtn').addEventListener('click', () => {
@@ -820,6 +892,10 @@ const BetterStreamChat = {
             let value = {name: name, message: message, interval: interval, enabled: true}
 
             Helper.tryAddUserTimeout(value)
+
+            document.querySelector('[id="timeoutName"]').value = ''
+            document.querySelector('[id="timeoutMessage"]').value = ''
+            document.querySelector('[id="timeoutInterval"]').value = 300
         })
     },
 };
