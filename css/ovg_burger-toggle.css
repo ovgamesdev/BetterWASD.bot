@@ -1,0 +1,70 @@
+.burger-menu__wrap[ovg] {
+  margin-left: 16px;
+  position: relative;
+  display: block
+}
+
+.burger-toggle[ovg] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer
+}
+
+.burger-toggle[ovg]:after {
+  position: absolute;
+  top: -.5rem;
+  right: -.5rem;
+  bottom: -.5rem;
+  left: -.5rem;
+  display: block;
+  content: "";
+  opacity: .5;
+  background: none
+}
+
+.burger-toggle[ovg] .burger-toggle__icon[ovg] {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: -.8rem;
+  margin-left: -.8rem;
+  transition: all .3s ease
+}
+
+.burger-toggle[ovg] .burger-toggle__icon.icon-active[ovg] {
+  transform: scale(0);
+  opacity: 0
+}
+
+.burger-toggle[ovg] .burger-toggle__icon[ovg] .icon[ovg] {
+  display: block;
+  width: 100%;
+  height: 100%
+}
+
+.burger-toggle.active[ovg] .burger-toggle__icon.icon-active[ovg] {
+  transform: scale(1);
+  opacity: 1
+}
+
+.burger-toggle.active[ovg] .burger-toggle__icon.icon-default[ovg] {
+  transform: scale(0);
+  opacity: 0
+}
+
+.wasd-icons-close[ovg],
+.wasd-icons-menu-burger[ovg],
+.wasd-icons-search[ovg] {
+  color: var(--wasd-color-text-second);
+  font-size: 14px;
+  line-height: 1
+}

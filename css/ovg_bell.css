@@ -1,0 +1,187 @@
+.bell[_ngcontent-ljm-c288],
+.bell__icon-wrap[_ngcontent-ljm-c288] {
+    position: relative
+}
+
+.bell__icon-wrap[_ngcontent-ljm-c288] {
+    border: 2px solid transparent;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 4px;
+    box-sizing: content-box
+}
+
+@media (hover:hover) and (pointer:fine) {
+    .bell__icon-wrap[_ngcontent-ljm-c288]:hover {
+        background-color: rgba(var(--color-switch), .08)
+    }
+
+    .bell__icon-wrap[_ngcontent-ljm-c288]:hover .bell__icon[_ngcontent-ljm-c288] {
+        color: rgb(var(--color-switch))
+    }
+}
+
+.bell__icon-wrap[_ngcontent-ljm-c288]:focus {
+    border: 2px solid rgba(var(--color-system-blue), .48);
+    background-color: rgba(var(--color-switch), .08)
+}
+
+.bell__icon-wrap[_ngcontent-ljm-c288]:active {
+    background-color: rgba(var(--color-switch), .16)
+}
+
+.bell__icon-wrap[_ngcontent-ljm-c288]:after {
+    position: absolute;
+    display: block;
+    content: "";
+    height: 7px;
+    width: 7px;
+    border-radius: 100%;
+    top: 10px;
+    right: 8px;
+    background-color: rgb(var(--color-system-warning));
+    opacity: 0
+}
+
+.bell__icon-wrap[_ngcontent-ljm-c288] .bell__icon[_ngcontent-ljm-c288] {
+    font-size: 14px;
+    color: rgba(var(--color-switch), .64)
+}
+
+.bell__icon-wrap_new-msg[_ngcontent-ljm-c288] .bell__icon[_ngcontent-ljm-c288] {
+    color: rgb(var(--color-switch))
+}
+
+.bell__icon-wrap_new-msg[_ngcontent-ljm-c288]:after {
+    opacity: 1
+}
+
+.bell__info[_ngcontent-ljm-c288] {
+    width: 304px;
+    max-height: 393px;
+    position: absolute;
+    top: 48px;
+    right: 0;
+    background: var(--color-second-layer);
+    box-shadow: 0 8px 16px rgba(var(--color-shadow), .16);
+    border-radius: 8px
+}
+
+@media screen and (max-width:639px) {
+    .bell__info[_ngcontent-ljm-c288] {
+        position: fixed;
+        max-height: 295px;
+        top: 102px;
+        right: calc(50% - 152px)
+    }
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info[_ngcontent-ljm-c288] {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: start
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__title[_ngcontent-ljm-c288] {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 26px;
+    color: rgb(var(--color-switch));
+    margin: 16px 24px
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__hr[_ngcontent-ljm-c288] {
+    height: 1px;
+    width: 100%;
+    background: rgba(var(--color-switch), .08)
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__list[_ngcontent-ljm-c288] {
+    padding: 0 12px 16px;
+    max-height: 334px
+}
+
+@media screen and (max-width:639px) {
+    .bell[_ngcontent-ljm-c288] .bell-info__list[_ngcontent-ljm-c288] {
+        max-height: 236px
+    }
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__list_scroll[_ngcontent-ljm-c288] {
+    overflow-y: auto
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__elem[_ngcontent-ljm-c288] {
+    padding: 8px 20px 8px 16px;
+    border-radius: 4px;
+    margin-top: 8px;
+    position: relative
+}
+
+@media (hover:hover) and (pointer:fine) {
+    .bell[_ngcontent-ljm-c288] .bell-info__elem[_ngcontent-ljm-c288]:hover {
+        background: rgb(var(--color-switch), .08)
+    }
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__elem_new[_ngcontent-ljm-c288]:after {
+    position: absolute;
+    display: block;
+    content: "";
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    top: 16px;
+    left: 4px;
+    background-color: rgb(var(--color-system-blue))
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__text[_ngcontent-ljm-c288] {
+    font-size: 16px;
+    line-height: 22px;
+    color: rgb(var(--color-switch))
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__link[_ngcontent-ljm-c288]>a[_ngcontent-ljm-c288] {
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 22px;
+    color: rgb(var(--color-system-blue));
+    border-bottom: 1px solid rgb(var(--color-system-blue))
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__date[_ngcontent-ljm-c288] {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 18px;
+    color: rgba(var(--color-switch), .64)
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__empty[_ngcontent-ljm-c288] {
+    padding-bottom: 8px
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__empty-icon-wrap[_ngcontent-ljm-c288] {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__empty-icon[_ngcontent-ljm-c288] {
+    font-size: 28px;
+    color: rgba(var(--color-switch), .64)
+}
+
+.bell[_ngcontent-ljm-c288] .bell-info__empty-text[_ngcontent-ljm-c288] {
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(var(--color-switch), .64);
+    text-align: center
+}

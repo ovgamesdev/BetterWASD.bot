@@ -1,0 +1,549 @@
+.ovg-tabs-wrapper {
+  max-height: 100%;
+  max-width: 100%
+}
+
+.ovg-tabs-wrapper {
+  display: flex
+}
+
+.ovg-tabs-wrapper>.tabs {
+  color: var(--wasd-color-switch);
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.71;
+  max-width: 100%;
+  position: relative
+}
+
+.ovg-tabs-wrapper>.tabs>.title {
+  color: var(--wasd-color-switch);
+  font-family: Roboto-Bold;
+  font-size: 24px;
+  text-transform: capitalize
+}
+
+.ovg-tabs-wrapper>.tabs:before {
+  bottom: 0;
+  content: "";
+  position: absolute
+}
+
+.ovg-tabs-wrapper>.tabs .items {
+  display: flex;
+  position: relative;
+  white-space: nowrap;
+  z-index: 1
+}
+
+
+/*.ovg-tabs-wrapper>.tabs .items::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    width: 0
+}*/
+
+.ovg-tabs-wrapper>.tabs .items::-webkit-scrollbar-track {
+  background-color: rgba(var(--wasd-color-switch--rgb), .08);
+  border-radius: 4px;
+}
+
+.ovg-tabs-wrapper>.tabs .items::-webkit-scrollbar-thumb {
+  background-color: var(--wasd-color-gray1);
+  border-radius: 4px;
+  box-shadow: 0 0 2px 0 rgba(var(--wasd-color-prime--rgb), .32);
+}
+
+.ovg-tabs-wrapper>.tabs .items::-webkit-scrollbar {
+  background-color: rgba(var(--wasd-color-switch--rgb), .08);
+  width: 4px;
+}
+
+.ovg-tabs-wrapper>.tabs .item {
+  align-items: center;
+  border-radius: 4px;
+  color: var(--wasd-color-text-prime);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  height: 28px;
+  letter-spacing: .2px;
+  line-height: 1.43;
+  padding: 0 16px;
+  position: relative;
+  white-space: nowrap
+}
+
+.ovg-tabs-wrapper>.tabs .item:hover {
+  color: rgba(var(--wasd-color-corp-blue--rgb), .84)
+}
+
+.ovg-tabs-wrapper>.tabs .item:hover:focus {
+  box-shadow: none;
+  outline: none
+}
+
+.ovg-tabs-wrapper>.tabs .item:active {
+  color: var(--wasd-color-corp-blue)
+}
+
+.ovg-tabs-wrapper>.tabs .item:focus {
+  box-shadow: inset 0 0 0 2px rgba(var(--wasd-color-switch--rgb), .08);
+  outline: none
+}
+
+.ovg-tabs-wrapper>.tabs .item.active:focus {
+  box-shadow: none;
+  outline: none
+}
+
+.ovg-tabs-wrapper>.tabs .item.disabled {
+  cursor: default
+}
+
+.ovg-tabs-wrapper>.tabs .item.disabled,
+.ovg-tabs-wrapper>.tabs .item.disabled:active,
+.ovg-tabs-wrapper>.tabs .item.disabled:hover {
+  color: rgba(var(--wasd-color-switch--rgb), .16)
+}
+
+.ovg-tabs-wrapper>.tabs .item.disabled:focus {
+  border-width: 0 !important;
+  box-shadow: none
+}
+
+.ovg-tabs-wrapper>.tabs .active {
+  cursor: default;
+  position: relative
+}
+
+.ovg-tabs-wrapper>.tabs .active,
+.tabs-wrapper>.tabs .active:hover {
+  color: var(--wasd-color-corp-blue)
+}
+
+.ovg-tabs-wrapper>.tabs a {
+  text-decoration: none
+}
+
+.ovg-tabs-wrapper>.tabs a i {
+  font-size: 14px;
+  margin-right: 10px
+}
+
+.ovg-tabs-wrapper>.tabs-content {
+  padding-top: 24px
+}
+
+.ovg-tabs-wrapper>.tabs-content wasd-tab {
+  outline: none
+}
+
+.ovg-tabs-wrapper.vertical>.tabs {
+  margin-bottom: 0;
+  max-height: 100%;
+  width: auto
+}
+
+.ovg-tabs-wrapper.vertical>.tabs:before {
+  height: 100%;
+  width: 100%
+}
+
+.ovg-tabs-wrapper.vertical>.tabs .items {
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%
+}
+
+.ovg-tabs-wrapper.vertical>.tabs .items .item {
+  align-items: center;
+  display: flex;
+  margin-top: 24px;
+  min-height: 32px
+}
+
+.ovg-tabs-wrapper.vertical>.tabs .items .item:first-child {
+  margin-top: 0
+}
+
+.ovg-tabs-wrapper.vertical>.tabs .items .active:after {
+  bottom: 0;
+  content: "";
+  height: 100%;
+  position: absolute;
+  width: 2px
+}
+
+.ovg-tabs-wrapper.vertical>.tabs-content {
+  background-color: rgba(var(--wasd-color-switch--rgb), .02);
+  border-radius: 4px;
+  padding: 24px;
+  width: 100%
+}
+
+.ovg-tabs-wrapper.vertical.left>.tabs {
+  margin-right: 24px
+}
+
+.ovg-tabs-wrapper.vertical.left>.tabs:before {
+  border-right: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  right: 0
+}
+
+.ovg-tabs-wrapper.vertical.left>.tabs .item {
+  border-radius: 4px 0 0 4px;
+  justify-content: flex-end
+}
+
+.ovg-tabs-wrapper.vertical.left>.tabs .active:after {
+  border-right: 2px solid var(--wasd-color-corp-blue);
+  right: 0
+}
+
+.ovg-tabs-wrapper.vertical.right {
+  flex-direction: row-reverse
+}
+
+.ovg-tabs-wrapper.vertical.right>.tabs {
+  margin-left: 24px
+}
+
+.ovg-tabs-wrapper.vertical.right>.tabs:before {
+  border-left: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  left: 0
+}
+
+.ovg-tabs-wrapper.vertical.right>.tabs .item {
+  border-radius: 0 4px 4px 0;
+  justify-content: flex-start
+}
+
+.ovg-tabs-wrapper.vertical.right>.tabs .active:after {
+  border-left: 2px solid var(--wasd-color-corp-blue);
+  left: 0
+}
+
+.ovg-tabs-wrapper.horizontal {
+  flex-direction: column
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs:before {
+  border-bottom: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  height: 2px;
+  left: 0;
+  width: 100%
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items {
+  overflow-x: auto;
+  overflow-y: hidden
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item {
+  margin-bottom: 12px
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item:before {
+  background: transparent;
+  bottom: -12px;
+  content: "";
+  height: 2px;
+  left: 0;
+  margin: 0 16px;
+  position: absolute;
+  width: calc(100% - 32px)
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item:last-child {
+  padding-right: 0
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item:last-child:before {
+  margin-right: 0;
+  width: calc(100% - 16px)
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item:first-child {
+  padding-left: 0
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .item:first-child:before {
+  margin-left: 0;
+  width: calc(100% - 16px)
+}
+
+.ovg-tabs-wrapper.horizontal>.tabs .items .active:before {
+  background: var(--wasd-color-corp-blue)
+}
+
+.ovg-tabs-wrapper.filter {
+  flex-direction: column
+}
+
+.ovg-tabs-wrapper.filter>.tabs {
+  flex-direction: row;
+  margin-bottom: 24px
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items {
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden
+}
+
+@media (max-width:639px) {
+  .ovg-tabs-wrapper.filter>.tabs .items {
+    display: none
+  }
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item {
+  border-radius: 4px;
+  margin-left: 8px;
+  min-height: 32px
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item:hover {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), .16);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item:active {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), 1);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item:focus {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), .08)
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item.disabled:active,
+.ovg-tabs-wrapper.filter>.tabs .items .item.disabled:hover {
+  box-shadow: none;
+  color: rgba(var(--wasd-color-switch--rgb), .16)
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .item.disabled:focus {
+  box-shadow: none
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .active {
+  cursor: default;
+  position: relative
+}
+
+.ovg-tabs-wrapper.filter>.tabs .items .active,
+.ovg-tabs-wrapper.filter>.tabs .items .active:active,
+.ovg-tabs-wrapper.filter>.tabs .items .active:focus,
+.ovg-tabs-wrapper.filter>.tabs .items .active:hover {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), .48);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs {
+  flex-direction: row-reverse
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs .items {
+  border-right: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  margin-right: 24px
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs .item:first-child {
+  margin-left: 16px !important
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs .items-list {
+  right: 0
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs .items-mobile {
+  border-right: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  margin-right: 24px
+}
+
+.ovg-tabs-wrapper.filter.right>.tabs .mobile-active {
+  margin-right: 32px !important
+}
+
+.ovg-tabs-wrapper.filter.left>.tabs .items {
+  border-left: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  margin-left: 24px
+}
+
+.ovg-tabs-wrapper.filter.left>.tabs .item:last-child {
+  margin-right: 16px !important
+}
+
+.ovg-tabs-wrapper.filter.left>.tabs .items-list {
+  right: 0
+}
+
+.ovg-tabs-wrapper.filter.left>.tabs .items-mobile {
+  border-left: 2px solid rgba(var(--wasd-color-switch--rgb), .08);
+  margin-left: 24px
+}
+
+.ovg-tabs-wrapper.filter.left>.tabs .mobile-active {
+  margin-left: 32px !important
+}
+
+.ovg-tabs-wrapper.filter.center>.tabs {
+  justify-content: center
+}
+
+.ovg-tabs-wrapper.filter.center>.tabs .title {
+  display: none
+}
+
+.ovg-tabs-wrapper.filter.center>.tabs .item:first-child {
+  margin-left: 0
+}
+
+.ovg-tabs-wrapper.filter.center>.tabs .items-list {
+  left: 0;
+  right: 0
+}
+
+.ovg-tabs-wrapper .items-mobile {
+  align-items: center;
+  display: none;
+  position: relative
+}
+
+@media (max-width:639px) {
+  .ovg-tabs-wrapper .items-mobile {
+    display: flex
+  }
+}
+
+.ovg-tabs-wrapper .items-mobile .mobile-active {
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  height: 32px;
+  letter-spacing: .2px;
+  line-height: 1.43;
+  outline: none;
+  padding: 0 16px;
+  position: relative;
+  white-space: nowrap
+}
+
+.ovg-tabs-wrapper .items-mobile .mobile-active,
+.ovg-tabs-wrapper .items-mobile .mobile-active:hover {
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper .items-mobile .mobile-active,
+.ovg-tabs-wrapper .items-mobile .mobile-active:hover,
+.ovg-tabs-wrapper .items-mobile .mobile-active:hover:focus {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), .48)
+}
+
+.ovg-tabs-wrapper .items-mobile .mobile-active:active,
+.ovg-tabs-wrapper .items-mobile .mobile-active:focus {
+  box-shadow: inset 0 0 0 1px rgba(var(--wasd-color-switch--rgb), .48);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper .items-mobile .wasd-icons-dropdown-down {
+  margin: 0 0 0 20px !important
+}
+
+.ovg-tabs-wrapper .items-list {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background-color: var(--wasd-color-prime);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px 0 rgba(var(--wasd-color-black--rgb), .16);
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  position: absolute;
+  text-align: end;
+  top: 44px;
+  width: 100%
+}
+
+.ovg-tabs-wrapper .items-list_wrapper {
+  display: none;
+  width: 100%;
+  z-index: 100
+}
+
+.ovg-tabs-wrapper .items-list_item {
+  align-items: center;
+  box-sizing: border-box;
+  color: var(--wasd-color-text-third);
+  display: flex;
+  height: 48px;
+  justify-content: left;
+  padding: 4px 24px 4px 16px;
+  white-space: nowrap
+}
+
+.ovg-tabs-wrapper .items-list_item.active {
+  color: var(--wasd-color-switch);
+  cursor: default
+}
+
+.ovg-tabs-wrapper .items-list_item:hover {
+  background-color: rgba(var(--wasd-color-switch--rgb), .08);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper .items-list_item:active {
+  background-color: rgba(var(--wasd-color-switch--rgb), .16);
+  color: var(--wasd-color-switch)
+}
+
+.ovg-tabs-wrapper .items-list_item.disabled {
+  opacity: .16
+}
+
+.ovg-tabs-wrapper .items-list_item.disabled:active,
+.ovg-tabs-wrapper .items-list_item.disabled:hover {
+  background-color: transparent;
+  color: var(--wasd-color-text-third)
+}
+
+.ovg-tabs-wrapper .items-list_item.disabled:focus {
+  background-color: transparent
+}
+
+.ovg-tabs-wrapper .is-open {
+  display: block !important
+}
+
+@media (min-width:640px) {
+  .ovg-tabs-wrapper .is-open {
+    display: none !important
+  }
+}
+
+.ovg-tabs-wrapper i:before {
+  margin: 0
+}
+
+
+/******************************/
+
+header .ovg-tabs-wrapper {
+  margin-top: 8px;
+  padding: 0 8px;
+}
+
+header .tabs {
+  display: grid !important;
+}
+
+header .tabs .items>.item {
+  padding: 0px 15px;
+}

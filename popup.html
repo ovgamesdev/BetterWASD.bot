@@ -1,16 +1,120 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>BetterWASd.bot</title>
-        <meta name="theme-color" content="#FFFFFF" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <!--link rel="stylesheet" type="text/css" href="https://static.wasd.tv/assets/fe/styles.a6aabf595045dccc88bc.css"-->
-        <link rel="stylesheet" type="text/css" href="https://static.wasd.tv/icons/css/wasd-font.css">
-        <script src="index.js" defer></script>
-    </head>
+  <head>
+    <meta charset="utf-8" />
+    <title>BetterWASd.bot</title>
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <body style="">
-    </body>
+    <style type="text/css">
+      html {
+        width: 870px;
+        height: 500px;
+      }
+
+      body {
+        align-items: stretch;
+        box-sizing: content-box;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        padding: 1rem;
+        position: relative;
+        border: 2px solid white;
+      }
+
+      body {
+        font-family: Roboto-Regular,Arial,Helvetica Neue,Helvetica,sans-serif;
+        font-weight: 400;
+      }
+
+      body {
+        --wasd-color-black: #000000;
+        --wasd-color-black--rgb: 0, 0, 0;
+        --wasd-color-white: #ffffff;
+        --wasd-color-white--rgb: 255, 255, 255;
+        --wasd-color-corp-prime: #1A202C;
+        --wasd-color-corp-prime--rgb: 26, 32, 44;
+        --wasd-color-corp-gray: #848CA0;
+        --wasd-color-corp-gray--rgb: 132, 140, 160;
+        --wasd-color-dark-blue: #483cb8;
+        --wasd-color-corp-blue: #258fe5;
+        --wasd-color-corp-blue--rgb: 37, 143, 229;
+        --wasd-color-warning: #d85252;
+        --wasd-color-warning--rgb: 216, 82, 82;
+        --wasd-color-success: #6ba131;
+        --wasd-color-success--rgb: 107, 161, 49;
+        --wasd-color-event1: #913CA7;
+        --wasd-color-event2: #5BC3C1;
+        --wasd-color-event3: #F5A623;
+        --wasd-color-xp: #9013fe;
+        --wasd-color-bordo: #a5276d;
+        --wasd-color-prime: #1A202C;
+        --wasd-color-prime--rgb: 26, 32, 44;
+        --wasd-color-switch: #ffffff;
+        --wasd-color-switch--rgb: 255, 255, 255;
+        --wasd-color-second: #141820;
+        --wasd-color-third: #0c1014;
+        --wasd-color-gray1: #242830;
+        --wasd-color-gray2: #444858;
+        --wasd-color-gray3: #848ca0;
+        --wasd-color-text-prime: rgba(255, 255, 255, 1);
+        --wasd-color-text-second: rgba(255, 255, 255, 0.8);
+        --wasd-color-text-third: rgba(255, 255, 255, 0.64);
+        --wasd-color-text-fourth: rgba(255, 255, 255, 0.48);
+        --wasd-color-text-disabled: rgba(255, 255, 255, 0.24);
+        --wasd-color-bg-prime: #141820;
+        --wasd-color-bg-second: #0c1014;
+        --color-lowest-layer: rgba(0, 0, 0, 0.2);
+        --color-background: 20, 24, 32;
+        --color-first-layer: #1A212D;
+        --color-second-layer: #1D2736;
+        --color-upper-layer: #212D3F;
+        --color-switch: 246, 247, 248;
+        --color-shadow: 9, 9, 9;
+        --color-system-blue: 0, 143, 236;
+        --color-system-dark-blue: 13, 110, 200;
+        --color-system-white: 255, 255, 255;
+        --color-system-black: 0, 0, 0;
+        --color-system-warning: 252, 77, 100;
+        --color-system-attention: 243, 173, 56;
+        --color-system-success: 62, 189, 65;
+        --color-system-xp: 144, 19, 254;
+        --color-additional-yellow-light: #F0DF47;
+        --color-additional-yellow-dark: #DBC92A;
+        --color-additional-yellow-orange: #F8B23E;
+        --color-additional-orange: #E88021;
+        --color-additional-red: #D03F3F;
+        --color-additional-pink: #CD317C;
+        --color-additional-lilac: #952BA7;
+        --color-additional-violet: #6227E0;
+        --color-additional-blue: #2264E3;
+        --color-additional-blue-light: #27B4E0;
+        --color-additional-aquamarine: #00CBBF;
+        --color-additional-blue-green: #27E087;
+        --color-additional-green-acid: #2BE027;
+        --color-additional-green: #139520;
+        --color-additional-green-light: #A6D323;
+        --color-additional-gray: #898989;
+      }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_tooltip.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_button.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_tabs-wrapper.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_burger-toggle.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_bell.css" />
+    <link rel="stylesheet" type="text/css" href="css/ovg_checkbox.css" />
+
+    <link rel="stylesheet" type="text/css" href="https://static.wasd.tv/icons/css/wasd-font.css">
+
+    <script src="lib/jquery/jquery.min.js" defer></script>
+    <script src="lib/jquery/jquery.ui.js" defer></script>
+    <script src="index.js" defer></script>
+  </head>
+
+  <body style="">
+  </body>
 </html>

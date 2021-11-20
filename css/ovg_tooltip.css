@@ -1,0 +1,262 @@
+ovg-tooltip {
+  z-index: 5;
+}
+
+ovg-tooltip .tooltip {
+  display: none;
+  justify-content: center;
+  position: absolute;
+  transform: translateZ(0);
+  z-index: 1;
+  font-weight: normal;
+}
+
+ovg-tooltip .tooltip_visible {
+  display: flex
+}
+
+ovg-tooltip .tooltip-content {
+  background-color: rgb(var(--color-switch));
+  border-radius: 4px;
+  color: rgba(var(--color-background), 1);
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  line-height: normal;
+  position: relative;
+  word-break: break-word
+}
+
+ovg-tooltip .tooltip-content_nowrap {
+  white-space: nowrap
+}
+
+ovg-tooltip .tooltip-content_left {
+  text-align: left
+}
+
+ovg-tooltip .tooltip-content_center {
+  text-align: center
+}
+
+ovg-tooltip .tooltip_position-top {
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 8px;
+  transform: translateX(-50%) translateZ(0)
+}
+
+ovg-tooltip .tooltip_position-top .tooltip-content:before {
+  border: 4px solid transparent;
+  border-bottom: none;
+  border-top: 4px solid rgb(var(--color-switch));
+  content: "";
+  height: 0;
+  left: 50%;
+  margin-left: -4px;
+  position: absolute;
+  top: 100%;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-topLeft {
+  bottom: 100%;
+  justify-content: flex-start;
+  left: 0;
+  margin-bottom: 8px
+}
+
+ovg-tooltip .tooltip_position-topLeft .tooltip-content:before {
+  border: 4px solid transparent;
+  border-bottom: none;
+  border-top: 4px solid rgb(var(--color-switch));
+  content: "";
+  height: 0;
+  left: 8px;
+  position: absolute;
+  top: 100%;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-topRight {
+  bottom: 100%;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+  right: 0
+}
+
+ovg-tooltip .tooltip_position-topRight .tooltip-content:before {
+  border: 4px solid transparent;
+  border-bottom: none;
+  border-top: 4px solid rgb(var(--color-switch));
+  content: "";
+  height: 0;
+  position: absolute;
+  right: 8px;
+  top: 100%;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-bottom {
+  left: 50%;
+  margin-top: 8px;
+  top: 100%;
+  transform: translateX(-50%) translateZ(0)
+}
+
+ovg-tooltip .tooltip_position-bottom .tooltip-content:after {
+  border: 4px solid transparent;
+  border-bottom: 4px solid rgb(var(--color-switch));
+  border-top: none;
+  bottom: 100%;
+  content: "";
+  height: 0;
+  left: 50%;
+  margin-left: -4px;
+  position: absolute;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-bottomLeft {
+  justify-content: flex-start;
+  left: 0;
+  margin-top: 8px;
+  top: 100%
+}
+
+ovg-tooltip .tooltip_position-bottomLeft:after {
+  border: 4px solid transparent;
+  border-bottom: 4px solid rgb(var(--color-switch));
+  border-top: none;
+  bottom: 100%;
+  content: "";
+  height: 0;
+  left: 8px;
+  position: absolute;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-bottomRight {
+  justify-content: flex-end;
+  margin-top: 8px;
+  right: 0;
+  top: 100%
+}
+
+ovg-tooltip .tooltip_position-bottomRight:after {
+  border: 4px solid transparent;
+  border-bottom: 4px solid rgb(var(--color-switch));
+  border-top: none;
+  bottom: 100%;
+  content: "";
+  height: 0;
+  position: absolute;
+  right: 8px;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-left {
+  justify-content: flex-end;
+  margin-right: 8px;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateZ(0)
+}
+
+ovg-tooltip .tooltip_position-left:after {
+  border: 4px solid transparent;
+  border-left: 4px solid rgb(var(--color-switch));
+  border-right: none;
+  content: "";
+  height: 0;
+  left: 100%;
+  margin-top: -4px;
+  position: absolute;
+  top: 50%;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_position-right {
+  justify-content: flex-start;
+  left: 100%;
+  margin-left: 8px;
+  top: 50%;
+  transform: translateY(-50%) translateZ(0)
+}
+
+ovg-tooltip .tooltip_position-right:after {
+  border: 4px solid transparent;
+  border-left: none;
+  border-right: 4px solid rgb(var(--color-switch));
+  content: "";
+  height: 0;
+  margin-top: -4px;
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transition: all .3s ease
+}
+
+ovg-tooltip .tooltip_size-small .tooltip-content {
+  padding: 4px 16px
+}
+
+ovg-tooltip .tooltip_size-large .tooltip-content {
+  padding: 8px 16px
+}
+
+
+/******************************/
+
+.sticker-card ovg-tooltip {
+  position: relative;
+  bottom: -5px;
+}
+
+ovg-button:hover ovg-tooltip .tooltip,
+button:hover ovg-tooltip .tooltip,
+.sticker-card:hover ovg-tooltip .tooltip,
+wasd-channel-favorite-btn:hover ovg-tooltip .tooltip,
+.def:hover ovg-tooltip .tooltip,
+a:hover ovg-tooltip .tooltip,
+.tooltip-wrapper:hover .tooltip,
+.tooltip-hover:hover .tooltip {
+  display: flex;
+}
+
+.tooltip-wrapper {
+  display: inline-block;
+  /*vertical-align: middle;*/
+  margin: -.5rem 0;
+  position: relative;
+}
+
+.tooltip-wrapper:hover {
+  z-index: 1;
+}
+
+.tooltip-wrapper .tooltip-content {
+  text-align: center;
+}
+
+@media screen and (max-width:479px) {
+  .def:hover ovg-tooltip .tooltip {
+    display: none;
+  }
+}
+
+/* ui-tooltip */
+
+.ui-ovg-tooltip {
+  text-align: center;
+  background-color: rgb(var(--color-switch)) !important;
+  color: rgba(var(--color-background), 1) !important;
+  padding: 4px 16px !important;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  line-height: normal;
+  word-break: break-word;
+  border-radius: 4px;
+  width: fit-content;
+}

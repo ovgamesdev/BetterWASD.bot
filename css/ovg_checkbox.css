@@ -1,0 +1,49 @@
+.stream-tags__autocomplete[ovg] {
+    width: 240px;
+    height: 36px
+}
+
+.stream-tags__tag-row[ovg] {
+    display: flex;
+    margin-top: 16px;
+    flex-wrap: wrap
+}
+
+.stream-tags__tag[ovg] {
+    margin: 0 8px 8px 0;
+    white-space: nowrap
+}
+
+.stream-tags__mature[ovg] {
+    margin-top: 16px;
+    display: flex;
+    align-items: center
+}
+
+.stream-tags__checkbox[ovg] {
+    position: relative;
+    min-width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    padding: 0;
+    background-size: contain;
+    background: url(https://static.wasd.tv/assets/fe/images/icons/1-norm.svg) 50%;
+    outline: none
+}
+
+.stream-tags__checkbox[ovg]:hover {
+    background: url(https://static.wasd.tv/assets/fe/images/icons/2-hover.svg)
+}
+
+.stream-tags__checkbox[ovg]:checked {
+    background: url(https://static.wasd.tv/assets/fe/images/league/streamers/checkbox-active.svg)
+}
+
+.stream-tags__checkbox[ovg]:active {
+    background: url(https://static.wasd.tv/assets/fe/images/icons/3-press.svg)
+}
+
+.stream-tags__checkbox[ovg].cb-emote {
+	position: absolute;
+	right: -4px;
+}

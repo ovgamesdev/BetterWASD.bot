@@ -1,0 +1,509 @@
+button.ovg {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: Roboto-Bold, sans-serif;
+  letter-spacing: .4px;
+  margin: 0;
+  outline: none;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all .1s ease;
+  vertical-align: top;
+  white-space: nowrap;
+  width: inherit
+}
+
+button.ovg,
+button.ovg i {
+  align-items: center;
+  display: flex;
+  justify-content: center
+}
+
+button.ovg:before {
+  border-radius: 4px;
+  bottom: 0;
+  content: "";
+  display: block;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0
+}
+
+button.ovg:focus {
+  box-shadow: 0 0 0 3px rgba(var(--wasd-color-corp-blue--rgb), .4)
+}
+
+button.ovg:active:focus {
+  box-shadow: none
+}
+
+button.ovg.active {
+  cursor: default
+}
+
+button.ovg.small {
+  font-size: 10px;
+  height: 24px;
+  padding: 0 8px
+}
+
+button.ovg.small i {
+  font-size: 12px;
+  height: 12px;
+  width: 12px
+}
+
+button.ovg.small i+span:not(:empty) {
+  padding-left: 4px
+}
+
+button.ovg.small.icon-right i+span:not(:empty) {
+  padding-left: 0;
+  padding-right: 4px
+}
+
+button.ovg.medium {
+  font-size: 12px;
+  height: 32px;
+  padding: 0 16px
+}
+
+button.ovg.medium i {
+  font-size: 14px;
+  height: 14px;
+  width: 14px
+}
+
+button.ovg.medium i+span:not(:empty) {
+  padding-left: 8px
+}
+
+button.ovg.medium.icon-right i+span:not(:empty) {
+  padding-left: 0;
+  padding-right: 8px
+}
+
+button.ovg.medium-cube {
+  font-size: 12px;
+  height: 32px;
+  width: 32px
+}
+
+button.ovg.medium-cube i {
+  font-size: 14px;
+  height: 14px;
+  width: 14px
+}
+
+button.ovg.medium-cube i+span:not(:empty) {
+  padding-left: 8px
+}
+
+button.ovg.medium-cube.icon-right i+span:not(:empty) {
+  padding-left: 0;
+  padding-right: 8px
+}
+
+button.ovg.large {
+  font-size: 14px;
+  height: 40px;
+  padding: 0 24px
+}
+
+button.ovg.large i {
+  font-size: 16px;
+  height: 16px;
+  width: 16px
+}
+
+button.ovg.large i+span:not(:empty) {
+  padding-left: 12px
+}
+
+button.ovg.large.icon-right i+span:not(:empty) {
+  padding-left: 0;
+  padding-right: 12px
+}
+
+button.ovg.extra-large {
+  font-size: 16px;
+  height: 48px;
+  padding: 0 32px
+}
+
+button.ovg.extra-large i {
+  font-size: 18px;
+  height: 18px;
+  width: 18px
+}
+
+button.ovg.extra-large i+span:not(:empty) {
+  padding-left: 16px
+}
+
+button.ovg.extra-large.icon-right i+span:not(:empty) {
+  padding-left: 0;
+  padding-right: 16px
+}
+
+button.ovg.icon-left {
+  flex-direction: row
+}
+
+button.ovg.icon-right {
+  flex-direction: row-reverse
+}
+
+button.ovg.disabled,
+button.ovg[disabled] {
+  background: rgba(var(--wasd-color-switch--rgb), .08) !important;
+  box-shadow: none;
+  color: rgba(var(--wasd-color-switch--rgb), .48) !important;
+  cursor: default
+}
+
+button.ovg.disabled:before,
+button.ovg[disabled]:before {
+  opacity: 0 !important
+}
+
+@media (max-width:639px) {
+  button.ovg i+span:not(:empty) {
+    display: none
+  }
+}
+
+.flat-btn.ovg button.ovg {
+  color: var(--wasd-color-white)
+}
+
+.flat-btn.ovg button.ovg:active {
+  color: rgba(var(--wasd-color-white--rgb), .8)
+}
+
+.flat-btn.ovg button.ovg:hover:before {
+  background-color: rgba(var(--wasd-color-white--rgb), .16);
+  opacity: 1
+}
+
+.flat-btn.ovg button.ovg:active:before {
+  background-color: rgba(var(--wasd-color-black--rgb), .16);
+  cursor: default;
+  opacity: 1
+}
+
+.flat-btn.ovg button.ovg.active,
+.flat-btn.ovg button.ovg.loading-button {
+  color: var(--wasd-color-white) !important
+}
+
+.flat-btn.ovg .basic {
+  background: var(--wasd-color-gray1)
+}
+
+.flat-btn.ovg .basic.active,
+.flat-btn.ovg .basic.loading-button {
+  background: var(--wasd-color-gray1) !important
+}
+
+.flat-btn.ovg .primary {
+  background: var(--wasd-color-corp-blue)
+}
+
+.flat-btn.ovg .primary.active,
+.flat-btn.ovg .primary.loading-button {
+  background: var(--wasd-color-corp-blue) !important
+}
+
+.flat-btn.ovg .success {
+  background: var(--wasd-color-success)
+}
+
+.flat-btn.ovg .success.active,
+.flat-btn.ovg .success.loading-button {
+  background: var(--wasd-color-success) !important
+}
+
+.flat-btn.ovg .warning {
+  background: var(--wasd-color-warning)
+}
+
+.flat-btn.ovg .warning.active,
+.flat-btn.ovg .warning.loading-button {
+  background: var(--wasd-color-warning) !important
+}
+
+.flat-btn.ovg .icon-pending .icon-pending-inner {
+  stroke: #fff !important
+}
+
+.stroked-btn.ovg button.ovg:active {
+  border: 1px solid transparent !important;
+  color: rgba(var(--wasd-color-white--rgb), .8) !important
+}
+
+.stroked-btn.ovg button.ovg:hover {
+  border: 1px solid transparent !important;
+  color: var(--wasd-color-white)
+}
+
+.stroked-btn.ovg button.ovg:hover:before {
+  background-color: rgba(var(--wasd-color-white--rgb), .16);
+  bottom: -1px;
+  left: -1px;
+  opacity: 1;
+  right: -1px;
+  top: -1px
+}
+
+.stroked-btn.ovg button.ovg:active:before {
+  background-color: rgba(var(--wasd-color-black--rgb), .16);
+  cursor: default;
+  opacity: 1
+}
+
+.stroked-btn.ovg button.ovg.disabled,
+.stroked-btn.ovg button.ovg[disabled] {
+  border: 1px solid transparent !important
+}
+
+.stroked-btn.ovg button.ovg.active,
+.stroked-btn.ovg button.ovg.loading-button {
+  color: var(--wasd-color-white) !important
+}
+
+.stroked-btn.ovg .primary {
+  border: 1px solid var(--wasd-color-corp-blue);
+  color: var(--wasd-color-corp-blue)
+}
+
+.stroked-btn.ovg .primary.active,
+.stroked-btn.ovg .primary:active,
+.stroked-btn.ovg .primary:hover {
+  background: var(--wasd-color-corp-blue)
+}
+
+.stroked-btn.ovg .primary.active,
+.stroked-btn.ovg .primary.loading-button {
+  background: var(--wasd-color-corp-blue) !important
+}
+
+.stroked-btn.ovg .success {
+  border: 1px solid var(--wasd-color-success);
+  color: var(--wasd-color-success)
+}
+
+.stroked-btn.ovg .success.active,
+.stroked-btn.ovg .success:active,
+.stroked-btn.ovg .success:hover {
+  background: var(--wasd-color-success)
+}
+
+.stroked-btn.ovg .success.active,
+.stroked-btn.ovg .success.loading-button {
+  background: var(--wasd-color-success) !important
+}
+
+.stroked-btn.ovg .warning {
+  border: 1px solid var(--wasd-color-warning);
+  color: var(--wasd-color-warning)
+}
+
+.stroked-btn.ovg .warning.active,
+.stroked-btn.ovg .warning:active,
+.stroked-btn.ovg .warning:hover {
+  background: var(--wasd-color-warning)
+}
+
+.stroked-btn.ovg .warning.active,
+.stroked-btn.ovg .warning.loading-button {
+  background: var(--wasd-color-warning) !important
+}
+
+.stroked-btn.ovg .basic {
+  border: 1px solid rgba(var(--wasd-color-switch--rgb), .72);
+  color: rgba(var(--wasd-color-switch--rgb), .72)
+}
+
+.stroked-btn.ovg .basic.active,
+.stroked-btn.ovg .basic:active,
+.stroked-btn.ovg .basic:hover {
+  background: var(--wasd-color-gray1)
+}
+
+.stroked-btn.ovg .basic.active,
+.stroked-btn.ovg .basic.loading-button {
+  background: var(--wasd-color-gray1) !important
+}
+
+.stroked-btn.ovg .icon-pending .icon-pending-inner {
+  stroke: #fff !important
+}
+
+.ghost-btn.ovg button.ovg {
+  box-sizing: border-box
+}
+
+.ghost-btn.ovg button.ovg.active,
+.ghost-btn.ovg button.ovg.loading-button {
+  color: var(--wasd-color-white) !important
+}
+
+.ghost-btn.ovg .primary {
+  color: var(--wasd-color-corp-blue)
+}
+
+.ghost-btn.ovg .primary:hover {
+  background: rgba(var(--wasd-color-corp-blue--rgb), .16)
+}
+
+.ghost-btn.ovg .primary:active {
+  background: rgba(var(--wasd-color-corp-blue--rgb), .24)
+}
+
+.ghost-btn.ovg .primary.active,
+.ghost-btn.ovg .primary.loading-button {
+  background: var(--wasd-color-corp-blue) !important
+}
+
+.ghost-btn.ovg .success {
+  color: var(--wasd-color-success)
+}
+
+.ghost-btn.ovg .success:hover {
+  background: rgba(var(--wasd-color-success--rgb), .16)
+}
+
+.ghost-btn.ovg .success:active {
+  background: rgba(var(--wasd-color-success--rgb), .24)
+}
+
+.ghost-btn.ovg .success.active,
+.ghost-btn.ovg .success.loading-button {
+  background: var(--wasd-color-success) !important
+}
+
+.ghost-btn.ovg .warning {
+  color: var(--wasd-color-warning)
+}
+
+.ghost-btn.ovg .warning:hover {
+  background: rgba(var(--wasd-color-warning--rgb), .16)
+}
+
+.ghost-btn.ovg .warning:active {
+  background: rgba(var(--wasd-color-warning--rgb), .24)
+}
+
+.ghost-btn.ovg .warning.active,
+.ghost-btn.ovg .warning.loading-button {
+  background: var(--wasd-color-warning) !important
+}
+
+.ghost-btn.ovg .basic,
+.ghost-btn.ovg .basic:hover {
+  color: rgba(var(--wasd-color-switch--rgb), .72)
+}
+
+.ghost-btn.ovg .basic:hover:before {
+  background: var(--wasd-color-gray1);
+  opacity: .16
+}
+
+.ghost-btn.ovg .basic:active:before {
+  background: var(--wasd-color-gray1);
+  opacity: .24
+}
+
+.ghost-btn.ovg .basic.active,
+.ghost-btn.ovg .basic.loading-button {
+  background: var(--wasd-color-gray1) !important
+}
+
+.ghost-btn.ovg .icon-pending .icon-pending-inner {
+  stroke: #fff !important
+}
+
+.icon-save {
+  color: var(--wasd-color-white);
+  font-size: 14px
+}
+
+.icon-container,
+.icon-save {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%
+}
+
+.icon-container {
+  height: 100%
+}
+
+.icon-pending {
+  -webkit-animation: loading 3s linear infinite;
+  animation: loading 3s linear infinite;
+  width: 14px
+}
+
+.icon-pending .icon-pending-inner {
+  -webkit-animation: loading-circle 2s linear infinite;
+  animation: loading-circle 2s linear infinite;
+  fill: hsla(0, 0%, 100%, 0);
+  stroke: #fff;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-miterlimit: 10;
+  stroke-width: 16
+}
+
+@-webkit-keyframes loading {
+  0% {
+    transform: rotate(0)
+  }
+  to {
+    transform: rotate(1turn)
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0)
+  }
+  to {
+    transform: rotate(1turn)
+  }
+}
+
+@-webkit-keyframes loading-circle {
+  0% {
+    stroke-dashoffset: 0
+  }
+  to {
+    stroke-dashoffset: -600
+  }
+}
+
+@keyframes loading-circle {
+  0% {
+    stroke-dashoffset: 0
+  }
+  to {
+    stroke-dashoffset: -600
+  }
+}
+
+
+/******************************/
+
+.ovg-viewer-card button>* {
+  pointer-events: none;
+}
