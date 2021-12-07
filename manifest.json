@@ -1,7 +1,14 @@
 {
   "background": {
     "persistent": true,
-    "scripts": ["background.js"]
+    "scripts": [
+      "lib/moment/moment.min.js",
+      "lib/moment/locales.js",
+      "lib/moment/moment-with-locales.js",
+      "lib/linkify/linkify.min.js",
+      "lib/linkify/linkify-html.min.js",
+      "background.js"
+    ]
   },
   "browser_action": {
     "default_icon": {
@@ -20,6 +27,6 @@
   "minimum_chrome_version": "41",
   "name": "BetterWASD - bot",
   "permissions": ["tabs", "storage", "https://wasd.tv/*"],
-  "version": "1.0.6",
-  "web_accessible_resources": ["img/*.png"]
+  "version": "1.0.7",
+  "web_accessible_resources": ["img/*.png", "backup.html"]
 }

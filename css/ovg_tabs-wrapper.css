@@ -61,6 +61,26 @@
   width: 4px;
 }
 
+.ovg-tabs-wrapper>.tabs [role="pod-tab"] {
+  color: rgba(var(--wasd-color-corp-blue--rgb), 0.50) !important;
+}
+
+.ovg-tabs-wrapper>.tabs .sub-item {
+  align-items: center;
+  border-radius: 4px;
+  color: rgba(var(--wasd-color-switch--rgb), .64);
+  cursor: pointer;
+  display: flex;
+  font-size: 12px;
+  /*height: 28px;*/
+  letter-spacing: .2px;
+  line-height: 1.43;
+  padding: 0 16px;
+  position: relative;
+  white-space: nowrap;
+  margin-top: 0px !important;
+}
+
 .ovg-tabs-wrapper>.tabs .item {
   align-items: center;
   border-radius: 4px;
@@ -76,29 +96,35 @@
   white-space: nowrap
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item:hover,
 .ovg-tabs-wrapper>.tabs .item:hover {
   color: rgba(var(--wasd-color-corp-blue--rgb), .84)
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item:hover:focus,
 .ovg-tabs-wrapper>.tabs .item:hover:focus {
   box-shadow: none;
   outline: none
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item:active,
 .ovg-tabs-wrapper>.tabs .item:active {
   color: var(--wasd-color-corp-blue)
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item:focus,
 .ovg-tabs-wrapper>.tabs .item:focus {
   box-shadow: inset 0 0 0 2px rgba(var(--wasd-color-switch--rgb), .08);
   outline: none
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item.active:focus,
 .ovg-tabs-wrapper>.tabs .item.active:focus {
   box-shadow: none;
   outline: none
 }
 
+.ovg-tabs-wrapper>.tabs .sub-item.disabled,
 .ovg-tabs-wrapper>.tabs .item.disabled {
   cursor: default
 }
@@ -159,18 +185,37 @@
   width: 100%
 }
 
-.ovg-tabs-wrapper.vertical>.tabs .items .item {
+.ovg-tabs-wrapper.vertical>.tabs .items > .item {
   align-items: center;
   display: flex;
   margin-top: 24px;
   min-height: 32px
 }
+.ovg-tabs-wrapper.vertical>.tabs .items .sub-item {
+  align-items: center;
+  display: flex;
+  margin-top: 24px;
+  min-height: 32px
+}
+.ovg-tabs-wrapper.vertical>.tabs .items > div {
+  align-items: center;
+  display: table;
+  margin-top: 24px;
+  min-height: 32px
+}
 
-.ovg-tabs-wrapper.vertical>.tabs .items .item:first-child {
+.ovg-tabs-wrapper.vertical>.tabs .items > .item:first-child {
   margin-top: 0
 }
 
-.ovg-tabs-wrapper.vertical>.tabs .items .active:after {
+.ovg-tabs-wrapper.vertical>.tabs .items .sub-item.active:after {
+  bottom: 0;
+  content: "";
+  height: 100%;
+  position: absolute;
+  width: 2px
+}
+.ovg-tabs-wrapper.vertical>.tabs .items > .active:after {
   bottom: 0;
   content: "";
   height: 100%;
@@ -194,7 +239,8 @@
   right: 0
 }
 
-.ovg-tabs-wrapper.vertical.left>.tabs .item {
+.ovg-tabs-wrapper.vertical.left>.tabs .item,
+.ovg-tabs-wrapper.vertical.left>.tabs .sub-item {
   border-radius: 4px 0 0 4px;
   justify-content: flex-end
 }
@@ -217,11 +263,11 @@
   left: 0
 }
 
+.ovg-tabs-wrapper.vertical.right>.tabs .sub-item,
 .ovg-tabs-wrapper.vertical.right>.tabs .item {
   border-radius: 0 4px 4px 0;
   justify-content: flex-start
 }
-
 .ovg-tabs-wrapper.vertical.right>.tabs .active:after {
   border-left: 2px solid var(--wasd-color-corp-blue);
   left: 0

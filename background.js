@@ -1,19 +1,17 @@
 let settings = {}
-
+moment.locale('ru')
 
 chrome.storage.sync.get((items) => {
   if (typeof items.bot !== 'undefined') {
-    settings = items.bot
+    settings = items
     socket.getCurrent()
-    socket.setIntervals(settings)
   }
 });
 
 chrome.storage.onChanged.addListener(function (changes, namespace) {
-  settings = Object.entries(changes)[0][1].newValue
+  settings[Object.entries(changes)[0][0]] = Object.entries(changes)[0][1].newValue
   if (socket.socketd == null) socket.getCurrent()
   console.log('onChanged', settings)
-  socket.setIntervals(settings)
 });
 
 const socket = {
@@ -22,10 +20,14 @@ const socket = {
   channelId: 0,
   intervalcheck: null,
   intervalusers: null,
+  intervalfivemessages: null,
   current: null,
   stream_url: null,
   isBotInited: false,
   intervals: [],
+  startedTimeouts: {},
+  currentChannel: null,
+  intervalLastMessages: {},
   getCurrent() {
     new Promise((resolve, reject) => {
     fetch(`https://wasd.tv/api/profiles/current`)
@@ -59,6 +61,7 @@ const socket = {
     })
     }) .then((out) => {
       this.current = out
+      // console.log(out)
       this.initBot()
     }) .catch((err) => {
       console.log(err)
@@ -81,7 +84,7 @@ const socket = {
         this.stop(12345, 'LIVE_CLOSED')
         console.log('bot not inited to channel')
       } else if (this.isBotInited && out.result.channel_is_live) {
-        console.log('bot worked')
+        // console.log('bot worked')
       } else {
         console.log('bot not worked')
         chrome.browserAction.setIcon({path: "img/noactive48.png"});
@@ -108,7 +111,7 @@ const socket = {
             fetch(`https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`)
             .then(res => res.json())
             .then((out) => {
-              if (out.result.media_container && out.result.media_container.media_container_streams) {
+              if (out.result?.media_container && out.result?.media_container?.media_container_streams) {
                 resolve(out)
               } else {
                 fetch(`https://wasd.tv/api/v2/profiles/current/broadcasts/closed-view-url`)
@@ -124,7 +127,7 @@ const socket = {
               }
             })
           }).then((out) => {
-
+            socket.currentChannel = out.result
             socket.streamId = out.result.media_container.media_container_streams[0].stream_id
             socket.channelId = out.result.channel.channel_id
 
@@ -140,6 +143,7 @@ const socket = {
                 } catch {
                   clearInterval(socket.intervalcheck)
                   clearInterval(socket.intervalusers)
+                  clearInterval(socket.intervalfivemessages)
                   socket.socketd = null
                   console.log('[catch]', socket.socketd)
                   socket.start()
@@ -154,6 +158,7 @@ const socket = {
     this.socketd.onclose = function(e) {
       clearInterval(socket.intervalcheck)
       clearInterval(socket.intervalusers)
+      clearInterval(socket.intervalfivemessages)
       socket.socketd = null
       if (e.code == 404) {
         console.log(`[close] Соединение закрыто чисто, код= ${e.code} причина= ${e.reason}`);
@@ -185,7 +190,7 @@ const socket = {
           switch (JSData[0]) {
             case "joined":
               console.log(`[${JSData[0]}] ${JSData[1].user_channel_role}`, JSData);
-              if (settings.eventInit[1]) socket.send(settings.eventInit[0])
+              if (settings.bot.eventInit[1]) socket.send(settings.bot.eventInit[0])
               break;
             case "system_message":
               console.log(`[${JSData[0]}] ${JSData[1].message}`, JSData);
@@ -193,6 +198,9 @@ const socket = {
             case "message":
               console.log(`[${JSData[0]}] ${JSData[1].user_login}: ${JSData[1].message}`, JSData)
               socket.onMessage(JSData)
+              wasd.messages.push(JSData[1])
+              socket.setTimeouts(JSData)
+              protection.protect(JSData[1])
               break;
             case "sticker":
               console.log(`[${JSData[0]}] ${JSData[1].user_login}: ${JSData[1].sticker.sticker_alias}`, JSData);
@@ -202,8 +210,8 @@ const socket = {
               break;
             case "event":
               console.log(`[${JSData[0]}] ${JSData[1].event_type} - ${JSData[1].payload.user_login} ${JSData[1].message}`, JSData);
-              if (settings.eventFollow[1] && JSData[1].event_type == 'NEW_FOLLOWER') {
-                let text = settings.eventFollow[0].replace('{user_login}', '@'+JSData[1].payload.user_login);
+              if (settings.bot.eventFollow[1] && JSData[1].event_type == 'NEW_FOLLOWER') {
+                let text = settings.bot.eventFollow[0].replace('{user_login}', '@'+JSData[1].payload.user_login);
                 socket.send(text)
               }
               break;
@@ -218,8 +226,8 @@ const socket = {
               break;
             case "subscribe":
               console.log(`[${JSData[0]}] ${JSData[1].user_login} - ${JSData[1].product_name}`, JSData);
-              if (settings.eventSub[1]) {
-                let text = settings.eventSub[0].replace('{user_login}', '@'+JSData[1].user_login);
+              if (settings.bot.eventSub[1]) {
+                let text = settings.bot.eventSub[0].replace('{user_login}', '@'+JSData[1].user_login);
                 prname = `${(JSData[1].product_name == '30') ? '1 месяц' : ''}${(JSData[1].product_name == '60') ? '2 месяца' : ''}`
                 text.replace('{product_name}', prname);
                 socket.send(text)
@@ -248,6 +256,7 @@ const socket = {
     this.socketd.onerror = function(error) {
       clearInterval(socket.intervalcheck)
       clearInterval(socket.intervalusers)
+      clearInterval(socket.intervalfivemessages)
       socket.socketd = null
       console.log(`[error] ${error}`);
       //socket.start()
@@ -256,6 +265,7 @@ const socket = {
   stop(code, reason) {
     clearInterval(socket.intervalcheck)
     clearInterval(socket.intervalusers)
+    clearInterval(socket.intervalfivemessages)
     this.socketd.close(code, reason)
     this.socketd = null
   },
@@ -301,12 +311,12 @@ const socket = {
     }
   },
   onMessage(JSData) {
-    let data1 = this.parseCmd(JSData[1].message, true, settings.cmdPrefixBotMod[0])
+    let data1 = this.parseCmd(JSData[1].message, true, settings.bot.cmdPrefixBotMod[0])
     let user_login = JSData[1].user_login
     if (data1.cmd != null) console.log('bot mod', data1)
-    if (data1.prefix == settings.cmdPrefixBotMod[0]) switch (data1.cmd) {
+    if (data1.prefix == settings.bot.cmdPrefixBotMod[0]) switch (data1.cmd) {
       case 'ban':
-        if (settings.cmdBan) {
+        if (settings.bot.cmdBan) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res.json())
@@ -351,7 +361,7 @@ const socket = {
         }
         return;
       case 'unban':
-        if (settings.cmdBan) {
+        if (settings.bot.cmdBan) {
           if (this.isMod(JSData))  if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res.json())
@@ -392,7 +402,7 @@ const socket = {
         }
         return;
       case 'mod':
-        if (settings.cmdMod) {
+        if (settings.bot.cmdMod) {
           if (this.isMod(JSData)) if (data1.data) {
             for(let data of data1.data) {
               fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
@@ -440,7 +450,7 @@ const socket = {
         }
         return;
       case 'unmod':
-        if (settings.cmdMod) {
+        if (settings.bot.cmdMod) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res.json())
@@ -486,7 +496,7 @@ const socket = {
         }
         return;
       case 'raid':
-        if (settings.cmdRaid) {
+        if (settings.bot.cmdRaid) {
           if (this.isMod(JSData)) if (data1.data) {
             url = data1.data[0].split('@').join('').toLowerCase().trim()
             if (url.indexOf('://') == -1) { url = `https://wasd.tv/${url}` }
@@ -515,7 +525,7 @@ const socket = {
         }
         return;
       case 'game':
-        if (settings.cmdGame) {
+        if (settings.bot.cmdGame) {
           data1 = this.parseCmd(JSData[1].message, false, '/')
           if (this.isMod(JSData)) if (data1.data != null) {
             var game = data1.data.split('@').join('').toLowerCase().trim()
@@ -562,7 +572,7 @@ const socket = {
         }
         return;
       case 'title':
-        if (settings.cmdTitle) {
+        if (settings.bot.cmdTitle) {
           data1 = this.parseCmd(JSData[1].message, false, '/')
           if (this.isMod(JSData)) if (data1.data != null) {
             let title = data1.data.split('@').join('').trim()
@@ -593,7 +603,7 @@ const socket = {
         }
         return;
       case 'followers':
-        if (settings.cmdFollowers) {
+        if (settings.bot.cmdFollowers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res.json())
@@ -619,7 +629,7 @@ const socket = {
         }
         return;
       case 'followersoff':
-        if (settings.cmdFollowers) {
+        if (settings.bot.cmdFollowers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res.json())
@@ -645,7 +655,7 @@ const socket = {
         }
         return;
       case 'subscribers':
-        if (settings.cmdSubscribers) {
+        if (settings.bot.cmdSubscribers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res.json())
@@ -671,7 +681,7 @@ const socket = {
         }
         return;
       case 'subscribersoff':
-        if (settings.cmdSubscribers) {
+        if (settings.bot.cmdSubscribers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res.json())
@@ -697,7 +707,7 @@ const socket = {
         }
         return;
       case 'timeout':
-          if (settings.cmdTimeout) {
+          if (settings.bot.cmdTimeout) {
             if (this.isMod(JSData)) if (data1.data) {
               let data = data1.data[0]
               let duration = Number(data1?.data?.[1])
@@ -747,11 +757,11 @@ const socket = {
           return;
     }
 
-    let data2 = this.parseCmd(JSData[1].message, false, settings.cmdPrefixBotUser[0])
+    let data2 = this.parseCmd(JSData[1].message, false, settings.bot.cmdPrefixBotUser[0])
     if (data2.cmd != null) console.log('bot user', data2)
-    if (data2.prefix == settings.cmdPrefixBotUser[0]) switch (data2.cmd) {
+    if (data2.prefix == settings.bot.cmdPrefixBotUser[0]) switch (data2.cmd) {
       case 'uptime':
-        if (settings.cmdUptime) {
+        if (settings.bot.cmdUptime) {
           fetch(socket.stream_url)
           .then(res => res.json())
           .then((out) => {
@@ -765,7 +775,7 @@ const socket = {
         }
         return;
       case 'game':
-        if (settings.cmdUserGame) {
+        if (settings.bot.cmdUserGame) {
           fetch(`https://wasd.tv/api/profiles/current/settings`)
           .then(res => res.json())
           .then((out) => {
@@ -778,7 +788,7 @@ const socket = {
         }
         return;
       case 'title':
-          if (settings.cmdUserTitle) {
+          if (settings.bot.cmdUserTitle) {
             fetch(`https://wasd.tv/api/profiles/current/settings`)
             .then(res => res.json())
             .then((out) => {
@@ -792,8 +802,8 @@ const socket = {
           return;
     }
 
-    for (let cmd in settings.usercmds) {
-      let item = settings.usercmds[cmd]
+    for (let cmd in settings.bot.usercmds) {
+      let item = settings.bot.usercmds[cmd]
 
       let data3 = socket.parseCmd(JSData[1].message, false, item.prefix)
 
@@ -825,29 +835,105 @@ const socket = {
     intervalusers = setInterval(() => {
       wasd.saveUserList()
     }, 30000)
-
     wasd.saveUserList()
   },
-  setIntervals(settings) {
-    socket.intervals.forEach((item) => {
-      clearInterval(item)
-    })
-    socket.intervals = []
-    for ( let int in settings.usercmdstimeout ) {
-      let interval = setInterval(() => {
+  setTimeouts(JSData) {
+    if (JSData[1].user_login != socket.current.user_profile.user_login) {
 
-        let res = wasd.replacetext(settings.usercmdstimeout[int].message)
+      for ( let int in settings.bot.usercmdstimeout ) {
 
-        socket.send(res)
-      }, settings.usercmdstimeout[int].interval*1000)
+        if (!socket.intervalLastMessages[int]) socket.intervalLastMessages[int] = []
+        socket.intervalLastMessages[int].push(JSData[1])
 
-      socket.intervals.push(interval)
+        let data = settings.bot.usercmdstimeout[int]
+        if (!!data.minMessages ? socket.intervalLastMessages[int].length >= data.minMessages : true) {
+
+          if (socket.startedTimeouts[data.name]) continue
+
+          socket.startedTimeouts[data.name] = {name: data.name}
+
+          setTimeout(() => {
+
+            delete socket.startedTimeouts[int]
+            delete socket.intervalLastMessages[int]
+            socket.send(data.message)
+
+          }, data.interval*1000)
+
+        }
+      }
+
+      console.log('startedTimeouts', socket.startedTimeouts, 'intervalLastMessages', socket.intervalLastMessages)
+    }
+  },
+  punishment(type, JSData) {
+    let user_login = JSData.user_login
+
+    if (type.toString() == '0') {
+      // socket. Удалить
+
+      let response = {
+        method: 'POST',
+        body: `{"ids":["${JSData.id}"],"messages_owner_id":${JSData.user_id}}`,
+        headers: {'Content-Type': 'application/json'},
+      }
+      fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/delete-messages`, response)
+      .then(res => res.json())
+      .then((out) => {
+        // console.log(out)
+        // if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+        //   console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
+        // } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+        //   console.log(`@${user_login} Вы не можете этого сделать`);
+        // }
+      })
+
+    } else if (type.toString() == '1') {
+      // socket. Тайм-аут
+
+      let response = {
+        method: 'PUT',
+        body: `{"user_id":${JSData.user_id},"stream_id":${socket.streamId}, "keep_messages": true, "duration": 1}`,
+        headers: {'Content-Type': 'application/json'},
+      }
+      fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
+      .then(res => res.json())
+      .then((out) => {
+        //console.log(out)
+        if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+          console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
+        } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+          console.log(`@${user_login} Вы не можете этого сделать`);
+        }
+      })
+
+    } else if (type.toString() == '2') {
+      // socket. Бан
+
+      let response = {
+        method: 'PUT',
+        body: `{"user_id":${JSData.user_id},"stream_id":${socket.streamId}}`,
+        headers: {'Content-Type': 'application/json'},
+      }
+      fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
+      .then(res => res.json())
+      .then((out) => {
+        //console.log(out)
+        if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+            console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
+        } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+            console.log(`@${user_login} Вы не можете этого сделать`);
+        }
+      })
+
     }
   }
 }
 
 const wasd = {
-  users: null,
+  users: [],
+  lastFiveMessages: [],
+  messages: [],
   saveUserList() {
     fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=10000&offset=0`)
     .then(res => res.json())
@@ -880,7 +966,7 @@ const wasd = {
       }
     })
 
-    res = res.replace('randomUser()', (match) => {
+    res = res.replace('randomUser()', () => {
       return wasd.getRndUser()
     })
     
@@ -889,14 +975,104 @@ const wasd = {
       return match[wasd.getRndInteger(0, match.length-1)].trim()
     })
 
-    res = res.replace('user()', (match) => {
+    res = res.replace('user()', () => {
       if (JSData) {
         return '@' + JSData[1].user_login
       } else {
         return '@undefined'
       }
     })
-    
+
+    res = res.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
+      match = match.replace('timer', '').replace(/([()])/ig, '')
+      if (match) {
+          return moment(new Date(match.trim())).fromNow();
+      } else {
+        return 'Invalid date'
+      }
+    })
+
+    res = res.replace('uptime()', () => {
+      var date1 = new Date(socket.currentChannel.media_container.published_at)
+      var dater = new Date(new Date() - date1);
+      return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
+    })
+
     return res
+  }
+}
+
+
+const protection = {
+  // Настройки защиты от заглавных букв
+  findCaps(message) {
+    let caps = message.match(/([A-ZА-Я])/g);
+    if (!caps) return false
+    const percent = caps.length / message.length * 100
+    const removed = (caps.length > settings.protectionCaps.minCaps && percent >= settings.protectionCaps.percentCaps) || caps.length >= settings.protectionCaps.maxCaps
+    // console.log(`${removed ? 'removed' : 'not removed'}`, '(caps.length >= minCaps):', caps.length > settings.protectionCaps.minCaps, '(caps.length >= maxCaps):', caps.length >= settings.protectionCaps.maxCaps, '(percent >= percentCaps):', percent >= settings.protectionCaps.percentCaps, '(caps.length):', caps.length, 'length:', message.length, 'percent:', percent)
+    return removed
+  },
+
+  // Максимум. Длина сообщения
+  maxLength(message) {
+    const removed = message.length >= settings.protectionSymbol.maxLength
+    // console.log(`${removed ? 'removed' : 'not removed'}`, 'message.length:', message.length)
+    return removed
+  },
+
+  // Настройки защиты от ссылок
+  findLink(message, data = { blacklist: { 'wasd.tv': {hostname: 'wasd.tv'} } } ) {
+    // data.blacklist
+    var links = linkify.find(message)
+    var removed = false
+
+    for (let link of links) {
+
+      let find = link.type = "url" ? data.blacklist[new URL(link.href).hostname] : false
+      if (find) {
+        removed = true
+        console.log('find', find.hostname)
+        break;
+      }
+
+    }
+    
+    console.log(`${removed ? 'removed' : 'not removed'}`, 'links:', links)
+    
+    return removed
+  },
+
+  permit(role, JSData) {
+    if (role.toString == '0') {
+      return false
+    } else if (role.toString == '1') {
+      return socket.isSub(JSData)
+    }
+  },
+
+  protect(JSData) {
+    if (JSData.user_login != socket.current.user_profile.user_login) {
+
+      if (settings.protectionCaps.status && this.findCaps(JSData.message)) {
+        if (this.permit(settings.protectionCaps.autoPermit, JSData)) return
+        if (settings.protectionCaps.sendPunishmentMessage[1]) {
+          socket.send(settings.protectionCaps.sendPunishmentMessage[0].replace('{user_login}', '@'+JSData.user_login))
+        }
+        socket.punishment(settings.protectionCaps.punishment, JSData)
+      }
+
+      if (settings.protectionSymbol.status && this.maxLength(JSData.message)) {
+        if (this.permit(settings.protectionSymbol.autoPermit, JSData)) return
+        if (settings.protectionSymbol.sendPunishmentMessage[1]) {
+          socket.send(settings.protectionSymbol.sendPunishmentMessage[0].replace('{user_login}', '@'+JSData.user_login))
+        }
+        socket.punishment(settings.protectionSymbol.punishment, JSData)
+      }
+
+      // this.findLink(JSData.message, )
+
+    }
+    
   }
 }

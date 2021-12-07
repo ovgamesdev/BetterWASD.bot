@@ -95,7 +95,8 @@ wasd-input[ovg] {
   padding-right: 28px;
 }
 
-.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg] {
+.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg],
+.wasd-input-wrapper[ovg] .wasd-input[ovg] textarea[ovg] {
   background-color: transparent;
   border: 1px solid var(--wasd-color-text-fourth);
   border-radius: 4px;
@@ -110,6 +111,8 @@ wasd-input[ovg] {
   position: relative;
   width: 100%;
   z-index: 1;
+  padding: 10px;
+  resize: vertical;
 }
 
 .wasd-input-wrapper[ovg] .wasd-input[ovg] button[ovg] {
@@ -133,12 +136,16 @@ i[ovg] {
 }
 
 .wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg]:active,
-.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg]:focus {
+.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg]:focus,
+
+.wasd-input-wrapper[ovg] .wasd-input[ovg] textarea[ovg]:active,
+.wasd-input-wrapper[ovg] .wasd-input[ovg] textarea[ovg]:focus {
   border: 1px solid var(--wasd-color-corp-blue) !important;
   box-shadow: 0 0 0 2px rgba(var(--wasd-color-corp-blue--rgb), .48) !important;
 }
 
-.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg]:hover {
+.wasd-input-wrapper[ovg] .wasd-input[ovg] input[ovg]:hover,
+.wasd-input-wrapper[ovg] .wasd-input[ovg] textarea[ovg]:hover {
   border: 1px solid var(--wasd-color-text-prime);
 }
 
@@ -3128,7 +3135,7 @@ a {
 }
 
 
-input, select {
+input, select, textarea {
   color: var(--wasd-color-text-prime);
   background: var(--wasd-color-corp-gray);
 }
@@ -3144,4 +3151,98 @@ input, select, textarea {
 }
 ::placeholder {
   color: rgba(var(--wasd-color-switch--rgb), 0.75);
+}
+
+/* form  */
+.form-bg {
+  background-color: rgba(0,0,0,0.5);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.form {
+  position: fixed;
+  top: 39%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -250px;
+  color: var(--wasd-color-text-second);
+  width: 500px;
+  z-index: 5556;
+  background-color: var(--wasd-color-prime);
+  box-shadow: 0 2px 4px rgba(var(--wasd-color-black--rgb),0.16);
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  animation-duration: 0.5s;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(0, 0, 0);
+  border-image: initial;
+}
+
+.form * {
+  box-sizing: border-box;
+}
+
+.form input[type=text], .form select, .form textarea, .form input[type=number] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+button[type=submit] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+button[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.container {
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.col-25 {
+  float: left;
+  width: 25%;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+}
+
+.row.footer {
+  display: flex;
+  justify-content: end;
+}
+.row.footer button {
+  margin: 0 5px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }

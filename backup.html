@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html style=" width: auto; height: auto; ">
   <head>
     <meta charset="utf-8"/>
-    <title>BetterWASD.bot</title>
+    <title>BetterWASD.bot - backup</title>
     <meta name="theme-color" content="#FFFFFF"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
@@ -110,17 +110,45 @@
 
     <link rel="stylesheet" type="text/css" href="https://static.wasd.tv/icons/css/wasd-font.css">
     
-    <script src="lib/moment/moment.min.js"></script>
-    <script src="lib/moment/ru.js"></script>
-    <script src="lib/jquery/jquery.min.js"></script>
-    <script src="lib/jquery/jquery.ui.js"></script>
-    <script src="lib/linkify/linkify.min.js"></script>
-    <script src="lib/linkify/linkify-html.min.js"></script>
     <script src="helper/Helper.js"></script>
-    <script src="helper/Settings.js"></script>
-    <script src="index.js"></script>
   </head>
 
-  <body style="background-color: var(--wasd-color-prime);">
+  <body style="background-color: var(--wasd-color-prime);border: none;padding: 0;">
+    <div id="status">
+      <p>
+      </p>
+    </div>
+
+    <input id="importInput" type="file" accept=".backup, .backup.txt" style="display: none;">
+    <span style="color: var(--wasd-color-text-second);font-size: 15px;padding-left: 10px;"> Эта функция позволяет вам сохранить и восстановить ваши настройки BetterWASD </span>
+    <div style="padding-top: 10px;">
+      <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
+        <button class="primary medium ovg backup-download">
+          <span class="ovg-button-span">
+            <img style="width: 20px; height: 20px;" src="img/download.png">
+          </span>
+          <span> Сохранить </span>
+        </button>
+      </div>
+      <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
+        <button class="primary medium ovg backup-upload">
+          <span class="ovg-button-span">
+            <img style="width: 20px; height: 20px;" src="img/upload.png">
+          </span>
+          <span> Восстановить </span>
+        </button>
+      </div>
+      <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
+        <button class="backup-reset medium ovg warning">
+          <span class="ovg-button-span">
+          <i class="wasd-icons-record" style="font-size: 20px;"></i></span><span class=""> Сбросить по умолчанию </span>
+          <ovg-tooltip><div class="tooltip tooltip_position-bottomRight tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> нажмите дважды </div></div></ovg-tooltip>
+        </button>
+      </div>
+    </div>
+    <div id="backupDropContainer" class="drodHere">Drop Here</div>
+
+    <script src="backup.js"></script>
+
   </body>
 </html>
