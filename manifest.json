@@ -26,7 +26,7 @@
   "manifest_version": 2,
   "minimum_chrome_version": "41",
   "name": "BetterWASD - bot",
-  "permissions": ["tabs", "storage", "https://wasd.tv/*"],
+  "permissions": ["storage", "https://wasd.tv/*"],
   "version": "1.0.7",
   "web_accessible_resources": ["img/*.png", "backup.html", "css/fonts/*"]
 }
