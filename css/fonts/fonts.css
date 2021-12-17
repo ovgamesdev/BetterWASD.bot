@@ -1,0 +1,60 @@
+[class^="ovg-icon-"], [class*=" ovg-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ovg-icon-variables:before {
+  content: "\e914";
+}
+.ovg-icon-giveaway:before {
+  content: "\e910";
+}
+.ovg-icon-timer:before {
+  content: "\e911";
+}
+.ovg-icon-magic:before {
+  content: "\e912";
+}
+.ovg-icon-log:before {
+  content: "\e913";
+}
+.ovg-icon-filter:before {
+  content: "\e906";
+}
+.ovg-icon-backup:before {
+  content: "\e900";
+}
+.ovg-icon-bttv:before {
+  content: "\e901";
+}
+.ovg-icon-change_log:before {
+  content: "\e902";
+}
+.ovg-icon-ffz:before {
+  content: "\e903";
+}
+.ovg-icon-tv7:before {
+  content: "\e904";
+}
+.ovg-icon-chat:before {
+  content: "\e905";
+}
+.ovg-icon-history:before {
+  content: "\e907";
+}
+.ovg-icon-upload:before {
+  content: "\e908";
+}
+.ovg-icon-download:before {
+  content: "\e909";
+}

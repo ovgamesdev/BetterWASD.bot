@@ -22,12 +22,13 @@ const Helper = {
 
         eventFollow: ['{user_login} Спасибо за подписку!', false],
         eventSub: ['{user_login} Спасибо за платную подписку на {product_name}!', false],
-        eventInit: ['Bot inited', true],
+        eventInit: ['бот запущен', true],
         
         usercmds: {},
         usercmdstimeout: {}
       },
       protectionCaps: {
+      	status: false,
         autoPermit: '0',
         punishment: '0',
         sendPunishmentMessage: ['{user_login} -> Пожалуйста, воздержитесь от заглавных букв.', true],
@@ -36,11 +37,30 @@ const Helper = {
         percentCaps: 50
       },
       protectionSymbol: {
+      	status: false,
         autoPermit: '0',
         punishment: '0',
         sendPunishmentMessage: ['{user_login} -> Пожалуйста, воздержитесь от отправки длинных сообщений.', true],
         maxLength: 140,
       },
+      log: {
+      	enabled: true,
+      	type: {
+      		// system_message: true,
+      		message: true,
+      		// sticker: true,
+					// event: true,
+					// giftsV1: true,
+					// yadonat: true,
+					// messageDeleted: true,
+					subscribe: true,
+					// _system: true,
+					// leave: true,
+					user_ban: true,
+					// settings_update: true,
+      		// joined: true,
+      	}
+      }
     };
   },
   getSettings() {
@@ -68,8 +88,7 @@ const Helper = {
       }
     });
   },
-  
-  addUserCmd(data) {
+	addUserCmd(data) {
 	  console.log(data)
 	  let html = document.querySelector('.usercmds.ovg-items')
 	  let item = document.createElement('tr')
@@ -89,7 +108,7 @@ const Helper = {
 	    userCmdResult.value = changed.result
 	    userCmdPrivilege.selectedIndex = changed.privilege
 
-	    document.querySelector('.cmdbot.form-bg').style.display = 'block'
+	    document.querySelector(".cmdbot.form-bg").classList.add('show')
 	    document.querySelector('.cmdbot.form-bg .container h3').textContent = ' Изменить команду '
 	  })
 
@@ -100,11 +119,21 @@ const Helper = {
 	    delete settings.bot.usercmds[data.cmd]
 
 	    item.remove()
-	    HelperSettings.showMessage(`Команда ${deleted.cmd} удалена`, 'success')
+			this.setNotFoundUserCmd()
+	    HelperSettings.showMessage(`Команда ${deleted?.cmd} удалена`, 'success')
 
 	    console.log('2', settings.bot.usercmds)
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  })
+
+		document.querySelector('.usercmds.ovg-items .not-found')?.remove()
+	},
+	setNotFoundUserCmd() {
+		if (document.querySelector('.usercmds.ovg-items').childElementCount == 0) {
+      let div = document.createElement('div')
+      document.querySelector('.usercmds.ovg-items').append(div)
+      div.outerHTML = '<div class="not-found" style="position: absolute;width: 748px;height: 321px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Команд пока нет.. Нажмите кнопку «Добавить команду», чтобы создать его.</div></div>'
+    }
 	},
 	addUserTimeout(data, index) {
 	  console.log(data)
@@ -127,7 +156,7 @@ const Helper = {
 	    timeoutInterval.value = changed.interval
 	    timeoutMinMessages.value = changed.minMessages
 
-	    document.querySelector('.timer.form-bg').style.display = 'block'
+	    document.querySelector(".timer.form-bg").classList.add('show')
 	    document.querySelector('.timer.form-bg .container h3').textContent = ' Изменить таймер '
 	  })
 
@@ -138,11 +167,45 @@ const Helper = {
 	    delete settings.bot.usercmdstimeout[data.name]
 
 	    item.remove()
+	    this.setNotFoundUserTimeout()
 	    HelperSettings.showMessage(`Команда ${deleted.name} удалена`, 'success')
 
 	    console.log('2', settings.bot.usercmdstimeout)
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  })
+
+		document.querySelector('.usercmdstimeout.ovg-items .not-found')?.remove()
+	},
+	setNotFoundUserTimeout() {
+    if (document.querySelector('.usercmdstimeout.ovg-items').childElementCount == 0) {
+      let div = document.createElement('div')
+      document.querySelector('.usercmdstimeout.ovg-items').append(div)
+      div.outerHTML = '<div class="not-found" style="position: absolute;width: 748px;height: 321px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Таймеров пока нет.. Нажмите кнопку «Добавить таймер», чтобы создать его.</div></div>'
+    }
+	},
+	addLog(JSData) {
+	  // console.log(JSData)
+
+	  // JSData[0] == 'message' || JSData[0] == 'subscribe' || JSData[0] == 'user_ban'
+	  let html = document.querySelector('.logs.ovg-items')
+	  let item = document.createElement('tr')
+	  item.classList.add(`table-menu__block`)
+	  item.style = 'justify-content: space-between;'
+
+	  let user_login = JSData[1].user_login || JSData[1].payload.user_login
+	  
+	  let isMsg = typeof JSData[1].message != 'undefined'
+	  let isSub = typeof JSData[1].product_name != 'undefined'
+	  let isBan = JSData[0] == 'user_ban'
+	  if (isSub) isSub = `${JSData[1].product_name == 60 ? 'Оформляет подписку на 2 месяца' : 'Оформляет подписку на 1 месяц' }`
+
+	  let message = JSData[1].message || isSub || JSData[0]
+
+	  item.innerHTML = `<td><div><p type="${isMsg ? 'msg' : ''}${isSub ? 'sub' : ''}${isBan ? 'ban' : ''}"><i _ngcontent-boj-c248="" class="${isMsg ? 'wasd-icons-message' : ''}${isSub ? 'wasd-icons-subscribe' : ''}${isBan ? 'wasd-icons-ban' : ''}"></i></p></div></td>
+	  <td><div><p date="${JSData[1].date_time}">${moment(JSData[1].date_time).format('H:mm:ss')}</p></div></td>
+	  <td><div><p user_login="${user_login}">${user_login}</p></div></td>
+	  <td><div><p message="${message}">${message}</p></div></td>`;
+	  html.append(item)
 	},
 	tryAddUserCmd(data) {
 	  if (data.prefix.trim() == '') {

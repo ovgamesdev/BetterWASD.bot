@@ -19,7 +19,7 @@ const socket = {
   streamId: 0,
   channelId: 0,
   intervalcheck: null,
-  intervalusers: null,
+  intervalSave: null,
   intervalfivemessages: null,
   current: null,
   stream_url: null,
@@ -28,10 +28,11 @@ const socket = {
   startedTimeouts: {},
   currentChannel: null,
   intervalLastMessages: {},
+  logs: [],
   getCurrent() {
     new Promise((resolve, reject) => {
     fetch(`https://wasd.tv/api/profiles/current`)
-    .then(res => res.json())
+    .then(res => res?.json())
     .then((out) => {
       if (out?.result?.user_profile?.channel_id) {
         
@@ -46,7 +47,7 @@ const socket = {
             channel_image: out.result.user_profile.profile_image.large
           })
         })
-        .then(res => res.json())
+        .then(res => res?.json())
         .then((out) => {
           console.log(out)
         })
@@ -72,7 +73,7 @@ const socket = {
   },
   initBot() {
     fetch(`https://wasd.tv/api/channels/${this.current?.user_profile?.channel_id}`)
-    .then(res => res.json())
+    .then(res => res?.json())
     .then((out) => {
       if (!this.isBotInited && out.result.channel_is_live) {
         this.isBotInited = true
@@ -103,23 +104,23 @@ const socket = {
 
     this.socketd.onopen = function(e) {
       fetch(`https://wasd.tv/api/auth/chat-token`)
-      .then(res => res.json())
+      .then(res => res?.json())
       .then((out) => {
           socket.jwt = out.result
           new Promise((resolve, reject) => {
             socket.stream_url = `https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`
             fetch(`https://wasd.tv/api/v2/broadcasts/public?channel_name=${channel_name}`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               if (out.result?.media_container && out.result?.media_container?.media_container_streams) {
                 resolve(out)
               } else {
                 fetch(`https://wasd.tv/api/v2/profiles/current/broadcasts/closed-view-url`)
-                .then(res => res.json())
+                .then(res => res?.json())
                 .then((out) => {
                   socket.stream_url = out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/')
                   fetch(out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/') )
-                  .then(res => res.json())
+                  .then(res => res?.json())
                   .then((out) => {
                     resolve(out)
                   })
@@ -142,7 +143,7 @@ const socket = {
                   socket.socketd.send('2')
                 } catch {
                   clearInterval(socket.intervalcheck)
-                  clearInterval(socket.intervalusers)
+                  clearInterval(socket.intervalSave)
                   clearInterval(socket.intervalfivemessages)
                   socket.socketd = null
                   console.log('[catch]', socket.socketd)
@@ -157,9 +158,10 @@ const socket = {
 
     this.socketd.onclose = function(e) {
       clearInterval(socket.intervalcheck)
-      clearInterval(socket.intervalusers)
+      clearInterval(socket.intervalSave)
       clearInterval(socket.intervalfivemessages)
       socket.socketd = null
+      socket.logs = []
       if (e.code == 404) {
         console.log(`[close] Соединение закрыто чисто, код= ${e.code} причина= ${e.reason}`);
       } else if (e.wasClean) {
@@ -187,6 +189,13 @@ const socket = {
           code = e.data;
         }
         if (JSData) {
+
+          if (settings.log?.enabled && settings.log.type[JSData[0]]) {
+            let log = JSData
+            log[1].date_time = new Date().toISOString()
+            socket.logs.push(log)
+          }
+
           switch (JSData[0]) {
             case "joined":
               console.log(`[${JSData[0]}] ${JSData[1].user_channel_role}`, JSData);
@@ -255,7 +264,7 @@ const socket = {
 
     this.socketd.onerror = function(error) {
       clearInterval(socket.intervalcheck)
-      clearInterval(socket.intervalusers)
+      clearInterval(socket.intervalSave)
       clearInterval(socket.intervalfivemessages)
       socket.socketd = null
       console.log(`[error] ${error}`);
@@ -263,11 +272,12 @@ const socket = {
     };
   },
   stop(code, reason) {
-    clearInterval(socket.intervalcheck)
-    clearInterval(socket.intervalusers)
-    clearInterval(socket.intervalfivemessages)
+    clearInterval(socket.intervalcheck) // ?
+    clearInterval(socket.intervalSave) // ?
+    clearInterval(socket.intervalfivemessages) // ?
     this.socketd.close(code, reason)
-    this.socketd = null
+    this.socketd = null // ?
+    socket.logs = []
   },
   send(message) {
 
@@ -281,15 +291,20 @@ const socket = {
     return result;
   },
   parseCmd(message, isDataArray=false, prefix='!') {
-    prefix = prefix.trim()
-    message = message.trim()
-    let cmd = message.slice(prefix.length, message.indexOf(" "))
-    if (!(message.indexOf(" ") != -1)) cmd = message.slice(prefix.length, message.length)
-    if (message.slice(0, prefix.length) != prefix) cmd = null
-    let data = message.slice(message.indexOf(" "), message.length).trim()
-    if (data == data.slice(data.length-1)) {data = null}
-    if (data != null && isDataArray) data = data.split(' ')
-    return {cmd: cmd, data: data, prefix: prefix}
+    try {
+      prefix = prefix.trim()
+      message = message.trim()
+      let cmd = message.slice(prefix.length, message.indexOf(" "))
+      if (!(message.indexOf(" ") != -1)) cmd = message.slice(prefix.length, message.length)
+      if (message.slice(0, prefix.length) != prefix) cmd = null
+      let data = message.slice(message.indexOf(" "), message.length).trim()
+      if (data == data.slice(data.length-1)) {data = null}
+      if (data != null && isDataArray) data = data.split(' ')
+      return {cmd: cmd, data: data, prefix: prefix}
+    } catch (err) {
+      console.log(err)
+      return {}
+    }
   },
   isMod(JSData) {
     if (JSData) {
@@ -319,7 +334,7 @@ const socket = {
         if (settings.bot.cmdBan) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               if (out.result) {
                 var finded = false;
@@ -328,7 +343,7 @@ const socket = {
                   if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
                     finded = true;
                     fetch(socket.stream_url)
-                    .then(res => res.json())
+                    .then(res => res?.json())
                     .then((out) => {
 
                       let response = {
@@ -337,7 +352,7 @@ const socket = {
                         headers: {'Content-Type': 'application/json'},
                       }
                       fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users`, response)
-                      .then(res => res.json())
+                      .then(res => res?.json())
                       .then((out) => {
                         //console.log(out)
                         if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
@@ -364,7 +379,7 @@ const socket = {
         if (settings.bot.cmdBan) {
           if (this.isMod(JSData))  if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               if (out.result) {
                 var finded = false
@@ -372,14 +387,14 @@ const socket = {
                   if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
                     finded = true;
                     if (socket.stream_url != null) fetch(socket.stream_url)
-                    .then(res => res.json())
+                    .then(res => res?.json())
                     .then((out) => {
 
                       let response = {
                         method: 'DELETE',
                       }
                       fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users/${value.user_id}`, response)
-                      .then(res => res.json())
+                      .then(res => res?.json())
                       .then((out) => {
                         if (out.error.code == 'STREAMER_BAN_NOT_FOUND') {
                           socket.send(`@${user_login} Пользователь @${value.user_login} не забанен`)
@@ -406,7 +421,7 @@ const socket = {
           if (this.isMod(JSData)) if (data1.data) {
             for(let data of data1.data) {
               fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.result) {
                   var finded = false;
@@ -415,7 +430,7 @@ const socket = {
                     if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
                       finded = true;
                       fetch(socket.stream_url)
-                      .then(res => res.json())
+                      .then(res => res?.json())
                       .then((out) => {
 
                         let response = {
@@ -424,7 +439,7 @@ const socket = {
                           headers: {'Content-Type': 'application/json'},
                         }
                         fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/moderators`, response)
-                        .then(res => res.json()) //err
+                        .then(res => res?.json()) //err
                         .then((out) => {
                           //console.log(out)
                           if (out.error.code == 'STREAMER_MODERATOR_ALREADY_EXISTS') {
@@ -453,7 +468,7 @@ const socket = {
         if (settings.bot.cmdMod) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               if (out.result) {
                 var finded = false
@@ -461,7 +476,7 @@ const socket = {
                   if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
                     finded = true;
                     fetch(socket.stream_url)
-                    .then(res => res.json())
+                    .then(res => res?.json())
                     .then((out) => {
 
                       let response = {
@@ -469,7 +484,7 @@ const socket = {
                         headers: {'Content-Type': 'application/json'}, // , 'Access-Control-Allow-Origin': 'https://wasd.tv'
                       }
                       fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/moderators/${value.user_id}`, response)
-                      .then(res => res.json()) //err
+                      .then(res => res?.json()) //err
                       .then((out) => {
                         if (out.error.code == 'STREAMER_MODERATOR_NOT_FOUND') {
                           socket.send(`@${user_login} Пользователь @${value.user_login} не назначен модератором`)
@@ -501,10 +516,10 @@ const socket = {
             url = data1.data[0].split('@').join('').toLowerCase().trim()
             if (url.indexOf('://') == -1) { url = `https://wasd.tv/${url}` }
             fetch(socket.stream_url)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               fetch(`https://wasd.tv/api/v2/channels/${out.result.channel.channel_id}/raid?raid_channel=${url}`, {method: 'POST'})
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 //console.log(out)
                 if (out.error.code == 'ERROR') {
@@ -530,7 +545,7 @@ const socket = {
           if (this.isMod(JSData)) if (data1.data != null) {
             var game = data1.data.split('@').join('').toLowerCase().trim()
             fetch(`https://wasd.tv/api/search/games?limit=999&offset=0&search_phrase=${encodeURIComponent(game.toLowerCase())}`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               //console.log(out.result)
               if (out.result.rows.length) {
@@ -545,7 +560,7 @@ const socket = {
                         'Content-Type': 'application/json'
                       },
                     })
-                    .then(res => res.json())
+                    .then(res => res?.json())
                     .then((out) => {
                       if (out.result[0].setting_key == "STREAM_GAME") {
                         socket.send(`@${user_login} Категория была изменена на '${value.game_name}'`)
@@ -560,7 +575,7 @@ const socket = {
             })
           } else {
             fetch(`https://wasd.tv/api/profiles/current/settings`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               for(let setting_key of out.result) {
                 if (setting_key.setting_key == 'STREAM_GAME') {
@@ -583,7 +598,7 @@ const socket = {
                 'Content-Type': 'application/json'
               },
             })
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               if (out.result[0].setting_key == "STREAM_NAME") {
                 socket.send(`@${user_login} Название было изменено на '${title}'`)
@@ -591,7 +606,7 @@ const socket = {
             })
           } else {
             fetch(`https://wasd.tv/api/profiles/current/settings`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               for(let setting_key of out.result) {
                 if (setting_key.setting_key == 'STREAM_NAME') {
@@ -606,7 +621,7 @@ const socket = {
         if (settings.bot.cmdFollowers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
 
               fetch(`https://wasd.tv/api/chat/streams/${out.result.media_container.media_container_streams[0].stream_id}/settings`, {
@@ -616,7 +631,7 @@ const socket = {
                   'Content-Type': 'application/json'
                 },
               })
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
                   socket.send(`@${user_login} Вы не можете этого сделать`)
@@ -632,7 +647,7 @@ const socket = {
         if (settings.bot.cmdFollowers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
 
               fetch(`https://wasd.tv/api/chat/streams/${out.result.media_container.media_container_streams[0].stream_id}/settings`, {
@@ -642,7 +657,7 @@ const socket = {
                   'Content-Type': 'application/json'
                 },
               })
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
                   socket.send(`@${user_login} Вы не можете этого сделать`)
@@ -658,7 +673,7 @@ const socket = {
         if (settings.bot.cmdSubscribers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
 
               fetch(`https://wasd.tv/api/chat/streams/${out.result.media_container.media_container_streams[0].stream_id}/settings`, {
@@ -668,7 +683,7 @@ const socket = {
                   'Content-Type': 'application/json'
                 },
               })
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
                   socket.send(`@${user_login} Вы не можете этого сделать`)
@@ -684,7 +699,7 @@ const socket = {
         if (settings.bot.cmdSubscribers) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
 
               fetch(`https://wasd.tv/api/chat/streams/${out.result.media_container.media_container_streams[0].stream_id}/settings`, {
@@ -694,7 +709,7 @@ const socket = {
                   'Content-Type': 'application/json'
                 },
               })
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.error) if (out.error.code == "AUTH_FORBIDDEN") {
                   socket.send(`@${user_login} Вы не можете этого сделать`)
@@ -714,7 +729,7 @@ const socket = {
               if (isNaN(duration)) duration = 10
               if (duration != 1 && duration != 10 && duration != 60) { duration = 10 }
               fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-              .then(res => res.json())
+              .then(res => res?.json())
               .then((out) => {
                 if (out.result) {
                   var finded = false;
@@ -723,7 +738,7 @@ const socket = {
                     if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
                       finded = true;
                       fetch(socket.stream_url)
-                      .then(res => res.json())
+                      .then(res => res?.json())
                       .then((out) => {
 
                         let response = {
@@ -732,7 +747,7 @@ const socket = {
                           headers: {'Content-Type': 'application/json'},
                         }
                         fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users`, response)
-                        .then(res => res.json())
+                        .then(res => res?.json())
                         .then((out) => {
                           //console.log(out)
                           if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
@@ -763,7 +778,7 @@ const socket = {
       case 'uptime':
         if (settings.bot.cmdUptime) {
           fetch(socket.stream_url)
-          .then(res => res.json())
+          .then(res => res?.json())
           .then((out) => {
             if (typeof out.result.media_container.published_at !== 'undefined') {
               var date1 = new Date(out.result.media_container.published_at)
@@ -777,7 +792,7 @@ const socket = {
       case 'game':
         if (settings.bot.cmdUserGame) {
           fetch(`https://wasd.tv/api/profiles/current/settings`)
-          .then(res => res.json())
+          .then(res => res?.json())
           .then((out) => {
             for(let setting_key of out.result) {
               if (setting_key.setting_key == 'STREAM_GAME') {
@@ -790,7 +805,7 @@ const socket = {
       case 'title':
           if (settings.bot.cmdUserTitle) {
             fetch(`https://wasd.tv/api/profiles/current/settings`)
-            .then(res => res.json())
+            .then(res => res?.json())
             .then((out) => {
               for(let setting_key of out.result) {
                 if (setting_key.setting_key == 'STREAM_NAME') {
@@ -832,7 +847,7 @@ const socket = {
     }
   },
   onOpen() {
-    intervalusers = setInterval(() => {
+    intervalSave = setInterval(() => {
       wasd.saveUserList()
     }, 30000)
     wasd.saveUserList()
@@ -878,7 +893,7 @@ const socket = {
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/delete-messages`, response)
-      .then(res => res.json())
+      .then(res => res?.json())
       .then((out) => {
         // console.log(out)
         // if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
@@ -897,7 +912,7 @@ const socket = {
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
-      .then(res => res.json())
+      .then(res => res?.json())
       .then((out) => {
         //console.log(out)
         if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
@@ -916,7 +931,7 @@ const socket = {
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
-      .then(res => res.json())
+      .then(res => res?.json())
       .then((out) => {
         //console.log(out)
         if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
@@ -935,14 +950,22 @@ const wasd = {
   lastFiveMessages: [],
   messages: [],
   saveUserList() {
-    fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=10000&offset=0`)
-    .then(res => res.json())
-    .then((out) => {
-      wasd.users = out.result
-      console.log('saveUserList', out.result)
-    }).catch((error) => {
-      console.log(error)
-    })
+    wasd.users = []
+    getall = (limit, offset) => {
+      fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=${limit}&offset=${offset}`)
+      .then(res => res?.json())
+      .then((out) => {
+        wasd.users.push(...out.result)
+        if(out.result.length == limit) {
+          getall(limit, offset+1)
+        } else {
+          console.log('saveUserList', wasd.users)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    }
+    getall(10000, 0)
   },
   getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -957,46 +980,50 @@ const wasd = {
   replacetext(text, JSData) {
     let res = text
 
-    res  = res.replace(/(randomInt\(([^)]+[^ ]))/ig, (match) => {
-      match = match.replace('randomInt', '').replace(/([()])/ig, '').split(',')
-      if (match[0] && match[1]) {
-        return wasd.getRndInteger(parseInt(match[0].trim()), parseInt(match[1].trim()))
-      } else {
-        return '0'
-      }
-    })
+    try {
+      res  = res.replace(/(randomInt\(([^)]+[^ ]))/ig, (match) => {
+        match = match.replace('randomInt', '').replace(/([()])/ig, '').split(',')
+        if (match[0] && match[1]) {
+          return wasd.getRndInteger(parseInt(match[0].trim()), parseInt(match[1].trim()))
+        } else {
+          return '0'
+        }
+      })
 
-    res = res.replace('randomUser()', () => {
-      return wasd.getRndUser()
-    })
-    
-    res = res.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
-      match = match.replace('randomVar', '').replace(/([()])/ig, '').split('&')
-      return match[wasd.getRndInteger(0, match.length-1)].trim()
-    })
+      res = res.replace('randomUser()', () => {
+        return wasd.getRndUser()
+      })
+      
+      res = res.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
+        match = match.replace('randomVar', '').replace(/([()])/ig, '').split('&')
+        return match[wasd.getRndInteger(0, match.length-1)].trim()
+      })
 
-    res = res.replace('user()', () => {
-      if (JSData) {
-        return '@' + JSData[1].user_login
-      } else {
-        return '@undefined'
-      }
-    })
+      res = res.replace('user()', () => {
+        if (JSData) {
+          return '@' + JSData[1].user_login
+        } else {
+          return '@undefined'
+        }
+      })
 
-    res = res.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
-      match = match.replace('timer', '').replace(/([()])/ig, '')
-      if (match) {
-          return moment(new Date(match.trim())).fromNow();
-      } else {
-        return 'Invalid date'
-      }
-    })
+      res = res.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
+        match = match.replace('timer', '').replace(/([()])/ig, '')
+        if (match) {
+            return moment(new Date(match.trim())).fromNow();
+        } else {
+          return 'Invalid date'
+        }
+      })
 
-    res = res.replace('uptime()', () => {
-      var date1 = new Date(socket.currentChannel.media_container.published_at)
-      var dater = new Date(new Date() - date1);
-      return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
-    })
+      res = res.replace('uptime()', () => {
+        var date1 = new Date(socket.currentChannel.media_container.published_at)
+        var dater = new Date(new Date() - date1);
+        return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
+      })
+    } catch (err) {
+      console.log(err)
+    }
 
     return res
   }
@@ -1076,3 +1103,14 @@ const protection = {
     
   }
 }
+
+chrome.runtime.onMessage.addListener(
+  (request, sender, sendResponse) => {
+    if (request.from == "popup_bot" || request.log == true) {
+      chrome.runtime.sendMessage({
+        from: 'background_bot',
+        logs: [...socket.logs]
+      })
+    }
+  }
+);

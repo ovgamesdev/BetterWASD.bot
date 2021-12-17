@@ -1,0 +1,213 @@
+wasd-header #nav-sidebar i[ovg] {
+  /* background-image: url(https://user-avatar.png); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px!important;
+  height: 30px!important;
+  font-size: 20px;
+  color: rgb(var(--color-system-blue))!important;
+  background-position: center;
+  background-size: 30px;
+  background-repeat: no-repeat;
+  border-radius: 50px;
+  margin: 5px 0px 5px 11px;
+}
+wasd-header #nav-sidebar .nav-sidebar__link > div[ovg] {
+  display: flex;
+  justify-content: space-between !important;
+  -webkit-box-pack: justify !important;
+  width: calc(100% - 52px);
+  padding-right: 10px;
+}
+wasd-header #nav-sidebar.nav-sidebar--expanded .nav-sidebar__link[ovg] .line > div {
+  left: 0;
+  opacity: 1;
+}
+wasd-header #nav-sidebar .nav-sidebar__link[ovg] .line > div {
+  position: relative;
+  left: -8px;
+  width: auto;
+  margin-left: 11px;
+  opacity: 0;
+  transition: width .3s linear,left .3s linear,opacity .3s linear;
+  color: rgba(var(--color-switch),.8)!important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+wasd-header .nav-sidebar__link[ovg]:hover .line > div {
+  color: rgb(var(--color-switch)) !important
+}
+
+wasd-header .nav-sidebar__link[ovg]:active .line > div {
+  color: rgb(var(--color-switch)) !important
+}
+
+wasd-header .nav-sidebar__link[ovg] .online-status__online-icon {
+  margin-right: .5rem;
+  width: .8rem;
+  height: .8rem;
+  border-radius: 50%;
+  background-color: var(--wasd-color-warning);
+  display: inline-block;
+}
+
+wasd-header .nav-sidebar__link[ovg] .status {
+  display: flex;
+  align-items: center !important;
+}
+
+
+
+
+/* bscSettingsPanel */
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar[ovg] {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100% - 48px);
+  width: 52px;
+  margin-top: 48px;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(var(--color-switch), .24);
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-decoration: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: width .3s linear;
+  background: var(--color-first-layer)
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar[ovg]::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(var(--color-switch), .24)
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar[ovg]::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: rgba(var(--color-switch), .48)
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg] {
+  display: block;
+  padding: 0;
+  margin: 0
+}
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].top {
+  top: 0;
+  position: absolute;
+}
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].bottom {
+  bottom: 0;
+  position: absolute;
+}
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg] li[ovg] {
+  list-style: none
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg] {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 52px;
+  height: 40px;
+  font-size: 14px;
+  line-height: 16px;
+  cursor: pointer;
+  transition: width .3s linear
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg] * {
+  pointer-events: none;
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg] span[ovg] {
+  position: relative;
+  left: -8px;
+  width: 0;
+  opacity: 0;
+  transition: width .3s linear, left .3s linear, opacity .3s linear;
+  color: rgba(var(--color-switch), .8) !important
+}
+
+.nav-sidebar__link[ovg]:hover {
+  background: rgba(var(--color-switch), .08)
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg]:hover span[ovg] {
+  color: rgb(var(--color-switch)) !important
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg]:active {
+  background: rgba(var(--color-switch), .16)
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg]:active span[ovg] {
+  color: rgb(var(--color-switch)) !important
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link.nav-sidebar__link--active[ovg] {
+  background: rgb(var(--color-system-blue))
+}
+
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link.nav-sidebar__link--active[ovg] i[ovg],
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link.nav-sidebar__link--active[ovg] span[ovg] {
+  color: rgb(var(--color-system-white)) !important
+}
+
+#bscSettingsPanel wasd-nav-sidebar.nav-sidebar--expanded[ovg] {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#bscSettingsPanel wasd-nav-sidebar.nav-sidebar--expanded[ovg] .nav-sidebar,
+#bscSettingsPanel wasd-nav-sidebar.nav-sidebar--expanded[ovg] .nav-sidebar .nav-sidebar__link[ovg] {
+  width: 240px
+}
+
+#bscSettingsPanel wasd-nav-sidebar.nav-sidebar--expanded[ovg] .nav-sidebar .nav-sidebar__link[ovg] span[ovg] {
+  left: 0;
+  width: 188px;
+  opacity: 1
+}
+
+#bscSettingsPanel wasd-nav-sidebar i[ovg] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px !important;
+  height: 40px !important;
+  font-size: 20px;
+  color: rgb(var(--color-system-blue)) !important
+}
+
+#bscSettingsPanel wasd-nav-sidebar i[ovg]:before {
+  margin: 0
+}
+
+#bscSettingsPanel wasd-nav-sidebar .onboard-layout[ovg] {
+  position: absolute;
+  opacity: .6;
+  background: rgb(var(--color-system-black));
+  z-index: 5557;
+  top: 48px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 52px;
+  height: calc(100vh - 48px);
+  display: flex;
+  justify-content: center;
+  align-items: center
+}

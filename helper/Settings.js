@@ -97,15 +97,18 @@ const HelperSettings = {
         title: `Пользователь платно подписался ({user_login}, ${Helper.tooltip('{product_name}', '1 месяц, 2 месяца')})`,
         type: 'botevent'
       },
+
+      usercmds: {
+        type: 'builditems'
+      },
+      usercmdstimeout: {
+        type: 'builditems'
+      },
     },
     protectionCaps: {
       general: {
         title: 'Общее настройки защиты от заглавных букв',
         type: 'title'
-      },
-      status: {
-        title: `Защита`,
-        type: 'boolean'
       },
       autoPermit: {
         title: `Авто разрешение ${Helper.tooltip('', 'Установите группу пользователей, которая не будет наказана')}`,
@@ -169,10 +172,6 @@ const HelperSettings = {
         title: 'Общее настройки защиты от длинных сообщений',
         type: 'title'
       },
-      status: {
-        title: `Защита`,
-        type: 'boolean'
-      },
       autoPermit: {
         title: `Авто разрешение ${Helper.tooltip('', 'Установите группу пользователей, которая не будет наказана')}`,
         type: 'select',
@@ -219,6 +218,13 @@ const HelperSettings = {
       },
       
     },
+    log: {
+      enabled: {
+        title: 'Записывать журнал',
+        description: 'сообщения, действия и др.',
+        type: 'boolean'
+      },
+    }
   },
   showMessage(message, type = 'success') {
     if (this.messageTimeout) {
@@ -240,14 +246,14 @@ const HelperSettings = {
   },
   _basic(title, description, formField, line=false, id) {
     return `
-    <div class="option" id="${id}">
+    <div class="option ${line ? "title" : ""}" ${id ? "id=" + id : ""}>
       <div class="ovg-option" >
         <div class="option-line" >
 
           <div class="labelField">
             ${line ? '<div class="line"></div>' : ''}
             <span ${line ? 'class="titleline"' : 'class="title"'}> ${title} </span>
-            <span class="description" style="display: block;"> ${description || ''}</span>
+            ${description ? `<span class="description"> ${description} </span>` : ''}
           </div>
           <div class="formField">${formField}</div>
 
@@ -283,7 +289,7 @@ const HelperSettings = {
 
       newSettings[split[0]][split[1]] = value;
 
-      let onChange = this.availableSettings[split[0]][split[1]].onChange;
+      let onChange = this.availableSettings[split[0]][split[1]]?.onChange;
       if (typeof onChange === 'function') onChange(value);
     }
     chrome.storage[storageType].set(newSettings, () => {

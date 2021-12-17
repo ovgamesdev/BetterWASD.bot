@@ -107,8 +107,22 @@
     <link rel="stylesheet" type="text/css" href="css/ovg_burger-toggle.css"/>
     <link rel="stylesheet" type="text/css" href="css/ovg_bell.css"/>
     <link rel="stylesheet" type="text/css" href="css/ovg_checkbox.css"/>
+    <link rel="stylesheet" type="text/css" href="css/fonts/fonts.css"/>
 
     <link rel="stylesheet" type="text/css" href="https://static.wasd.tv/icons/css/wasd-font.css">
+
+    <style type="text/css">
+      @font-face {
+        font-family: 'icomoon';
+        src:  url(css/fonts/icomoon.ttf?ek8nz4) format('truetype'),
+          url(css/fonts/icomoon.woff?ek8nz4) format('woff'),
+          url(css/fonts/icomoon.svg?ek8nz4#icomoon) format('svg');
+        font-weight: normal;
+        font-style: normal;
+        font-display: block;
+      }
+    </style>
+
     
     <script src="helper/Helper.js"></script>
   </head>
@@ -125,7 +139,7 @@
       <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
         <button class="primary medium ovg backup-download">
           <span class="ovg-button-span">
-            <img style="width: 20px; height: 20px;" src="img/download.png">
+            <i class="ovg-icon-download" style="font-size: 20px;"></i>
           </span>
           <span> Сохранить </span>
         </button>
@@ -133,7 +147,7 @@
       <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
         <button class="primary medium ovg backup-upload">
           <span class="ovg-button-span">
-            <img style="width: 20px; height: 20px;" src="img/upload.png">
+            <i class="ovg-icon-upload" style="font-size: 20px;"></i>
           </span>
           <span> Восстановить </span>
         </button>
@@ -141,7 +155,9 @@
       <div class="flat-btn ovg ovg-button-div" style="margin: 0px 10px 10px 10px;">
         <button class="backup-reset medium ovg warning">
           <span class="ovg-button-span">
-          <i class="wasd-icons-record" style="font-size: 20px;"></i></span><span class=""> Сбросить по умолчанию </span>
+            <i class="wasd-icons-record" style="font-size: 20px;"></i>
+          </span>
+          <span class=""> Сбросить по умолчанию </span>
           <ovg-tooltip><div class="tooltip tooltip_position-bottomRight tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> нажмите дважды </div></div></ovg-tooltip>
         </button>
       </div>
