@@ -5,20 +5,19 @@ const Helper = {
   getDefaultSettings() {
     return {
       bot: {
-        cmdPrefixBotMod: ['/', true],
-        cmdBan: true,
-        cmdMod: true,
-        cmdRaid: true,
-        cmdTitle: true,
-        cmdGame: true,
-        cmdFollowers: true,
-        cmdSubscribers: true,
-        cmdTimeout: true,
+        cmdBan: { enabled: true, alias: '/ban', unalias: '/unban' },
+        cmdMod: { enabled: true, alias: '/mod', unalias: '/unmod' },
+        cmdRaid: { enabled: true, alias: '/raid' },
+        cmdTitle: { enabled: true, alias: '/title' },
+        cmdGame: { enabled: true, alias: '/game' },
+        cmdFollowers: { enabled: true, alias: '/followers', unalias: '/followersoff' },
+        cmdSubscribers: { enabled: true, alias: '/subscribers', unalias: '/subscribersoff' },
+        cmdTimeout: { enabled: true, alias: '/timeout' },
 
-        cmdPrefixBotUser: ['!', true],
-        cmdUptime: true,
-        cmdUserTitle: true,
-        cmdUserGame: true,
+        cmdUptime: { enabled: true, alias: '!uptime' },
+        cmdUserTitle: { enabled: true, alias: '!title' },
+        cmdUserGame: { enabled: true, alias: '!game' },
+        cmdCommands: { enabled: true, alias: '!commands' },
 
         eventFollow: ['{user_login} Спасибо за подписку!', false],
         eventSub: ['{user_login} Спасибо за платную подписку на {product_name}!', false],
@@ -94,25 +93,30 @@ const Helper = {
 	  let item = document.createElement('tr')
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
-	  item.innerHTML = `<td><div><p prefix="${data.prefix}">${data.prefix}</p></div></td> <td><div><p cmd="${data.cmd}">${data.cmd}</p></div></td> <!--td><div><p attributes="${data.attributes}">${data.attributes}</p></div></td--> <td><div><p result="${data.result}">${data.result}</p></div></td> <td><div><p privilege="${data.privilege}">${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btns"><div> 
-	  <ovg-button class="flat-btn ovg remove"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
-	  <ovg-button class="flat-btn ovg change" style="left: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  item.innerHTML = `<td><div><p cmd="${data.cmd}">${data.cmd}</p></div></td> <!--td><div><p attributes="${data.attributes}">${data.attributes}</p></div></td--> <td><div><p result="${data.result}">${data.result}</p></div></td> <td><div><p privilege="${data.privilege}">${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btns" style="text-align: end;"><div> 
+	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+    
+    <label class="switch-ovg" style="align-self: center;">
+      <input type="checkbox" class="optionField" ${data.enabled ? 'checked' : ''}>
+      <span class="slider-ovg"> <div class="switcher_thumb-ovg"></div> </span>
+    </label>
+
 	  </div></td>`;
 	  item.setAttribute("itemcmd", data.cmd)
 	  html.append(item)
 
-	  item.querySelector('.change').addEventListener('click', ({ target }) => {
+	  item.querySelector('.change').addEventListener('click', () => {
 	    let changed = settings.bot.usercmds[data.cmd]
-	    userCmdPrefix.value = changed.prefix
 	    userCmdCmd.value = changed.cmd
 	    userCmdResult.value = changed.result
 	    userCmdPrivilege.selectedIndex = changed.privilege
 
-	    document.querySelector(".cmdbot.form-bg").classList.add('show')
-	    document.querySelector('.cmdbot.form-bg .container h3').textContent = ' Изменить команду '
+	    Helper.showModal('cmdbot')
+	    document.querySelector('ovg-modal-window.cmdbot .modal-block__title span').textContent = ' Изменить команду '
 	  })
 
-	  item.querySelector('.remove').addEventListener('click', ({ target }) => {
+	  item.querySelector('.remove').addEventListener('click', () => {
 	    console.log('1', settings.bot.usercmds)
 
 	    let deleted = settings.bot.usercmds[data.cmd]
@@ -123,6 +127,15 @@ const Helper = {
 	    HelperSettings.showMessage(`Команда ${deleted?.cmd} удалена`, 'success')
 
 	    console.log('2', settings.bot.usercmds)
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  })
+
+	  let input = item.querySelector('input')
+	  input.addEventListener('change', ({e}) => {
+	    console.log(input.checked)
+	    settings.bot.usercmds[data.cmd].enabled = input.checked
+
+
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  })
 
@@ -142,13 +155,19 @@ const Helper = {
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
 	  item.innerHTML = `<td><div><p name="${data.name}">${data.name}</p></div></td> <td><div><p message="${data.message}">${data.message}</p></div></td> <td><div><p interval="${data.interval}">${data.interval}</p></div></td> <td><div><p minMessages="${data.minMessages ? data.minMessages : "5"}">${data.minMessages ? data.minMessages : "5"}</p></div></td> <td class="td-btns"><div> 
-	  <ovg-button class="flat-btn ovg remove"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
-	  <ovg-button class="flat-btn ovg change" style="left: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  
+    <label class="switch-ovg" style="align-self: center;">
+      <input type="checkbox" class="optionField" ${data.enabled ? 'checked' : ''}>
+      <span class="slider-ovg"> <div class="switcher_thumb-ovg"></div> </span>
+    </label>
+
 	  </div></td>`;
 	  item.setAttribute("itemtime", data.cmd)
 	  html.append(item)
 
-	  item.querySelector('.change').addEventListener('click', ({ target }) => {
+	  item.querySelector('.change').addEventListener('click', () => {
 	    let changed = settings.bot.usercmdstimeout[data.name]
 	    console.log(changed)
 	    timeoutName.value = changed.name
@@ -156,11 +175,11 @@ const Helper = {
 	    timeoutInterval.value = changed.interval
 	    timeoutMinMessages.value = changed.minMessages
 
-	    document.querySelector(".timer.form-bg").classList.add('show')
-	    document.querySelector('.timer.form-bg .container h3').textContent = ' Изменить таймер '
+	    Helper.showModal('timer')
+	    document.querySelector('ovg-modal-window.timer .modal-block__title span').textContent = ' Изменить таймер '
 	  })
 
-	  item.querySelector('.remove').addEventListener('click', ({ target }) => {
+	  item.querySelector('.remove').addEventListener('click', () => {
 	    console.log('1', settings.bot.usercmdstimeout)
 
 	    let deleted = settings.bot.usercmdstimeout[data.name]
@@ -171,6 +190,15 @@ const Helper = {
 	    HelperSettings.showMessage(`Команда ${deleted.name} удалена`, 'success')
 
 	    console.log('2', settings.bot.usercmdstimeout)
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  })
+
+	  let input = item.querySelector('input')
+	  input.addEventListener('change', ({e}) => {
+	    console.log(input.checked)
+	    settings.bot.usercmdstimeout[data.name].enabled = input.checked
+	    if (!input.checked) chrome.runtime.sendMessage({ from: 'popup_bot', stopTimeout: data.name })
+
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  })
 
@@ -208,10 +236,6 @@ const Helper = {
 	  html.append(item)
 	},
 	tryAddUserCmd(data) {
-	  if (data.prefix.trim() == '') {
-	    HelperSettings.showMessage('Null prefix', 'error')
-	    return 'err'
-	  }
 	  if (data.cmd.trim() == '') {
 	    HelperSettings.showMessage('Null cmd', 'error')
 	    return 'err'
@@ -230,7 +254,6 @@ const Helper = {
 
 	    let item = document.querySelector(`[itemcmd="${data.cmd}"]`)
 
-	    item.querySelector('[prefix]').textContent = data.prefix
 	    item.querySelector('[cmd]').textContent = data.cmd
 	    item.querySelector('[result]').textContent = data.result
 	    item.querySelector('[privilege]').textContent = `${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}`
@@ -272,5 +295,13 @@ const Helper = {
 
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  }
-	}
+	},
+  hideModal() {
+    document.querySelector('ovg-modal-window.show')?.classList.remove('show')
+    document.querySelector('ovg-modal-backdrop.show')?.classList.remove('show')
+  },
+  showModal(modal) {
+    document.querySelector('ovg-modal-window.' + modal)?.classList.add('show')
+    document.querySelector('ovg-modal-backdrop')?.classList.add('show')
+  }
 };

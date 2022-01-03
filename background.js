@@ -1,13 +1,6 @@
 let settings = {}
 moment.locale('ru')
 
-chrome.storage.sync.get((items) => {
-  if (typeof items.bot !== 'undefined') {
-    settings = items
-    socket.getCurrent()
-  }
-});
-
 chrome.storage.onChanged.addListener(function (changes, namespace) {
   settings[Object.entries(changes)[0][0]] = Object.entries(changes)[0][1].newValue
   if (socket.socketd == null) socket.getCurrent()
@@ -23,6 +16,7 @@ const socket = {
   intervalfivemessages: null,
   current: null,
   stream_url: null,
+  closedId: null,
   isBotInited: false,
   intervals: [],
   startedTimeouts: {},
@@ -119,7 +113,8 @@ const socket = {
                 .then(res => res?.json())
                 .then((out) => {
                   socket.stream_url = out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/')
-                  fetch(out.result.view_url.replace('https://wasd.tv/private-stream/', 'https://wasd.tv/api/v2/broadcasts/closed/') )
+                  socket.closedId = out.result.view_url.replace('https://wasd.tv/private-stream/', '')
+                  fetch('https://wasd.tv/api/v2/broadcasts/closed/' + socket.closedId)
                   .then(res => res?.json())
                   .then((out) => {
                     resolve(out)
@@ -193,13 +188,14 @@ const socket = {
           if (settings.log?.enabled && settings.log.type[JSData[0]]) {
             let log = JSData
             log[1].date_time = new Date().toISOString()
+            if (socket.logs.length >= 100000) socket.logs.splice(0, 1)
             socket.logs.push(log)
           }
 
           switch (JSData[0]) {
             case "joined":
               console.log(`[${JSData[0]}] ${JSData[1].user_channel_role}`, JSData);
-              if (settings.bot.eventInit[1]) socket.send(settings.bot.eventInit[0])
+              if (settings.bot.eventInit[1]) socket.send(settings.bot.eventInit[0].replace('{cmd_commands}', settings.bot.cmdCommands.alias))
               break;
             case "system_message":
               console.log(`[${JSData[0]}] ${JSData[1].message}`, JSData);
@@ -210,6 +206,8 @@ const socket = {
               wasd.messages.push(JSData[1])
               socket.setTimeouts(JSData)
               protection.protect(JSData[1])
+              giveaway.add(JSData)
+              if (JSData[1].user_id == giveaway.winner?.user_id) chrome.runtime.sendMessage({ from: 'background_bot', giveawayWinnerMgs: JSData })
               break;
             case "sticker":
               console.log(`[${JSData[0]}] ${JSData[1].user_login}: ${JSData[1].sticker.sticker_alias}`, JSData);
@@ -280,8 +278,10 @@ const socket = {
     socket.logs = []
   },
   send(message) {
-
-    if (this.socketd) this.socketd.send(`42["message",{"hash":"${this.hash(25)}","streamId":${this.streamId},"channelId":${this.channelId},"jwt":"${this.jwt}","message":"${message}"}]`)
+    if (this.socketd) {
+      // console.log('send', message)
+      this.socketd.send(`42["message",{"hash":"${this.hash(25)}","streamId":${this.streamId},"channelId":${this.channelId},"jwt":"${this.jwt}","message":"${message}"}]`)
+    }
   },
   hash(length) {
     var result = '';
@@ -290,17 +290,15 @@ const socket = {
     for ( var i = 0; i < length; i++ ) { result += characters.charAt(Math.floor(Math.random() * charactersLength)); }
     return result;
   },
-  parseCmd(message, isDataArray=false, prefix='!') {
+  parseCmd(message, isDataArray=false) {
     try {
-      prefix = prefix.trim()
       message = message.trim()
-      let cmd = message.slice(prefix.length, message.indexOf(" "))
-      if (!(message.indexOf(" ") != -1)) cmd = message.slice(prefix.length, message.length)
-      if (message.slice(0, prefix.length) != prefix) cmd = null
+      let cmd = message.slice(0, message.indexOf(" "))
+      if (!(message.indexOf(" ") != -1)) cmd = message.slice(0, message.length)
       let data = message.slice(message.indexOf(" "), message.length).trim()
-      if (data == data.slice(data.length-1)) {data = null}
+      if (data == message.slice(cmd.length-1, cmd.length+data.length-1)) {data = null}
       if (data != null && isDataArray) data = data.split(' ')
-      return {cmd: cmd, data: data, prefix: prefix}
+      return {cmd: cmd, data: data}
     } catch (err) {
       console.log(err)
       return {}
@@ -326,12 +324,13 @@ const socket = {
     }
   },
   onMessage(JSData) {
-    let data1 = this.parseCmd(JSData[1].message, true, settings.bot.cmdPrefixBotMod[0])
+    let data1 = this.parseCmd(JSData[1].message, true)
     let user_login = JSData[1].user_login
     if (data1.cmd != null) console.log('bot mod', data1)
-    if (data1.prefix == settings.bot.cmdPrefixBotMod[0]) switch (data1.cmd) {
-      case 'ban':
-        if (settings.bot.cmdBan) {
+    switch (data1.cmd) {
+      // case '/ban':
+      case settings.bot.cmdBan.alias:
+        if (settings.bot.cmdBan.enabled) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res?.json())
@@ -340,7 +339,7 @@ const socket = {
                 var finded = false;
                 for (let value of out.result.rows) {
 
-                  if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
+                  if (value.user_login?.trim()?.toLowerCase() == data.split('@').join('').toLowerCase().trim()) {
                     finded = true;
                     fetch(socket.stream_url)
                     .then(res => res?.json())
@@ -375,8 +374,9 @@ const socket = {
           }
         }
         return;
-      case 'unban':
-        if (settings.bot.cmdBan) {
+      // case '/unban':
+      case settings.bot.cmdBan.unalias:
+        if (settings.bot.cmdBan.enabled) {
           if (this.isMod(JSData))  if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res?.json())
@@ -384,7 +384,7 @@ const socket = {
               if (out.result) {
                 var finded = false
                 for (let value of out.result.rows) {
-                  if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
+                  if (value.user_login?.trim()?.toLowerCase() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
                     finded = true;
                     if (socket.stream_url != null) fetch(socket.stream_url)
                     .then(res => res?.json())
@@ -416,8 +416,9 @@ const socket = {
           }
         }
         return;
-      case 'mod':
-        if (settings.bot.cmdMod) {
+      // case '/mod':
+      case settings.bot.cmdMod.alias:
+        if (settings.bot.cmdMod.enabled) {
           if (this.isMod(JSData)) if (data1.data) {
             for(let data of data1.data) {
               fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
@@ -427,7 +428,7 @@ const socket = {
                   var finded = false;
                   for (let value of out?.result?.rows) {
 
-                    if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
+                    if (value.user_login?.trim()?.toLowerCase() == data.split('@').join('').toLowerCase().trim()) {
                       finded = true;
                       fetch(socket.stream_url)
                       .then(res => res?.json())
@@ -464,8 +465,9 @@ const socket = {
           }
         }
         return;
-      case 'unmod':
-        if (settings.bot.cmdMod) {
+      // case '/unmod':
+      case settings.bot.cmdMod.unalias:
+        if (settings.bot.cmdMod.enabled) {
           if (this.isMod(JSData)) if (data1.data) for(let data of data1.data) {
             fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res?.json())
@@ -473,7 +475,7 @@ const socket = {
               if (out.result) {
                 var finded = false
                 for (let value of out.result.rows) {
-                  if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().toLowerCase().trim()) {
+                  if (value.user_login?.toLowerCase()?.trim() == data.split('@').join('').trim().toLowerCase()) {
                     finded = true;
                     fetch(socket.stream_url)
                     .then(res => res?.json())
@@ -510,8 +512,9 @@ const socket = {
           }
         }
         return;
-      case 'raid':
-        if (settings.bot.cmdRaid) {
+      // case '/raid':
+      case settings.bot.cmdRaid.alias:
+        if (settings.bot.cmdRaid.enabled) {
           if (this.isMod(JSData)) if (data1.data) {
             url = data1.data[0].split('@').join('').toLowerCase().trim()
             if (url.indexOf('://') == -1) { url = `https://wasd.tv/${url}` }
@@ -539,8 +542,9 @@ const socket = {
           }
         }
         return;
-      case 'game':
-        if (settings.bot.cmdGame) {
+      // case '/game':
+      case settings.bot.cmdGame.alias:
+        if (settings.bot.cmdGame.enabled) {
           data1 = this.parseCmd(JSData[1].message, false, '/')
           if (this.isMod(JSData)) if (data1.data != null) {
             var game = data1.data.split('@').join('').toLowerCase().trim()
@@ -586,8 +590,9 @@ const socket = {
           }
         }
         return;
-      case 'title':
-        if (settings.bot.cmdTitle) {
+      // case '/title':
+      case settings.bot.cmdTitle.alias:
+        if (settings.bot.cmdTitle.enabled) {
           data1 = this.parseCmd(JSData[1].message, false, '/')
           if (this.isMod(JSData)) if (data1.data != null) {
             let title = data1.data.split('@').join('').trim()
@@ -617,8 +622,9 @@ const socket = {
           }
         }
         return;
-      case 'followers':
-        if (settings.bot.cmdFollowers) {
+      // case '/followers':
+      case settings.bot.cmdFollowers.alias:
+        if (settings.bot.cmdFollowers.enabled) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res?.json())
@@ -643,8 +649,9 @@ const socket = {
           }
         }
         return;
-      case 'followersoff':
-        if (settings.bot.cmdFollowers) {
+      // case '/followersoff':
+      case settings.bot.cmdFollowers.unalias:
+        if (settings.bot.cmdFollowers.enabled) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res?.json())
@@ -669,8 +676,9 @@ const socket = {
           }
         }
         return;
-      case 'subscribers':
-        if (settings.bot.cmdSubscribers) {
+      // case '/subscribers':
+      case settings.bot.cmdSubscribers.alias:
+        if (settings.bot.cmdSubscribers.enabled) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res?.json())
@@ -695,8 +703,9 @@ const socket = {
           }
         }
         return;
-      case 'subscribersoff':
-        if (settings.bot.cmdSubscribers) {
+      // case '/subscribersoff':
+      case settings.bot.cmdSubscribers.unalias:
+        if (settings.bot.cmdSubscribers.enabled) {
           if (this.isMod(JSData)) {
             fetch(socket.stream_url)
             .then(res => res?.json())
@@ -721,129 +730,142 @@ const socket = {
           }
         }
         return;
-      case 'timeout':
-          if (settings.bot.cmdTimeout) {
-            if (this.isMod(JSData)) if (data1.data) {
-              let data = data1.data[0]
-              let duration = Number(data1?.data?.[1])
-              if (isNaN(duration)) duration = 10
-              if (duration != 1 && duration != 10 && duration != 60) { duration = 10 }
-              fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
-              .then(res => res?.json())
-              .then((out) => {
-                if (out.result) {
-                  var finded = false;
-                  for (let value of out.result.rows) {
-
-                    if (value.user_login.toLowerCase().trim() == data.split('@').join('').toLowerCase().trim()) {
-                      finded = true;
-                      fetch(socket.stream_url)
-                      .then(res => res?.json())
-                      .then((out) => {
-
-                        let response = {
-                          method: 'PUT',
-                          body: `{"user_id":${value.user_id},"stream_id":${out.result.media_container.media_container_streams[0].stream_id}, "keep_messages": true, "duration": ${duration}}`,
-                          headers: {'Content-Type': 'application/json'},
-                        }
-                        fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users`, response)
-                        .then(res => res?.json())
-                        .then((out) => {
-                          //console.log(out)
-                          if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
-                            socket.send(`@${user_login} Пользователь @${value.user_login} уже заблокирован`);
-                          } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
-                            socket.send(`@${user_login} Вы не можете этого сделать`);
-                          }
-                        })
-                      })
-                      break;
-                    }
-                  }
-                  if (!finded) {
-                    socket.send('Пользователь не найден')
-                  }
-                }
-              })
-            } else {
-              socket.send('Пользователь не найден')
-            }
-          }
-          return;
-    }
-
-    let data2 = this.parseCmd(JSData[1].message, false, settings.bot.cmdPrefixBotUser[0])
-    if (data2.cmd != null) console.log('bot user', data2)
-    if (data2.prefix == settings.bot.cmdPrefixBotUser[0]) switch (data2.cmd) {
-      case 'uptime':
-        if (settings.bot.cmdUptime) {
-          fetch(socket.stream_url)
-          .then(res => res?.json())
-          .then((out) => {
-            if (typeof out.result.media_container.published_at !== 'undefined') {
-              var date1 = new Date(out.result.media_container.published_at)
-              var dater = new Date(new Date() - date1);
-              var textdate = `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
-              socket.send(`@${user_login} стрим идет ${textdate}`)
-            }
-          })
-        }
-        return;
-      case 'game':
-        if (settings.bot.cmdUserGame) {
-          fetch(`https://wasd.tv/api/profiles/current/settings`)
-          .then(res => res?.json())
-          .then((out) => {
-            for(let setting_key of out.result) {
-              if (setting_key.setting_key == 'STREAM_GAME') {
-                socket.send(`@${user_login} категория стрима '${setting_key.setting_value.game_name}'`)
-              }
-            }
-          })
-        }
-        return;
-      case 'title':
-          if (settings.bot.cmdUserTitle) {
-            fetch(`https://wasd.tv/api/profiles/current/settings`)
+      // case '/timeout':
+      case settings.bot.cmdTimeout.alias:
+        if (settings.bot.cmdTimeout.enabled) {
+          if (this.isMod(JSData)) if (data1.data) {
+            let data = data1.data[0]
+            let duration = Number(data1?.data?.[1])
+            if (isNaN(duration)) duration = 10
+            if (duration != 1 && duration != 10 && duration != 60) { duration = 10 }
+            fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
             .then(res => res?.json())
             .then((out) => {
-              for(let setting_key of out.result) {
-                if (setting_key.setting_key == 'STREAM_NAME') {
-                  socket.send(`@${user_login} название стрима '${setting_key.setting_value}'`)
+              if (out.result) {
+                var finded = false;
+                for (let value of out.result.rows) {
+
+                  if (value.user_login?.trim()?.toLowerCase() == data.split('@').join('').toLowerCase().trim()) {
+                    finded = true;
+                    fetch(socket.stream_url)
+                    .then(res => res?.json())
+                    .then((out) => {
+
+                      let response = {
+                        method: 'PUT',
+                        body: `{"user_id":${value.user_id},"stream_id":${out.result.media_container.media_container_streams[0].stream_id}, "keep_messages": true, "duration": ${duration}}`,
+                        headers: {'Content-Type': 'application/json'},
+                      }
+                      fetch(`https://wasd.tv/api/channels/${out.result.channel.channel_id}/banned-users`, response)
+                      .then(res => res?.json())
+                      .then((out) => {
+                        //console.log(out)
+                        if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+                          socket.send(`@${user_login} Пользователь @${value.user_login} уже заблокирован`);
+                        } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+                          socket.send(`@${user_login} Вы не можете этого сделать`);
+                        }
+                      })
+                    })
+                    break;
+                  }
+                }
+                if (!finded) {
+                  socket.send('Пользователь не найден')
                 }
               }
             })
+          } else {
+            socket.send('Пользователь не найден')
           }
-          return;
+        }
+        return;
+    }
+
+    let data2 = this.parseCmd(JSData[1].message, false)
+    if (data2.cmd != null) console.log('bot user', data2)
+
+    if (data2.cmd == settings.bot.cmdUptime.alias    && settings.bot.cmdUptime.enabled) {
+      fetch(socket.stream_url)
+      .then(res => res?.json())
+      .then((out) => {
+        if (typeof out.result.media_container.published_at !== 'undefined') {
+          var date1 = new Date(out.result.media_container.published_at)
+          var dater = new Date(new Date() - date1);
+          var textdate = `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
+          socket.send(`@${user_login} стрим идет ${textdate}`)
+        }
+      })
+      return;
+    } else if (data2.cmd == settings.bot.cmdUserGame.alias  && settings.bot.cmdUserGame.enabled) {
+      fetch(`https://wasd.tv/api/profiles/current/settings`)
+      .then(res => res?.json())
+      .then((out) => {
+        for(let setting_key of out.result) {
+          if (setting_key.setting_key == 'STREAM_GAME') {
+            socket.send(`@${user_login} категория стрима '${setting_key.setting_value.game_name}'`)
+          }
+        }
+      })
+      return;
+    } else if (data2.cmd == settings.bot.cmdUserTitle.alias && settings.bot.cmdUserTitle.enabled) {
+      fetch(`https://wasd.tv/api/profiles/current/settings`)
+      .then(res => res?.json())
+      .then((out) => {
+        for(let setting_key of out.result) {
+          if (setting_key.setting_key == 'STREAM_NAME') {
+            socket.send(`@${user_login} название стрима '${setting_key.setting_value}'`)
+          }
+        }
+      })
+      return;
+    } else if (data2.cmd == settings.bot.cmdCommands.alias  && settings.bot.cmdCommands.enabled) {
+      let commands = ''
+      let allcommands = [settings.bot.cmdUptime.alias, settings.bot.cmdUserGame.alias, settings.bot.cmdUserTitle.alias]
+
+      for( let cmd of allcommands) {
+        commands += ' ' + cmd
+      }
+
+      for (let cmd in settings.bot.usercmds) {
+        commands += ' ' + settings.bot.usercmds[cmd].cmd
+      }
+
+      socket.send(`@${user_login} команды чата: ${commands}`)
+    } else if (data2.cmd == '!vote') {
+      if (data2.data) poll.addVote(JSData[1].user_id, data2.data, JSData[1].user_login)
     }
 
     for (let cmd in settings.bot.usercmds) {
       let item = settings.bot.usercmds[cmd]
 
-      let data3 = socket.parseCmd(JSData[1].message, false, item.prefix)
+      let data3 = socket.parseCmd(JSData[1].message, false)
 
       let res = wasd.replacetext(item.result, JSData)
 
-      if (item.privilege == 0 && socket.isMod(JSData)) {
-        if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
-          socket.send(res)
-          return;
+      if (item.enabled) {
+        if (item.privilege == 0 && socket.isMod(JSData)) {
+          if (data3.cmd == item.cmd) {
+            socket.send(res)
+            return;
+          }
+        }
+
+        if (item.privilege == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
+          if (data3.cmd == item.cmd) {
+            socket.send(res)
+            return;
+          }
+        }
+
+        if (item.privilege == 2) {
+          if (data3.cmd == item.cmd) {
+            socket.send(res)
+            return;
+          }
         }
       }
 
-      if (item.privilege == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
-        if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
-          socket.send(res)
-          return;
-        }
-      }
-
-      if (item.privilege == 2) {
-        if (data3.cmd == item.cmd && data3.prefix == item.prefix) {
-          socket.send(res)
-          return;
-        }
-      }
     }
   },
   onOpen() {
@@ -864,10 +886,9 @@ const socket = {
         if (!!data.minMessages ? socket.intervalLastMessages[int].length >= data.minMessages : true) {
 
           if (socket.startedTimeouts[data.name]) continue
+          if (!data.enabled) continue
 
-          socket.startedTimeouts[data.name] = {name: data.name}
-
-          setTimeout(() => {
+          let timeout = setTimeout(() => {
 
             delete socket.startedTimeouts[int]
             delete socket.intervalLastMessages[int]
@@ -875,6 +896,7 @@ const socket = {
 
           }, data.interval*1000)
 
+          socket.startedTimeouts[data.name] = {name: data.name, timeout: timeout}
         }
       }
 
@@ -1081,7 +1103,7 @@ const protection = {
   protect(JSData) {
     if (JSData.user_login != socket.current.user_profile.user_login) {
 
-      if (settings.protectionCaps.status && this.findCaps(JSData.message)) {
+      if (settings.protectionCaps?.status && this.findCaps(JSData.message)) {
         if (this.permit(settings.protectionCaps.autoPermit, JSData)) return
         if (settings.protectionCaps.sendPunishmentMessage[1]) {
           socket.send(settings.protectionCaps.sendPunishmentMessage[0].replace('{user_login}', '@'+JSData.user_login))
@@ -1089,7 +1111,7 @@ const protection = {
         socket.punishment(settings.protectionCaps.punishment, JSData)
       }
 
-      if (settings.protectionSymbol.status && this.maxLength(JSData.message)) {
+      if (settings.protectionSymbol?.status && this.maxLength(JSData.message)) {
         if (this.permit(settings.protectionSymbol.autoPermit, JSData)) return
         if (settings.protectionSymbol.sendPunishmentMessage[1]) {
           socket.send(settings.protectionSymbol.sendPunishmentMessage[0].replace('{user_login}', '@'+JSData.user_login))
@@ -1106,11 +1128,278 @@ const protection = {
 
 chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
-    if (request.from == "popup_bot" || request.log == true) {
+    if (request.from == "popup_bot" && request.log == true) {
       chrome.runtime.sendMessage({
         from: 'background_bot',
         logs: [...socket.logs]
       })
     }
+    if (request.from == "popup_bot" && request.keyWord) {
+      giveaway.keyWord = request.keyWord
+    }
+    if (request.from == "popup_bot" && request.start) {
+      giveaway.start()
+    }
+    if (request.from == "popup_bot" && request.draw) {
+      chrome.runtime.sendMessage({ from: 'background_bot', winner: giveaway.draw() })
+    }
+    if (request.from == "popup_bot" && request.reset) {
+      giveaway.reset()
+    }
+    if (request.from == "popup_bot" && request.getData) {
+      chrome.runtime.sendMessage({ from: 'background_bot', getData: giveaway.getData() })
+    }
+    if (request.from == "popup_bot" && request.end) {
+      giveaway.end()
+    }
+    if (request.from == "popup_bot" && request.clearWinner) {
+      giveaway.clearWinner()
+    }
+    if (request.from == "popup_bot" && request.getGiveaweySettings) {
+      chrome.runtime.sendMessage({ from: 'background_bot', getGiveaweySettings: {channel_name: socket.current?.user_profile?.user_login, stream_id: socket.streamId, private_link: socket.closedId} })
+    }
+    if (request.from == "popup_bot" && request.stopTimeout) {
+      let t = socket.startedTimeouts[request.stopTimeout]
+      if (t) {
+        clearTimeout(t.timeout)
+        delete socket.startedTimeouts[request.stopTimeout]
+      }
+    }
+    if (request.from == "popup_bot" && request.settings) {
+      chrome.runtime.sendMessage({ from: 'background_bot', settings: settings })
+    }
+    if (request.from == "popup_bot" && request.defsettings) {
+      chrome.runtime.sendMessage({ from: 'background_bot', defsettings: Helper.getDefaultSettings() })
+    }
+    if (request.from == "popup_bot" && request.createPoll) {
+      poll.create(request.createPoll.question, request.createPoll.arr, request.createPoll.duration)
+    }
+    if (request.from == "popup_bot" && request.getPollSettings) {
+      chrome.runtime.sendMessage({ from: 'background_bot', getPollSettings: {question: poll.question, args: poll.pollArgs, duration: poll.duration, startTime: poll.startTime, wins: poll.wins, data: {timeoutWin: poll.timeoutWin, duration: poll.winDuration} } })
+      chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: poll.get() })
+    }
+    if (request.from == "popup_bot" && request.endPoll) {
+      poll.end()
+    }
+    if (request.from == "popup_bot" && request.removePoll) {
+      poll.remove()
+    }
+
   }
 );
+
+const giveaway = {
+  registerStart: false,
+  registrationArr: [],
+  keyWord: '!giveaway',
+  winner: null,
+  add(JSData) {
+    if (JSData[1].message.toLowerCase() == giveaway.keyWord.toLowerCase() && giveaway.registerStart == true) {
+      var userFound = false;
+    
+      for(var i = 0; i < giveaway.registrationArr.length; i++) {
+        if(giveaway.registrationArr[i].user_id == JSData[1].user_id) {
+          userFound = true;
+          i = giveaway.registrationArr.length;
+        }
+      }
+
+      if(userFound == true) {
+        console.log(`@${JSData[1].user_login}, You are  already registered!`);
+      }
+
+      if(userFound == false) {
+        console.log(`@${JSData[1].user_login}, You are now registered!`);
+        giveaway.registrationArr.push({ user_login: JSData[1].user_login, user_id: JSData[1].user_id, user_avatar: JSData[1].user_avatar, user_channel_role: JSData[1].user_channel_role, other_roles: JSData[1].other_roles});
+        chrome.runtime.sendMessage({ from: 'background_bot', register_data: JSData })
+      }
+    }
+  },
+  start() {
+    if (giveaway.registerStart == false && giveaway.registrationArr.length == 0) {
+      giveaway.registerStart = true;
+      socket.send(`Розыгрыш начался! Используйте команду '${giveaway.keyWord}', чтобы получить шанс на победу`);
+    }
+  },
+  draw() {
+    if (giveaway.registerStart == true && giveaway.registrationArr.length > 0) {
+      var winner = Math.floor((Math.random() * giveaway.registrationArr.length));
+      var winnerUsr = giveaway.registrationArr[winner];
+      giveaway.winner = winnerUsr
+      socket.send(`Победителем розыгрыша становится @${winnerUsr.user_login}`);
+
+      return giveaway.registrationArr[winner]
+    }
+  },
+  reset() {
+    if (giveaway.registerStart == true && giveaway.registrationArr.length > 0) {
+      giveaway.registrationArr = [];
+    }
+  },
+  end() {
+    if (giveaway.registerStart == true) {
+      giveaway.registrationArr = [];
+      giveaway.registerStart = false;
+    }
+  },
+  clearWinner() {
+    giveaway.winner = null
+  },
+  getData() {
+    return {
+      registerStart: giveaway.registerStart,
+      registrationArr: giveaway.registrationArr,
+      keyWord: giveaway.keyWord
+    }
+  }
+}
+
+const poll = {
+  question: '',
+  pollArgs: [],
+  votes: {},
+  timeout: null,
+  duration: 0,
+  startTime: null,
+  wins: [],
+  timeoutRemove: null,
+  timeoutWin: null,
+
+  winDuration: 30000,
+
+  create(question, args, duration = 2) {
+    if (this.pollArgs.length != 0) {
+      console.log(`Голосование уже запущено`)
+      return false
+    }
+
+    this.pollArgs = args
+    this.question = question
+    this.duration = duration
+    this.startTime = new Date()
+
+    for (let arg in args) {
+      this.votes[arg] = []
+    }
+
+    this.timeout = setTimeout(() => {
+      this.end()
+    }, duration * 1000*60)
+
+    let s = ''
+    for (let arg in args) {s += ` ${Number(arg)+1} - ${args[arg]};`}
+    let o_time = `${duration==1?'1 минута':''}${duration==2?'2 минуты':''}${duration==3?'3 минуты':''}${duration==5?'5 минут':''}${duration==10?'10 минут':''}`
+
+    console.log(`Голосование ${question} с ответами:${s} запущено, !vote [id] чтобы проголосовать, у вас ${o_time}.`)
+    socket.send(`Голосование ${question} с ответами:${s} запущено, !vote [id] чтобы проголосовать, у вас ${o_time}.`);
+
+    chrome.runtime.sendMessage({ from: 'background_bot', createdPoll: { question: question, args: args, duration: duration, startTime: this.startTime, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} } })
+    return true
+  },
+  addVote(user_id, arg, user_login) {
+    arg = Number(arg)-1
+
+    if (!this.pollArgs[arg]) {
+      console.log(`@${user_login} Атрибута`, arg, 'не существует')
+      return false
+    }
+
+    if (this.wins.length != 0) {
+      console.log(`@${user_login} голосование завершено`)
+      return false
+    }
+
+    for (let i in this.pollArgs) {
+      if (this.votes[i].filter(word => word == user_id).length == 1) {
+        console.log(`@${user_login} вы уже проголосовали за`, i)
+        return false
+      }
+    }
+
+    console.log(`@${user_login} ваш голос за`, arg, 'защитан')
+    this.votes[arg].push(user_id)
+    
+    chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
+    
+    return true
+  },
+  get() {
+    let percent = {}
+    let sum = 0
+
+    for (let vote in this.votes) {
+      sum += this.votes[vote].length
+    }
+
+    for (let vote in this.votes) {
+      percent[vote] = {percent: ( this.votes[vote].length / sum ) * 100, title: this.pollArgs[vote], id: Number(vote), votes: this.votes[vote] }
+    }
+
+    console.log('Проценты голосования:', percent)
+    return percent
+  },
+  end() {
+    let max = -1
+    let arr = []
+
+    for (let vote in this.votes) { arr.push(this.votes[vote].length) }
+    max = Math.max(...arr)
+
+    for (let vote in this.votes) {
+      if (this.votes[vote].length >= max) {
+        this.wins.push( { id: Number(vote), votes: this.votes[vote], title: this.pollArgs[vote] } )
+      }
+    }
+
+    console.log('Голосование завершено победитель:', this.wins)
+
+    let s = ''
+    if (this.wins.length == 1) {
+      s += `Голосование завершено победитель:`
+    } else {
+      s += `Голосование завершено победители:`
+    }
+
+    for (let w of this.wins) {s += ` '${w.title}' с ${w.votes.length} голосами!`}
+
+    socket.send(s)
+
+    clearTimeout(this.timeout)
+
+    this.timeoutWin = new Date()
+    this.timeoutRemove = setTimeout(() => {
+      this.remove()
+    }, this.winDuration)
+
+    chrome.runtime.sendMessage({ from: 'background_bot', winPoll: this.wins, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} })
+    return this.wins
+  },
+  remove() {
+    this.question = ''
+    this.pollArgs = []
+    this.votes = {}
+    this.timeout = null
+    this.duration = 0
+    this.startTime = null
+    this.wins = []
+    clearTimeout(this.timeoutRemove)
+    this.timeoutRemove = null
+    this.timeoutWin = null
+    chrome.runtime.sendMessage({ from: 'background_bot', removePoll: true })
+  }
+}
+
+chrome.runtime.onInstalled.addListener(function(details) {
+  // if (details.reason == "install") {
+  //   chrome.runtime.setUninstallURL('https://example.com/extension-survey');
+  // }
+  if (details.reason == "update") {
+    chrome.windows.create({
+      url: "popup.html?type=updated",
+      type: "popup",
+      width: 900,
+      height: 560,
+      focused: false
+    });
+  }
+});

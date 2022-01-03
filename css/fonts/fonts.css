@@ -13,6 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ovg-icon-poll:before {
+  content: "\e915";
+}
+.ovg-icon-win:before {
+  content: "\e916";
+}
 .ovg-icon-variables:before {
   content: "\e914";
 }

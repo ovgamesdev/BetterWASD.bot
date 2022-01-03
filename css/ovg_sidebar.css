@@ -100,14 +100,6 @@ wasd-header .nav-sidebar__link[ovg] .status {
   padding: 0;
   margin: 0
 }
-#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].top {
-  top: 0;
-  position: absolute;
-}
-#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].bottom {
-  bottom: 0;
-  position: absolute;
-}
 #bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg] li[ovg] {
   list-style: none
 }

@@ -1,0 +1,114 @@
+/* window */
+ovg-modal-window {
+  align-items: center;
+  display: none;
+  height: calc(100% - 48px);
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  outline: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  top: 48px;
+  transition: all .5s ease;
+  width: 100%;
+  z-index: 5558
+}
+
+ovg-modal-window.show {
+  opacity: 1;
+  display: flex;
+}
+
+ovg-modal-window .modal-block {
+  background-color: var(--color-second-layer);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  margin: 8px;
+  max-height: calc(100% - 16px);
+  min-width: 304px
+}
+
+ovg-modal-window .modal-block,
+ovg-modal-window .modal-block_small {
+  max-width: 304px
+}
+
+ovg-modal-window .modal-block_medium {
+  max-width: 440px
+}
+
+ovg-modal-window .modal-block_large {
+  max-width: 720px
+}
+
+ovg-modal-window .modal-block__title {
+  border-bottom: 1px solid rgba(var(--color-switch), .08);
+  display: flex;
+  flex-direction: column;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  padding: 16px 24px;
+  position: relative
+}
+
+ovg-modal-window .modal-block__title_sub-title {
+  color: rgba(var(--color-switch), .64);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-top: 4px
+}
+
+ovg-modal-window .modal-block__title wasd-button {
+  position: absolute;
+  right: 24px
+}
+
+ovg-modal-window .modal-block__content {
+  color: rgba(var(--color-switch), .64);
+  font-size: 14px;
+  line-height: 20px;
+  overflow-y: auto;
+  padding: 16px 24px;
+  word-break: break-word
+}
+
+ovg-modal-window .row {
+  padding: 4px 0;
+}
+
+ovg-modal-window .modal-block__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 24px 16px
+}
+
+ovg-modal-window .modal-block__footer wasd-button {
+  margin-left: 16px
+}
+
+
+/* backdrop */
+
+ovg-modal-backdrop {
+  background-color: rgba(var(--color-system-black), .48);
+  display: none;
+  height: 100vh;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  z-index: 5557
+}
+
+ovg-modal-backdrop.show {
+  display: block
+}
