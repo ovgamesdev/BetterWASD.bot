@@ -16,6 +16,20 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.0.8.1',
+        date: '2022-01-04',
+        items: [{
+          text: [
+            `Инициализация бота`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Голосование`
+          ],
+          label: 'optimized'
+        }]
+      },{
         version: '1.0.8',
         date: '2022-01-04',
         items: [{
@@ -1930,6 +1944,7 @@ const poll_ui = {
     }
   },
   update(pollPercent) {
+    if (!document.querySelector(`main[data-tab="poll"] .poll`)) return
     for(let atr in pollPercent) {
       atr = pollPercent[atr]
       let option = document.querySelector(`main[data-tab="poll"] .poll .poll_option[index="${atr.id}"]`)
@@ -2047,9 +2062,8 @@ let initialize = async () => {
   }
   BetterStreamChat.init()
   HelperSettings.loaded()
+  chrome.runtime.sendMessage({ from: 'popup_bot', init: settings })
 }
-
-initialize();
 
 const getUpdateSettings = () => {
   return {
@@ -2094,6 +2108,17 @@ const normalizeCmd = (usercmds) => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
+  initialize();
+
+  // to init settings
+  if (new URL(document.URL).searchParams.get('type') == 'installed') {
+    let div = document.createElement('div')
+    div.classList.add('ex_updated')
+    div.innerHTML = `<div class="title">Расширение BetterWASD - bot установлено!</div></br><div><ovg-button class="flat-btn ovg"><button class="primary medium ovg"> хорошо </button></ovg-button></div>`
+    document.body.appendChild(div)
+    document.querySelector('button').addEventListener('click', () => window.close())
+  }
+
   // to update settings
   if (new URL(document.URL).searchParams.get('type') == 'updated') {
     let div = document.createElement('div')

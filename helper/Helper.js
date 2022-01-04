@@ -21,7 +21,7 @@ const Helper = {
 
         eventFollow: ['{user_login} Спасибо за подписку!', false],
         eventSub: ['{user_login} Спасибо за платную подписку на {product_name}!', false],
-        eventInit: ['бот запущен', true],
+        eventInit: ['Бот запущен. Что я умею: {cmd_commands}', true],
         
         usercmds: {},
         usercmdstimeout: {}

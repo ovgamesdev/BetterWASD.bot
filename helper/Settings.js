@@ -79,7 +79,7 @@ const HelperSettings = {
         type: 'title'
       },
       eventInit: {
-        title: 'Бот подключился к каналу',
+        title: `Бот подключился к каналу (${Helper.tooltip('{cmd_commands}', '!commands')})`,
         type: 'botevent'
       },
       eventFollow: {

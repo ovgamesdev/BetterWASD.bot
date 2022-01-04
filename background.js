@@ -135,6 +135,7 @@ const socket = {
             socket.intervalcheck = setInterval(() => {
               if (socket.socketd) {
                 try {
+                  if (socket.socketd.readyState !== socket.socketd.OPEN) return
                   socket.socketd.send('2')
                 } catch {
                   clearInterval(socket.intervalcheck)
@@ -1184,6 +1185,10 @@ chrome.runtime.onMessage.addListener(
     if (request.from == "popup_bot" && request.removePoll) {
       poll.remove()
     }
+    if (request.from == "popup_bot" && request.init) {
+      settings = request.init
+      if (socket.socketd == null) socket.getCurrent()
+    }
 
   }
 );
@@ -1264,6 +1269,7 @@ const poll = {
   wins: [],
   timeoutRemove: null,
   timeoutWin: null,
+  sendDataInterval: null,
 
   winDuration: 30000,
 
@@ -1285,6 +1291,9 @@ const poll = {
     this.timeout = setTimeout(() => {
       this.end()
     }, duration * 1000*60)
+    this.sendDataInterval = setInterval(() => {
+      chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
+    }, 100)
 
     let s = ''
     for (let arg in args) {s += ` ${Number(arg)+1} - ${args[arg]};`}
@@ -1319,7 +1328,7 @@ const poll = {
     console.log(`@${user_login} ваш голос за`, arg, 'защитан')
     this.votes[arg].push(user_id)
     
-    chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
+    // chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
     
     return true
   },
@@ -1365,6 +1374,7 @@ const poll = {
     socket.send(s)
 
     clearTimeout(this.timeout)
+    clearInterval(this.sendDataInterval)
 
     this.timeoutWin = new Date()
     this.timeoutRemove = setTimeout(() => {
@@ -1379,6 +1389,7 @@ const poll = {
     this.pollArgs = []
     this.votes = {}
     this.timeout = null
+    this.sendDataInterval = null
     this.duration = 0
     this.startTime = null
     this.wins = []
@@ -1390,9 +1401,17 @@ const poll = {
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
-  // if (details.reason == "install") {
-  //   chrome.runtime.setUninstallURL('https://example.com/extension-survey');
-  // }
+  if (details.reason == "install") {
+    chrome.windows.create({
+      url: "popup.html?type=installed",
+      type: "popup",
+      width: 900,
+      height: 560,
+      focused: false
+    });
+
+    // chrome.runtime.setUninstallURL('https://example.com/extension-survey');
+  }
   if (details.reason == "update") {
     chrome.windows.create({
       url: "popup.html?type=updated",
