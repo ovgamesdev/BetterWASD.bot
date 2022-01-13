@@ -30,21 +30,18 @@ const socket = {
     .then((out) => {
       if (out?.result?.user_profile?.channel_id) {
         
-        fetch(`https://radiant-basin-27885.herokuapp.com/api/v1/init/bot`, {
+        fetch(`https://betterwasd-stat.herokuapp.com/api/v1/bot/${out.result.user_profile.user_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             user_login: out.result.user_profile.user_login,
-            user_id: out.result.user_profile.user_id,
             channel_image: out.result.user_profile.profile_image.large
           })
         })
-        .then(res => res?.json())
-        .then((out) => {
-          console.log(out)
-        })
+
+        chrome.runtime.setUninstallURL(`https://betterwasd-stat.herokuapp.com/api/v1/bot/delete/${out.result.user_profile.user_id}`,)
 
         resolve(out.result)
       } else {
@@ -1409,8 +1406,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
       height: 560,
       focused: false
     });
-
-    // chrome.runtime.setUninstallURL('https://example.com/extension-survey');
   }
   if (details.reason == "update") {
     chrome.windows.create({
