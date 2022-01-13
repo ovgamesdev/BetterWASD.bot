@@ -238,61 +238,106 @@ const BetterStreamChat = {
 
       <wasd-nav-sidebar ovg="" style="z-index:5">
         <div ovg="" id="nav-sidebar" class="nav-sidebar" style="height: calc(100% - 48px);z-index: 1;float: left;z-index: 5557;overflow: hidden;">
-          <ul ovg="" class="nav-sidebar__list top">
+          <ul ovg="" class="nav-sidebar__list top" style="position: fixed;top: auto;">
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link nav-sidebar__link--active" data-tab="bot">
+              <a ovg="" class="nav-sidebar__link nav-sidebar__link--active" data-tab="bot" style="position: relative;">
                 <i ovg="" class="ovg-icon-magic"></i>
                 <span ovg="">Команды чата</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Команды чата </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="giveaway">
+              <a ovg="" class="nav-sidebar__link" data-tab="giveaway" style="position: relative;">
                 <i ovg="" class="ovg-icon-giveaway"></i>
                 <span ovg="">Подарки</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Подарки </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="poll">
+              <a ovg="" class="nav-sidebar__link" data-tab="poll" style="position: relative;">
                 <i ovg="" class="ovg-icon-poll"></i>
                 <span ovg="">Голосование</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Голосование </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="log">
+              <a ovg="" class="nav-sidebar__link" data-tab="log" style="position: relative;">
                 <i ovg="" class="ovg-icon-log" style="font-size: 18px;"></i>
                 <span ovg="">Журнал</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Журнал </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="protection">
+              <a ovg="" class="nav-sidebar__link" data-tab="protection" style="position: relative;">
                 <i ovg="" class="ovg-icon-filter"></i>
                 <span ovg="">Защита от спама</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Защита от спама </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="timeoutbot">
+              <a ovg="" class="nav-sidebar__link" data-tab="timeoutbot" style="position: relative;">
                 <i ovg="" class="ovg-icon-timer"></i>
                 <span ovg="">Таймеры бота</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Таймеры бота </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="variables">
+              <a ovg="" class="nav-sidebar__link" data-tab="variables" style="position: relative;">
                 <i ovg="" class="ovg-icon-variables"></i>
                 <span ovg="">Переменные</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Переменные </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="changelog">
+              <a ovg="" class="nav-sidebar__link" data-tab="changelog" style="position: relative;">
                 <i ovg="" class="ovg-icon-history"></i>
                 <span ovg="">Журнал изменений</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Журнал изменений </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
           </ul>
-          <ul ovg="" class="nav-sidebar__list bottom">
+          <ul ovg="" class="nav-sidebar__list bottom" style="position: fixed;top: auto;">
             <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="about">
+              <a ovg="" class="nav-sidebar__link" data-tab="about" style="position: relative;">
                 <i ovg="" class="wasd-icons-sidebar-faq"></i>
                 <span ovg="">О нас</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> О нас </div>
+                  </div>
+                </ovg-tooltip>
               </a>
             </li>
           </ul>

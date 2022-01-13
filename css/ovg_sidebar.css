@@ -68,11 +68,11 @@ wasd-header .nav-sidebar__link[ovg] .status {
   position: absolute;
   top: 0;
   left: 0;
-  height: calc(100% - 48px);
+  height: calc(100vh - 48px);
   width: 52px;
-  margin-top: 48px;
+  margin: 48px 0 0;
   box-sizing: border-box;
-  border-right: 1px solid rgba(var(--color-switch), .24);
+  border-right: 1px solid rgba(var(--color-switch),.24);
   overflow-y: auto;
   overflow-x: hidden;
   white-space: nowrap;
@@ -82,7 +82,7 @@ wasd-header .nav-sidebar__link[ovg] .status {
   -ms-user-select: none;
   user-select: none;
   transition: width .3s linear;
-  background: var(--color-first-layer)
+  background: var(--color-first-layer);
 }
 
 #bscSettingsPanel wasd-nav-sidebar .nav-sidebar[ovg]::-webkit-scrollbar {
@@ -96,9 +96,18 @@ wasd-header .nav-sidebar__link[ovg] .status {
 }
 
 #bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg] {
+  position: fixed;
   display: block;
   padding: 0;
   margin: 0
+}
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].top {
+  top: 0;
+  position: absolute;
+}
+#bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg].bottom {
+  bottom: 0;
+  position: absolute;
 }
 #bscSettingsPanel wasd-nav-sidebar .nav-sidebar__list[ovg] li[ovg] {
   list-style: none
@@ -114,7 +123,7 @@ wasd-header .nav-sidebar__link[ovg] .status {
   font-size: 14px;
   line-height: 16px;
   cursor: pointer;
-  transition: width .3s linear
+  transition: width .3s linear;
 }
 
 #bscSettingsPanel wasd-nav-sidebar .nav-sidebar__link[ovg] * {
