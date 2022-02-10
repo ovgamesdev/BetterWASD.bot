@@ -1,6 +1,6 @@
 [class^="ovg-icon-"], [class*=" ovg-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
+  font-family: 'ovg-icons' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -13,6 +13,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ovg-icon-coin:before {
+  content: "\e918";
+}
 .ovg-icon-poll:before {
   content: "\e915";
 }

@@ -13,7 +13,8 @@ ovg-modal-window {
   top: 48px;
   transition: all .5s ease;
   width: 100%;
-  z-index: 5558
+  z-index: 5558;
+  overflow: hidden
 }
 
 ovg-modal-window.show {
@@ -75,7 +76,6 @@ ovg-modal-window .modal-block__title wasd-button {
 ovg-modal-window .modal-block__content {
   color: rgba(var(--color-switch), .64);
   font-size: 14px;
-  line-height: 20px;
   overflow-y: auto;
   padding: 16px 24px;
   word-break: break-word

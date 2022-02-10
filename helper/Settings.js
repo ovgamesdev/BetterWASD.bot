@@ -221,6 +221,14 @@ const HelperSettings = {
         description: 'сообщения, действия и др.',
         type: 'boolean'
       },
+    },
+    coins: {
+      addCoinCount: {
+        title: `Добавить монет за 5 минут просмотра`,
+        type: 'number',
+        min: 1,
+        max: 100000
+      },
     }
   },
   showMessage(message, type = 'success') {
@@ -299,6 +307,11 @@ const HelperSettings = {
       this.showMessage('параметры сохранены', 'success');
     });
   },
+  saveSettings(newSettings) {
+    chrome.storage[storageType].set(newSettings, () => {
+      console.log('параметры сохранены');
+    });
+  },
   loaded() {
     chrome.storage.onChanged.addListener(async function(changes, namespace) {
       if (namespace === 'local') {
@@ -353,10 +366,11 @@ const HelperSettings = {
       </ol>`);
   },
   cmd(name, title, description, defaultValue = {enabled: true, alias: ''}, yesButton = 'Вкл', noButton = 'Откл') {
+    let def = Helper.getDefaultSettings()[name.split('_')[0]][name.split('_')[1]]
     return this._basic(title, description, `
       <ol class="flexibleButtonGroup optionTypeBoolean">
         <ovg-button class="flat-btn ovg change" style="right: 10px;">
-          <button class="basic ovg small editCmd" data-name="${name}">
+          <button class="basic ovg small editCmd" data-name="${name}" data-alias="${def.alias}">
             <i class="wasd-icons-edit" style="pointer-events: none;"></i>
           </button>
           <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip>
@@ -367,11 +381,12 @@ const HelperSettings = {
         </label>
       </ol>`);
   },
-  cmd2(name, title, description, defaultValue = {enabled: true, alias: ''}, yesButton = 'Вкл', noButton = 'Откл') {
+  cmd2(name, title, description, defaultValue = {enabled: true, alias: '', unalias: ''}, yesButton = 'Вкл', noButton = 'Откл') {
+    let def = Helper.getDefaultSettings()[name.split('_')[0]][name.split('_')[1]]
     return this._basic(title, description, `
       <ol class="flexibleButtonGroup optionTypeBoolean">
         <ovg-button class="flat-btn ovg change" style="right: 10px;">
-          <button class="basic ovg small editCmd2" data-name="${name}">
+          <button class="basic ovg small editCmd2" data-name="${name}" data-alias="${def.alias}"  data-unalias="${def.unalias}">
             <i class="wasd-icons-edit" style="pointer-events: none;"></i>
           </button>
           <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip>
@@ -393,7 +408,13 @@ const HelperSettings = {
     return this._basic(title, description, `
       <ol class="flexibleButtonGroup optionTypeBoolean">
         <div class="def">
-          <input type="number" class="optionField" data-name="${name}" value="${defaultValue}" ${min ? 'min="' + min + '" ' : ''}${max ? 'max="' + max + '"' : ''}/>
+          <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+            <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
+              <div ovg="" class="wasd-input">
+                <input ovg="" class="ng-pristine optionField ng-untouched ng-valid" type="number" option-type="number" data-name="${name}" style="margin: 0;" value="${defaultValue}" ${min ? 'min="' + min + '" ' : ''}${max ? 'max="' + max + '"' : ''}/>
+              </div>
+            </div>
+          </wasd-input>
           <ovg-tooltip><div class="tooltip tooltip_position-topRight tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Правая кнопка мыши для сброса </div></div></ovg-tooltip>
         </div>
         <!--button class="optionField def" data-name="${name}" option-type="number"><div class="tooltip-ovg"> Сбросить по умолчанию </div><i _ngcontent-khk-c259="" class="wasd-icons-close"></i></button-->
@@ -403,13 +424,18 @@ const HelperSettings = {
     let selectOptions = '';
     defaultValue = defaultValue.toString();
     for (let item of items) {
-      selectOptions += `
-      <option value="${item.value}"${item.value.toString() === defaultValue ? ' selected' : ''}>${item.label}</option>`;
+      selectOptions += `<option value="${item.value}"${item.value.toString() === defaultValue ? ' selected' : ''}>${item.label}</option>`;
     }
     return this._basic(title, description, `
       <ol class="flexibleButtonGroup optionTypeBoolean">
         <div class="def">
-          <select class="optionField" data-name="${name}">${selectOptions}</select>
+          <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+            <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
+              <div ovg="" class="wasd-input">
+                <select class="optionField" data-name="${name}" option-type="select" style="padding-right: 35px;">${selectOptions}</select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div>
+              </div>
+            </div>
+          </wasd-input>
         </div>
         <!--button class="optionField def" data-name="${name}" option-type="select"><div class="tooltip-ovg"> Сбросить по умолчанию </div><i _ngcontent-khk-c259="" class="wasd-icons-close"></i></button-->
       </ol>`);
@@ -436,7 +462,13 @@ const HelperSettings = {
     return this._basic(title, description, `
       <ol class="flexibleButtonGroup optionTypeBoolean">
         <div class="def">
-          <input option-type="botevent" type="text" class="optionField botevent" data-name="${name}" value="${defaultValue[0]}"/>
+          <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+            <div ovg="" class="wasd-input-wrapper">
+              <div ovg="" class="wasd-input" style="margin-right: 15px;">
+                <input ovg="" class="ng-pristine optionField botevent ng-untouched ng-valid" type="text" option-type="botevent" data-name="${name}" style="margin: 0;" value="${defaultValue[0]}">
+              </div>
+            </div>
+          </wasd-input>
           <ovg-tooltip><div class="tooltip tooltip_position-topRight tooltip_size-small" style="width: 260px;right: 40px;"><div class="tooltip-content tooltip-content_left"> Правая кнопка мыши для сброса </div></div></ovg-tooltip>
         </div>
         <label class="switch-ovg">

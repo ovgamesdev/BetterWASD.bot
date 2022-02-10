@@ -16,6 +16,28 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.0.9',
+        date: '2022-02-10',
+        items: [{
+          text: [
+            `Команды`,
+            `Пользовательские команды`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Монеты`
+          ],
+          label: 'added'
+        }, {
+          text: [
+            `WebSocket`,
+            `Журнал`,
+            `Подарки`
+          ],
+          label: 'optimized'
+        }]
+      },{
         version: '1.0.8.1',
         date: '2022-01-04',
         items: [{
@@ -225,6 +247,7 @@ const BetterStreamChat = {
             <a role="tab" class="item active" data-tab="protection">Защита от спама</a>
             <a role="tab" class="item active" data-tab="bot">Команды чата</a>
             <a role="tab" class="item" data-tab="cmdbot">Пользовательские команды</a>
+            <a role="tab" class="item" data-tab="coins">Монеты</a>
             <a role="tab" class="item" data-tab="giveaway">Подарки</a>
             <a role="tab" class="item" data-tab="poll">Голосование</a>
             <a role="tab" class="item" data-tab="log">Журнал</a>
@@ -257,6 +280,17 @@ const BetterStreamChat = {
                 <ovg-tooltip>
                   <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
                     <div class="tooltip-content tooltip-content_left"> Подарки </div>
+                  </div>
+                </ovg-tooltip>
+              </a>
+            </li>
+            <li ovg="">
+              <a ovg="" class="nav-sidebar__link" data-tab="coins" style="position: relative;">
+                <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
+                <span ovg="">Монеты</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Монеты </div>
                   </div>
                 </ovg-tooltip>
               </a>
@@ -369,7 +403,6 @@ const BetterStreamChat = {
         <div class="bottom" style="margin-bottom: 5px;">
           <span>Version ${changelogList[0].version} (${changelogList[0].date})</span>
         </div>
-
       </main>
 
       <main class="text" data-tab="giveaway" style="background-color: var(--wasd-color-bg-prime);">
@@ -386,7 +419,7 @@ const BetterStreamChat = {
               <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                 <div ovg="" class="wasd-input-wrapper" style="margin-bottom: 6px;">
                   <div ovg="" class="wasd-input">
-                    <input id="searchUser" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Поиск.." type="text" autocomplete="off">
+                    <input id="searchUser" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Поиск.." type="text" autocomplete="off">
                   </div>
                 </div>
               </wasd-input>
@@ -411,14 +444,14 @@ const BetterStreamChat = {
               <option selected> Платные подписчики </option>
               <option selected> Подписчики </option>
               <option selected> Пользовательи </option>
-            </select-->
+            </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div-->
 
             <!--p>Тип раздачи</p>
             <select id="giveaway_type">
               <option> activeusers </option>
               <option selected> keyword </option>
               <option> randomnumber </option>
-            </select-->
+            </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div-->
 
             <div class="activeusers" style="display: none">
               
@@ -433,7 +466,7 @@ const BetterStreamChat = {
                   <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input id="giveaway_keyword" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Ключевое слово" type="text" autocomplete="off" value="!giveaway">
+                        <input id="giveaway_keyword" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ключевое слово" type="text" autocomplete="off" value="!giveaway">
                       </div>
                     </div>
                    </wasd-input>
@@ -472,7 +505,52 @@ const BetterStreamChat = {
         <div class="not-found" style="position: absolute; width: 728px; height: 364px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Активных голосований пока нет.. Нажмите кнопку «Создать голосование», чтобы создать его.</div></div>
       </main>
 
-      <main class="text" data-tab="log">
+      <main class="text" data-tab="coins" style="height: calc(100vh - 68px)">
+
+        <div style="display: flex;justify-content: space-between;">
+          <h1> Монеты </h1>
+        </div>
+        
+        <!--div class="not-found" style="position: absolute; width: 728px; height: 364px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Активных голосований пока нет.. Нажмите кнопку «Создать голосование», чтобы создать его.</div></div-->
+        
+        <div style="margin: 0 -10px;">
+          ${HelperSettings.build('coins')}
+        </div>
+
+        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-valid ng-dirty ng-touched">
+          <div ovg="" class="wasd-input-wrapper">
+            <div ovg="" class="wasd-input">
+              <label ovg="" class="">Поиск пользователя</label>
+              <input id="coinUsersSearch" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Поиск пользователя" type="text">
+              <button ovg="" type="button" class="button-icon">
+                <i ovg="" class="wasd-icons-close"></i>
+              </button>
+            </div>
+          </div>
+        </wasd-input>
+
+        <table class="table-ovg">
+
+          <thead class="thead-ovg">
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Отображаемое имя</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Монет</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg" style="text-align: right;">Действия</div>
+            </th>
+          </thead>
+
+          <tbody class="coins ovg-items">
+          </tbody>
+        </table>
+
+        <div class="pagination"></div>
+      </main>
+
+      <main class="text" data-tab="log" style="height: calc(100vh - 68px)">
 
         <div style="display: flex;justify-content: space-between;">
           <h1> Журнал </h1>
@@ -482,7 +560,19 @@ const BetterStreamChat = {
           <option selected> all </option>
           <option> message </option>
           <option> ban </option>
-        </select-->
+        </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div-->
+
+        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-valid ng-dirty ng-touched">
+          <div ovg="" class="wasd-input-wrapper">
+            <div ovg="" class="wasd-input">
+              <label ovg="" class="">Поиск пользователя</label>
+              <input id="logUsersSearch" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Поиск пользователя" type="text">
+              <button ovg="" type="button" class="button-icon">
+                <i ovg="" class="wasd-icons-close"></i>
+              </button>
+            </div>
+          </div>
+        </wasd-input>
 
         <table class="table-ovg">
 
@@ -504,6 +594,8 @@ const BetterStreamChat = {
           <tbody class="logs ovg-items">
           </tbody>
         </table>
+
+        <div class="pagination"></div>
       </main>
 
       <main class="" data-tab="protection">
@@ -625,7 +717,7 @@ const BetterStreamChat = {
         </table>
       </main>
 
-      <main class="text" data-tab="timeoutbot">
+      <main class="text" data-tab="timeoutbot" style="height: calc(100vh - 68px)">
         <div style="display: flex;justify-content: space-between;">
           <h1> Таймеры бота </h1>
           <ovg-button class="flat-btn ovg">
@@ -658,7 +750,7 @@ const BetterStreamChat = {
         </table>
       </main>
 
-      <main class="text" data-tab="variables">
+      <main class="text" data-tab="variables" style="height: calc(100vh - 68px)">
         <h1> Переменные команд </h1>
         <table class="table-ovg">
 
@@ -717,6 +809,7 @@ const BetterStreamChat = {
         </table>
       </main>
 
+
       <ovg-modal-backdrop class=""> </ovg-modal-backdrop>
 
       <ovg-modal-window class="cmdbot">
@@ -735,7 +828,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="userCmdPrefix" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Префикс" type="text" autocomplete="off">
+                      <input id="userCmdPrefix" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Префикс" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -749,7 +842,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="userCmdCmd" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="!команда" type="text" autocomplete="off">
+                      <input id="userCmdCmd" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="!команда" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -757,13 +850,13 @@ const BetterStreamChat = {
             </div>
             <div class="row">
               <div class="col-36">
-                <label  for="fname"> Ответ </label>
+                <label  for="fname"> Ответ ${Helper.tooltip('', 'Если вы используете переменные длина сообщения может измениться, </br> и если превысит 240 символов сообщение не отобразится в чате')} </label>
               </div>
               <div class="col-64">
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="userCmdResult" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
+                      <textarea id="userCmdResult" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;" maxlength="240"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -781,7 +874,7 @@ const BetterStreamChat = {
                         <option value="0" > Модератор </option>
                         <option value="1" > Подписчик </option>
                         <option value="2" selected > Каждый </option>
-                      </select>
+                      </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div>
                     </div>
                   </div>
                  </wasd-input>
@@ -790,10 +883,10 @@ const BetterStreamChat = {
           </div>
 
           <div class="modal-block__footer">
-              <ovg-button class="flat-btn ovg" style="display: flex;">
-                <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
-                <button id="addCmdBtn" class="primary medium ovg updateUser"> сохранить </button>
-              </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addCmdBtn" class="primary medium ovg updateUser"> сохранить </button>
+            </ovg-button>
           </div>
 
         </div>
@@ -815,7 +908,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutName" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Имя" type="text" autocomplete="off">
+                      <input id="timeoutName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Имя" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -823,13 +916,13 @@ const BetterStreamChat = {
             </div>
             <div class="row">
               <div class="col-36">
-                <label for="subject"> Сообщение </label>
+                <label for="subject"> Сообщение ${Helper.tooltip('', 'Если вы используете переменные длина сообщения может измениться, </br> и если превысит 240 символов сообщение не отобразится в чате')} </label>
               </div>
               <div class="col-64">
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="timeoutMessage" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Сообщение (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
+                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;" maxlength="240"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -843,7 +936,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutInterval" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="interval" type="number" value="300" min="5" autocomplete="off">
+                      <input id="timeoutInterval" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="interval" type="number" value="300" min="5" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -857,7 +950,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutMinMessages" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="minMessages" type="number" value="5" min="1" max="1000" autocomplete="off">
+                      <input id="timeoutMinMessages" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="minMessages" type="number" value="5" min="1" max="1000" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -866,10 +959,10 @@ const BetterStreamChat = {
           </div>
 
           <div class="modal-block__footer">
-              <ovg-button class="flat-btn ovg" style="display: flex;">
-                <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
-                <button id="addTimeoutBtn" class="primary medium ovg updateUser"> сохранить </button>
-              </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addTimeoutBtn" class="primary medium ovg updateUser"> сохранить </button>
+            </ovg-button>
           </div>
 
         </div>
@@ -892,9 +985,9 @@ const BetterStreamChat = {
           </div>
 
           <div class="modal-block__footer">
-              <ovg-button class="flat-btn ovg" style="display: flex;">
-                <button class="primary medium ovg hide"> Понятно </button>
-              </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="primary medium ovg hide"> Понятно </button>
+            </ovg-button>
           </div>
 
         </div>
@@ -916,7 +1009,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Команда" type="text" autocomplete="off">
+                      <input id="aliasName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -925,10 +1018,10 @@ const BetterStreamChat = {
           </div>
 
           <div class="modal-block__footer">
-              <ovg-button class="flat-btn ovg" style="display: flex;">
-                <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
-                <button id="addCmdModBtn" class="primary medium ovg"> сохранить </button>
-              </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addCmdModBtn" class="primary medium ovg"> сохранить </button>
+            </ovg-button>
           </div>
 
         </div>
@@ -950,7 +1043,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName2_1" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Команда вкл." type="text" autocomplete="off">
+                      <input id="aliasName2_1" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда вкл." type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -964,7 +1057,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName2_2" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Команда откл." type="text" autocomplete="off">
+                      <input id="aliasName2_2" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда откл." type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -973,10 +1066,10 @@ const BetterStreamChat = {
           </div>
 
           <div class="modal-block__footer">
-              <ovg-button class="flat-btn ovg" style="display: flex;">
-                <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
-                <button id="addCmdModBtn2" class="primary medium ovg"> сохранить </button>
-              </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addCmdModBtn2" class="primary medium ovg"> сохранить </button>
+            </ovg-button>
           </div>
 
         </div>
@@ -998,7 +1091,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="questionInput" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Вопрос" type="text" autocomplete="off">
+                      <input id="questionInput" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Вопрос" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1169,7 +1262,7 @@ const BetterStreamChat = {
                         <option value="3" > 3 мин. </option>
                         <option value="5" > 5 мин. </option>
                         <option value="10" > 10 мин. </option>
-                      </select>
+                      </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div>
                     </div>
                   </div>
                  </wasd-input>
@@ -1187,7 +1280,43 @@ const BetterStreamChat = {
         </div>
       </ovg-modal-window>
 
-      <main class="text" data-tab="changelog">
+      <ovg-modal-window class="coinschange">
+        <div class="modal-block modal-block_medium" style="width: 440px;">
+
+          <div class="modal-block__title">
+            <span> Изменить количество монет </span>
+          </div>
+
+          <div class="modal-block__content" style="padding: 0 24px;">
+            <div class="row">
+              <div class="col-36">
+                <label for="fname"> Монет </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="coinsCount" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="interval" type="number" value="300" min="0" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-block__footer">
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="remCoinCount" style="margin-right: 5px;" class="primary medium ovg"> - </button>
+              <button id="setCoinCount" style="margin-right: 5px;" class="primary medium ovg"> = </button>
+              <button id="addCoinCount" class="primary medium ovg"> + </button>
+            </ovg-button>
+          </div>
+
+        </div>
+      </ovg-modal-window>
+
+      <main class="text" data-tab="changelog" style="height: calc(100vh - 68px)">
         <h1>Журнал изменений</h1>
         <!--h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;margin-bottom: 0px;"> Информацию о будущих версиях можно найти <a href="https://wasd.tv/ovgames/posts" target="_blank">тут</a></h4-->
         ${changelogHtml}
@@ -1202,6 +1331,13 @@ const BetterStreamChat = {
       settingsSearch.dispatchEvent(new Event('input'))
       settingsSearch.focus()
     });
+
+    for (let select of settingsDiv.querySelectorAll('select')) {
+      select.onfocus = (e) => e.target.classList.add('active')
+      select.onblur = (e) => e.target.classList.remove('active')
+
+      select.onchange = (e) => e.target.blur()
+    }
 
     settingsSearch.addEventListener('blur', () => {
       settingsSearch.value = ''
@@ -1268,7 +1404,7 @@ const BetterStreamChat = {
         aliasName.dataset.name = cmd.dataset.name
         aliasName.value = settings[split[0]][split[1]].alias
 
-        Helper.showModal('cmdmod')
+        Helper.showModal('cmdmod', cmd.dataset.alias)
       })
     }
     for (let cmd of document.querySelectorAll('.editCmd2')) {
@@ -1279,7 +1415,7 @@ const BetterStreamChat = {
         aliasName2_1.value = settings[split[0]][split[1]].alias
         aliasName2_2.value = settings[split[0]][split[1]].unalias
 
-        Helper.showModal('cmdmod2')
+        Helper.showModal('cmdmod2', cmd.dataset.alias, cmd.dataset.unalias)
       })
     }
 
@@ -1305,10 +1441,10 @@ const BetterStreamChat = {
     fontStyle.type = 'text/css';
     fontStyle.innerHTML = '';
     fontStyle.appendChild(document.createTextNode(`@font-face {
-      font-family: 'icomoon';
-      src:  url(${chrome.runtime.getURL("css/fonts/icomoon.ttf")}?hfnfya) format('truetype'),
-        url(${chrome.runtime.getURL("css/fonts/icomoon.woff")}?hfnfya) format('woff'),
-        url(${chrome.runtime.getURL("css/fonts/icomoon.svg")}?hfnfya#icomoon) format('svg');
+      font-family: 'ovg-icons';
+      src:  url(${chrome.runtime.getURL("css/fonts/ovg-icons.ttf")}?6w1vn5) format('truetype'),
+        url(${chrome.runtime.getURL("css/fonts/ovg-icons.woff")}?6w1vn5) format('woff'),
+        url(${chrome.runtime.getURL("css/fonts/ovg-icons.svg")}?6w1vn5#ovg-icons) format('svg');
       font-weight: normal;
       font-style: normal;
       font-display: block;
@@ -1335,8 +1471,8 @@ const BetterStreamChat = {
         let split = event.target.dataset.name.split('_');
         switch (event.target.getAttribute('option-type')) {
           case 'number':
-            event.target.parentElement.querySelector('input[type="number"]').value = Helper.getDefaultSettings()[split[0]][split[1]]
-            event.target.parentElement.querySelector('input[type="number"]').dispatchEvent(new Event('change'));
+            event.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="number"]').value = Helper.getDefaultSettings()[split[0]][split[1]]
+            event.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[type="number"]').dispatchEvent(new Event('change'));
             break;
           case 'select':
             event.target.parentElement.querySelector('select').value = Helper.getDefaultSettings()[split[0]][split[1]]
@@ -1349,7 +1485,6 @@ const BetterStreamChat = {
             event.target.parentElement.querySelector('input[data-coloris]').dispatchEvent(new Event('change'));
             break;
           case 'botevent':
-            console.log(event.target)
             event.target.parentElement.querySelector('input[type="text"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
             event.target.parentElement.querySelector('input[type="text"]').dispatchEvent(new Event('change'));
             break;
@@ -1379,7 +1514,6 @@ const BetterStreamChat = {
             event.target.parentElement.querySelector('input[data-coloris]').dispatchEvent(new Event('change'));
             break;
           case 'botevent':
-            console.log(event.target)
             event.target.parentElement.querySelector('input[type="text"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
             event.target.parentElement.querySelector('input[type="text"]').dispatchEvent(new Event('change'));
             break;
@@ -1433,6 +1567,10 @@ const BetterStreamChat = {
           chrome.runtime.sendMessage({ from: 'popup_bot', log: true })
         }
 
+        if (target.getAttribute('data-tab') == 'coins') {
+          Helper.buildUsersCount()
+        }
+
         if (target.getAttribute('data-tab') == 'giveaway') {
           chrome.runtime.sendMessage({ from: 'popup_bot', getGiveaweySettings: 'click' })
         } else {
@@ -1472,6 +1610,10 @@ const BetterStreamChat = {
 
         if (target.getAttribute('data-tab') == 'log') {
           chrome.runtime.sendMessage({ from: 'popup_bot', log: true })
+        }
+
+        if (target.getAttribute('data-tab') == 'coins') {
+          Helper.buildUsersCount()
         }
 
         if (target.getAttribute('data-tab') == 'giveaway') {
@@ -1590,7 +1732,7 @@ const BetterStreamChat = {
 
     addCmdBtn.addEventListener('click', () => {
       let cmd = userCmdCmd.value.trim()
-      let result = userCmdResult.value.trim()
+      let result = userCmdResult.value.trim().replace(/(\r\n|\n|\r)/gm, "");
       let privilege = userCmdPrivilege.selectedIndex
 
       let value = {cmd: cmd, attributes: '', result: result, privilege: privilege, enabled: true}
@@ -1602,7 +1744,7 @@ const BetterStreamChat = {
 
     addTimeoutBtn.addEventListener('click', () => {
       let name = timeoutName.value.trim()
-      let message = timeoutMessage.value.trim()
+      let message = timeoutMessage.value.trim().replace(/(\r\n|\n|\r)/gm, "");
       let interval = Number(timeoutInterval.value)
       let minMessages = Number(timeoutMinMessages.value)
 
@@ -1640,12 +1782,73 @@ const BetterStreamChat = {
       if (e.target.className == 'cmdbot show') Helper.hideModal()
     })
 
+    document.querySelector('ovg-modal-window.coinschange').addEventListener('click', (e) => {
+      if (e.target.className == 'coinschange show') Helper.hideModal()
+    })
+
+    remCoinCount.addEventListener('click', () => {
+      let data = settings.coins.users[coinsCount.getAttribute('user_id')]
+      data.count = Number(data.count) - Number(coinsCount.value)
+
+      settings.coins.users[coinsCount.getAttribute('user_id')].count = data.count
+      document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
+      HelperSettings.save([document.querySelector('.optionField')]);
+      Helper.hideModal()
+    })
+    setCoinCount.addEventListener('click', () => {
+      let data = settings.coins.users[coinsCount.getAttribute('user_id')]
+      data.count = Number(coinsCount.value)
+
+      settings.coins.users[coinsCount.getAttribute('user_id')].count = data.count
+      document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
+      HelperSettings.save([document.querySelector('.optionField')]);
+      Helper.hideModal()
+    })
+    addCoinCount.addEventListener('click', () => {
+      let data = settings.coins.users[coinsCount.getAttribute('user_id')]
+      data.count = Number(data.count) + Number(coinsCount.value)
+
+      settings.coins.users[coinsCount.getAttribute('user_id')].count = data.count
+      document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
+      HelperSettings.save([document.querySelector('.optionField')]);
+      Helper.hideModal()
+    })
+
+    // bind wasd-input
+    for (let wasdinput of settingsDiv.querySelectorAll('wasd-input')) {
+      let label = wasdinput.querySelector('label[ovg]')
+      let input = wasdinput.querySelector('input[ovg]')
+      let text = input?.placeholder
+      if (label) label.textContent = text
+      wasdinput.querySelector('input')?.addEventListener('focus', () => {
+        label?.classList.add('show')
+        input.placeholder = ''
+      })
+      wasdinput.querySelector('input')?.addEventListener('blur', () => {
+        label?.classList.remove('show')
+        input.placeholder = text
+      })
+      wasdinput.querySelector('button')?.addEventListener('click', () => {
+        input.value = ''
+        input.dispatchEvent(new Event('input'))
+      })
+    }
+
+    coinUsersSearch.addEventListener('input', () => {
+      Helper.paginationCoin(0)
+    });
+
+    logUsersSearch.addEventListener('input', () => {
+      Helper.paginationLog(0)
+    });
+
     chrome.runtime.onMessage.addListener((msg) => {
       if (msg.from == 'background_bot' && typeof msg.logs == 'object') {
         $('.table-ovg .logs').empty();
-        for (let log of msg.logs) {
-          if (log[0] == 'message' || log[0] == 'subscribe' || log[0] == 'user_ban') Helper.addLog(log.slice(0, 100))
-        }
+
+        Helper.logs = msg.logs
+        Helper.paginationLog()
+
         if (document.querySelector('.table-ovg .logs').childElementCount == 0) {
           let div = document.createElement('div')
           document.querySelector('.table-ovg .logs').append(div)
@@ -1672,12 +1875,16 @@ const BetterStreamChat = {
         if (document.querySelector('main[data-tab="giveaway"] .chat_iframe')) return
 
         if (!msg.getGiveaweySettings.stream_id) {
+          giveaway_roll.disabled = true
           var div = document.createElement('div')
           div.classList.add('chat_iframe')
-          div.innerHTML = 'Не удалось получить доступ к чату'
+          div.style.width = "100%"
+          div.style.height = "100%"
+          div.innerHTML = '<div style="align-items: center; display: flex; justify-content: center; width: 100%; height:100%;">Чат неактивен</div>'
           document.querySelector(`[data-tab="giveaway"] > div:nth-child(2) > div:nth-child(3)`).append(div)
           return
         }
+        giveaway_roll.disabled = false
         var iframe = document.createElement('iframe')
         iframe.src = `https://wasd.tv/chat?channel_name=${msg.getGiveaweySettings.channel_name}&stream_id=${msg.getGiveaweySettings.stream_id}${msg.getGiveaweySettings.private_link ? '&private_link=' + msg.getGiveaweySettings.private_link : ''}`
         iframe.classList.add('chat_iframe')
@@ -1697,6 +1904,13 @@ const BetterStreamChat = {
       }
       if (msg.from == 'background_bot' && msg.removePoll) {
         poll_ui.removeAll()
+      }
+      if (msg.from == "background_bot" && msg.saveSettings) {
+        HelperSettings.saveSettings(msg.saveSettings)
+      }
+      if (msg.from == "background_bot" && msg.coinUsers && document.querySelector('main.active[data-tab="coins"]')) {
+        settings.coins.users = msg.coinUsers
+        Helper.paginationCoin( document.querySelector('[data-tab="coins"] .pagination .active') ? Number(document.querySelector('[data-tab="coins"] .pagination .active').getAttribute("index")) : 0 )
       }
     });
     
@@ -1785,6 +1999,21 @@ const giveaway_ui = {
     var modal =  document.createElement('ovg-modal-window')
     modal.classList.add('winner')
     modal.innerHTML = `<div class="modal-block modal-block_medium" style="width: 440px;height: 380px;">
+      <div class="confetti">
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+        <div class="confetti-piece"></div>
+      </div>
       <div class="modal-block__title">
         <span> Победитель </span>
       </div>
@@ -2168,8 +2397,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (new URL(document.URL).searchParams.get('type') == 'updated') {
     let div = document.createElement('div')
     div.classList.add('ex_updated')
-    div.innerHTML = `<div class="title">Расширение BetterWASD - bot было обновлено!</div><div class="description">Могут возникнуть некоторые ошибки, в слкчае их происхождения переустановите расширение! :(</div></br><div><ovg-button class="flat-btn ovg"><button class="primary medium ovg"> хорошо </button></ovg-button></div>`
+    div.innerHTML = `<div class="title">Расширение BetterWASD - bot было обновлено!</div><div class="description">Могут возникнуть некоторые ошибки, в случае их происхождения обратитесь к разработчику! :(</div></br><div> <ovg-button class="flat-btn ovg" style="display: flex;"><button class="primary medium ovg changelog" style="margin-right: 2px;"> что нового </button><button class="primary medium ovg ok" style="margin-left: 2px;"> хорошо </button></ovg-button> </div>`
     document.body.appendChild(div)
-    document.querySelector('button').addEventListener('click', () => window.close())
+    document.querySelector('button.changelog').addEventListener('click', () => document.body.classList.add('whatisnew'))
+    document.querySelector('button.ok')       .addEventListener('click', () => window.close())
   }
 });

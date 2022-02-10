@@ -59,6 +59,10 @@ const Helper = {
 					// settings_update: true,
       		// joined: true,
       	}
+      },
+      coins: {
+      	addCoinCount: 1,
+      	users: {}
       }
     };
   },
@@ -300,8 +304,143 @@ const Helper = {
     document.querySelector('ovg-modal-window.show')?.classList.remove('show')
     document.querySelector('ovg-modal-backdrop.show')?.classList.remove('show')
   },
-  showModal(modal) {
+  showModal(modal, alias, unalias) {
+  	if (modal == 'cmdmod') {
+  		aliasName.placeholder = alias
+  	} else if (modal == 'cmdmod2') {
+  		aliasName2_1.placeholder = alias
+  		aliasName2_2.placeholder = unalias
+  	}
+
     document.querySelector('ovg-modal-window.' + modal)?.classList.add('show')
     document.querySelector('ovg-modal-backdrop')?.classList.add('show')
-  }
+  },
+	addUserCount(data) {
+	  data = settings.coins.users[data]
+	  let html = document.querySelector('.coins.ovg-items')
+	  let item = document.createElement('tr')
+	  item.classList.add(`table-menu__block`)
+	  item.style = 'justify-content: space-between;'
+	  item.innerHTML = `<td><div><p user_login="${data.user_login}">${data.user_login}</p></div></td> <td><div><p count="${data.count}">${data.count}</p></div></td><td class="td-btns" style="text-align: end;"><div> 
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button-->
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+		</div></td>`;
+	  item.setAttribute("user_id", data.user_id)
+	  html.append(item)
+
+	  item.querySelector('.change').addEventListener('click', () => {
+	    coinsCount.value = data.count
+	    coinsCount.setAttribute('user_id', data.user_id)
+
+	    Helper.showModal('coinschange')
+	  })
+
+	  // item.querySelector('.remove').addEventListener('click', () => {
+
+	  //   let deleted = settings.coins.users[data.user_id]
+	  //   delete settings.coins.users[data.user_id]
+
+	  //   item.remove()
+			// this.setNotFoundUserCount()
+	  //   HelperSettings.showMessage(`Монеты пользователя ${deleted?.user_login} удалена`, 'success')
+
+	  //   HelperSettings.save([document.querySelector('.optionField')]);
+	  // })
+
+		document.querySelector('.coins.ovg-items .not-found')?.remove()
+	},
+	buildUsersCount() {
+    Helper.paginationCoin()
+
+    Helper.setNotFoundUserCount()
+	},
+	setNotFoundUserCount() {
+    if (document.querySelector('.coins.ovg-items').childElementCount == 0) {
+      let div = document.createElement('div')
+      document.querySelector('.coins.ovg-items').append(div)
+      div.outerHTML = '<div class="not-found" style="position: absolute;width: 748px;height: 321px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Монет пока нет..</div></div>'
+    }
+	},
+	paginationCoin(page = 0, limit = 20) {
+		$('.coins.ovg-items').empty();
+
+	  let filter = coinUsersSearch.value.toUpperCase().trim();
+
+    let data = Object.values(settings.coins.users).filter ( (d) => {
+    	if (filter == '') return true
+    	return !!d.user_login.toUpperCase().match(filter)
+    });
+
+    let data_keys = data.map((item) => { return item.user_id })
+
+		let startFrom = page * limit
+		data = data_keys.slice(startFrom , startFrom + limit)
+
+		data.map((item) => { Helper.addUserCount(item) })
+
+    let pages = Math.ceil(data_keys.length / limit)
+
+    if (!(pages <= 1)) {
+	    let htmlPagination = ''
+
+	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">&#60;</div>`
+	    if (page >= 2) htmlPagination += `<div index="${page-2}" class="item">${page - 1}</div>`
+	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">${page}</div>`
+	    htmlPagination += `<div index="${page}" class="item active">${page + 1}</div>`
+	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">${page + 2}</div>`
+	    if (page <= pages - 3) htmlPagination += `<div index="${page+2}" class="item">${page + 3}</div>`
+	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">&#62;</div>`
+
+			document.querySelector('[data-tab="coins"] .pagination').innerHTML = htmlPagination
+
+			for(let item of document.querySelectorAll('[data-tab="coins"] .pagination .item')) {
+				item.addEventListener('click', () => { Helper.paginationCoin( Number(item.getAttribute("index")) ) })
+			}
+    } else {
+    	document.querySelector('[data-tab="coins"] .pagination').innerHTML = ''
+    }
+	},
+	logs: [],
+	paginationLog(page = 0, limit = 20) {
+		$('.logs.ovg-items').empty();
+
+	  let filter = logUsersSearch.value.toUpperCase().trim();
+
+    let data = Helper.logs.filter ( (d) => {
+    	if (filter == '') return true
+
+    	if (d[0] == 'message')   return d[1].user_login         .toUpperCase().match(filter)
+    	if (d[0] == 'subscribe') return d[1].user_login         .toUpperCase().match(filter)
+    	if (d[0] == 'user_ban')  return d[1].payload.user_login .toUpperCase().match(filter)
+
+    	return false
+    });
+
+		let startFrom = page * limit
+		data = data.slice(startFrom , startFrom + limit)
+
+		data.map((item) => { Helper.addLog(item) })
+
+    let pages = Math.ceil(data.length / limit)
+
+    if (!(pages <= 1)) {
+	    let htmlPagination = ''
+
+	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">&#60;</div>`
+	    if (page >= 2) htmlPagination += `<div index="${page-2}" class="item">${page - 1}</div>`
+	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">${page}</div>`
+	    htmlPagination += `<div index="${page}" class="item active">${page + 1}</div>`
+	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">${page + 2}</div>`
+	    if (page <= pages - 3) htmlPagination += `<div index="${page+2}" class="item">${page + 3}</div>`
+	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">&#62;</div>`
+
+			document.querySelector('[data-tab="log"] .pagination').innerHTML = htmlPagination
+
+			for(let item of document.querySelectorAll('[data-tab="log"] .pagination .item')) {
+				item.addEventListener('click', () => { Helper.paginationLog( Number(item.getAttribute("index")) ) })
+			}
+    } else {
+    	document.querySelector('[data-tab="log"] .pagination').innerHTML = ''
+    }
+	}
 };
