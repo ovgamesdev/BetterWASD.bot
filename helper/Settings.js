@@ -73,6 +73,11 @@ const HelperSettings = {
         description: 'Позволяет пользователям получать список команд',
         type: 'cmd'
       },
+      cmdPoints: { // p
+        title: '!points [USERNAME]',
+        description: 'Позволяет пользователям получать их количество монет',
+        type: 'cmd'
+      },
 
       event: {
         title: 'События (beta)',
@@ -160,7 +165,6 @@ const HelperSettings = {
         min: 0,
         max: 100
       },
-      
     },
     protectionSymbol: {
       general: {
@@ -213,7 +217,72 @@ const HelperSettings = {
         type: 'number',
         min: 1
       },
-      
+    },
+    protectionLink: {
+      general: {
+        title: 'Общее настройки защиты от ссылок',
+        type: 'title'
+      },
+      autoPermit: {
+        title: `Авто разрешение ${Helper.tooltip('', 'Установите группу пользователей, которая не будет наказана')}`,
+        type: 'select',
+        items: [
+          {
+            value: 0,
+            label: 'Нет'
+          },
+          {
+            value: 1,
+            label: 'Подписчики'
+          }
+        ]
+      },
+      punishment: {
+        title: 'Наказание',
+        type: 'select',
+        items: [
+          {
+            value: 0,
+            label: 'Удалить'
+          },
+          {
+            value: 1,
+            label: 'Тайм-аут 1мин.'
+          },
+          {
+            value: 2,
+            label: 'Бан'
+          }
+        ]
+      },
+      blockType: {
+        title: `Тип блокировки ${Helper.tooltip('', 'Черный список - блокируются сайты из этого списка. </br>Белый список - блокируются все сайты, которые не входят в этот список.')}`,
+        type: 'select',
+        items: [
+          {
+            value: 0,
+            label: 'Черный список'
+          },
+          {
+            value: 1,
+            label: 'Белый список'
+          }
+        ]
+      },
+      sendPunishmentMessage: {
+        title: 'Отправить сообщение о наказании ({user_login})',
+        type: 'botevent'
+      },
+      advanced: {
+        title: 'Настройки',
+        type: 'title'
+      },
+
+      // maxLength: {
+      //   title: `Максимум. Длина сообщения ${Helper.tooltip('', 'Установите максимальное количество символов, разрешенное в одном сообщении')}`,
+      //   type: 'number',
+      //   min: 1
+      // },
     },
     log: {
       enabled: {
@@ -258,7 +327,7 @@ const HelperSettings = {
           <div class="labelField">
             ${line ? '<div class="line"></div>' : ''}
             <span ${line ? 'class="titleline"' : 'class="title"'}> ${title} </span>
-            ${description ? `<span class="description"> ${description} </span>` : ''}
+            ${description ? `<span class="description" ${line ? 'style="background-color: var(--wasd-color-prime); padding-right: 5px;"' : ''}> ${description} </span>` : ''}
           </div>
           <div class="formField">${formField}</div>
 

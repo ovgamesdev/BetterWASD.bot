@@ -2928,10 +2928,17 @@ div.poll > .title {
   background-color: var(--wasd-color-corp-gray);
   margin: 0 5px;
   cursor: pointer;
+  color: var(--wasd-color-text-prime);
 }
 
 .pagination .item.active {
   background-color: var(--wasd-color-corp-blue);
+}
+
+.pagination .item[disabled] {
+  color: var(--wasd-color-text-disabled);
+  background-color: var(--wasd-color-gray2);
+  cursor: default;
 }
 
 .whatisnew .ex_updated,

@@ -18,6 +18,7 @@ const Helper = {
         cmdUserTitle: { enabled: true, alias: '!title' },
         cmdUserGame: { enabled: true, alias: '!game' },
         cmdCommands: { enabled: true, alias: '!commands' },
+        cmdPoints: { enabled: true, alias: '!points' },
 
         eventFollow: ['{user_login} Спасибо за подписку!', false],
         eventSub: ['{user_login} Спасибо за платную подписку на {product_name}!', false],
@@ -41,6 +42,14 @@ const Helper = {
         punishment: '0',
         sendPunishmentMessage: ['{user_login} -> Пожалуйста, воздержитесь от отправки длинных сообщений.', true],
         maxLength: 140,
+      },
+      protectionLink: {
+      	status: false,
+        autoPermit: '0',
+        punishment: '0',
+        blockType: '0',
+        sendPunishmentMessage: ['{user_login} -> Пожалуйста, воздержитесь от публикации ссылок.', true],
+        blacklist: {}
       },
       log: {
       	enabled: true,
@@ -241,11 +250,15 @@ const Helper = {
 	},
 	tryAddUserCmd(data) {
 	  if (data.cmd.trim() == '') {
-	    HelperSettings.showMessage('Null cmd', 'error')
+	    HelperSettings.showMessage('Не Хватает команды', 'error')
+	    return 'err'
+	  }
+	  if (data.cmd.trim().split(' ').length != 1) {
+	    HelperSettings.showMessage('Команда должна состоять из 1го слова', 'error')
 	    return 'err'
 	  }
 	  if (data.result.trim() == '') {
-	    HelperSettings.showMessage('Null result', 'error')
+	    HelperSettings.showMessage('Не Хватает ответа', 'error')
 	    return 'err'
 	  }
 
@@ -267,19 +280,19 @@ const Helper = {
 	},
 	tryAddUserTimeout(data) {
 	  if (data.name.trim() == '') {
-	    HelperSettings.showMessage('Null name', 'error')
+	    HelperSettings.showMessage('Не Хватает имени', 'error')
 	    return 'err'
 	  }
 	  if (data.message.trim() == '') {
-	    HelperSettings.showMessage('Null message', 'error')
+	    HelperSettings.showMessage('Не Хватает сообщения', 'error')
 	    return 'err'
 	  }
 	  if (data.interval < 5) {
-	    HelperSettings.showMessage('Interval < 5', 'error')
+	    HelperSettings.showMessage('Интервал меньше 5ти секунд', 'error')
 	    return 'err'
 	  }
 	  if (data.minMessages < 1) {
-	    HelperSettings.showMessage('MinMessages < 1', 'error')
+	    HelperSettings.showMessage('Минимум линии меньше 1го', 'error')
 	    return 'err'
 	  }
 
@@ -383,13 +396,13 @@ const Helper = {
     if (!(pages <= 1)) {
 	    let htmlPagination = ''
 
-	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">&#60;</div>`
-	    if (page >= 2) htmlPagination += `<div index="${page-2}" class="item">${page - 1}</div>`
-	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">${page}</div>`
-	    htmlPagination += `<div index="${page}" class="item active">${page + 1}</div>`
-	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">${page + 2}</div>`
-	    if (page <= pages - 3) htmlPagination += `<div index="${page+2}" class="item">${page + 3}</div>`
-	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">&#62;</div>`
+	    htmlPagination += `<button index="${page-1}" class="item" ${page >= 1 ? '' : 'disabled'}>&#60;</button>`
+	    if (page >= 2) htmlPagination += `<button index="${page-2}" class="item">${page - 1}</button>`
+	    if (page >= 1) htmlPagination += `<button index="${page-1}" class="item">${page}</button>`
+	    htmlPagination += `<button index="${page}" class="item active">${page + 1}</button>`
+	    if (page <= pages - 2) htmlPagination += `<button index="${page+1}" class="item">${page + 2}</button>`
+	    if (page <= pages - 3) htmlPagination += `<button index="${page+2}" class="item">${page + 3}</button>`
+	    htmlPagination += `<button index="${page+1}" class="item" ${page <= pages - 2 ? '' : 'disabled'}>&#62;</button>`
 
 			document.querySelector('[data-tab="coins"] .pagination').innerHTML = htmlPagination
 
@@ -406,7 +419,7 @@ const Helper = {
 
 	  let filter = logUsersSearch.value.toUpperCase().trim();
 
-    let data = Helper.logs.filter ( (d) => {
+    let data_keys = Helper.logs.filter ( (d) => {
     	if (filter == '') return true
 
     	if (d[0] == 'message')   return d[1].user_login         .toUpperCase().match(filter)
@@ -417,22 +430,22 @@ const Helper = {
     });
 
 		let startFrom = page * limit
-		data = data.slice(startFrom , startFrom + limit)
+		data = data_keys.slice(startFrom , startFrom + limit)
 
 		data.map((item) => { Helper.addLog(item) })
 
-    let pages = Math.ceil(data.length / limit)
+    let pages = Math.ceil(data_keys.length / limit)
 
     if (!(pages <= 1)) {
 	    let htmlPagination = ''
 
-	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">&#60;</div>`
-	    if (page >= 2) htmlPagination += `<div index="${page-2}" class="item">${page - 1}</div>`
-	    if (page >= 1) htmlPagination += `<div index="${page-1}" class="item">${page}</div>`
-	    htmlPagination += `<div index="${page}" class="item active">${page + 1}</div>`
-	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">${page + 2}</div>`
-	    if (page <= pages - 3) htmlPagination += `<div index="${page+2}" class="item">${page + 3}</div>`
-	    if (page <= pages - 2) htmlPagination += `<div index="${page+1}" class="item">&#62;</div>`
+	    htmlPagination += `<button index="${page-1}" class="item" ${page >= 1 ? '' : 'disabled'}>&#60;</button>`
+	    if (page >= 2) htmlPagination += `<button index="${page-2}" class="item">${page - 1}</button>`
+	    if (page >= 1) htmlPagination += `<button index="${page-1}" class="item">${page}</button>`
+	    htmlPagination += `<button index="${page}" class="item active">${page + 1}</button>`
+	    if (page <= pages - 2) htmlPagination += `<button index="${page+1}" class="item">${page + 2}</button>`
+	    if (page <= pages - 3) htmlPagination += `<button index="${page+2}" class="item">${page + 3}</button>`
+	    htmlPagination += `<button index="${page+1}" class="item" ${page <= pages - 2 ? '' : 'disabled'}>&#62;</button>`
 
 			document.querySelector('[data-tab="log"] .pagination').innerHTML = htmlPagination
 
@@ -442,5 +455,54 @@ const Helper = {
     } else {
     	document.querySelector('[data-tab="log"] .pagination').innerHTML = ''
     }
+	},
+	addLink(data) {
+	  let html = document.querySelector('.blacklist.ovg-items')
+	  let item = document.createElement('tr')
+	  item.classList.add(`table-menu__block`)
+	  item.style = 'justify-content: space-between;'
+	  item.innerHTML = `<td><div><p url="${data.url}">${data.url}</p></div></td> <td><div><p count="${data.type}">${data.type}</p></div></td><td class="td-btns" style="text-align: end;"><div> 
+	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <!--ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
+		</div></td>`;
+	  item.setAttribute("itemurlkey", data.url)
+	  html.append(item)
+
+	  // item.querySelector('.change').addEventListener('click', () => {
+	  //   coinsCount.value = data.count
+	  //   coinsCount.setAttribute('user_id', data.user_id)
+
+	  //   Helper.showModal('coinschange')
+	  // })
+
+	  item.querySelector('.remove').addEventListener('click', () => {
+
+	    let deleted = settings.protectionLink.blacklist[data.url]
+	    delete settings.protectionLink.blacklist[data.url]
+
+	    item.remove()
+			this.setNotFoundUserCount()
+	    HelperSettings.showMessage(`Ссылка ${deleted?.url} удалена`, 'success')
+
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  })
+
+		document.querySelector('.blacklist.ovg-items .not-found')?.remove()
+	},
+	tryAddLink(data) {
+	  if (!settings.protectionLink.blacklist[data.url]) {
+	    settings.protectionLink.blacklist[data.url] = data
+	    Helper.addLink(data)
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  } else {
+	    settings.protectionLink.blacklist[data.url] = data
+
+	    let item = document.querySelector(`[itemurlkey="${data.url}"]`)
+
+	    item.querySelector('[url]').textContent = data.url
+	    item.querySelector('[type]').textContent = data.type
+
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  }
 	}
 };

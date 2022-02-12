@@ -868,8 +868,14 @@ const socket = {
           let uptime = settings.bot.cmdUptime.alias == '' ? '!uptime' : settings.bot.cmdUptime.alias
           let game = settings.bot.cmdUserGame.alias == '' ? '!game' : settings.bot.cmdUserGame.alias
           let title = settings.bot.cmdUserTitle.alias == '' ? '!title' : settings.bot.cmdUserTitle.alias
+          let points = settings.bot.cmdPoints.alias == '' ? '!points' : settings.bot.cmdPoints.alias
 
-          let allcommands = [ settings.bot.cmdUptime.enabled ? uptime : '', settings.bot.cmdUserGame.enabled ? game : '', settings.bot.cmdUserTitle.enabled ? title : '' ]
+          let allcommands = [
+            settings.bot.cmdUptime.enabled ? uptime : '',
+            settings.bot.cmdUserGame.enabled ? game : '',
+            settings.bot.cmdUserTitle.enabled ? title : '',
+            settings.bot.cmdPoints.enabled ? points : ''
+          ]
 
           for( let cmd of allcommands) {
             commands += ' ' + cmd
@@ -888,6 +894,39 @@ const socket = {
         return;
       case '!vote':
         if (data2.data) poll.addVote(JSData[1].user_id, data2.data, JSData[1].user_login)
+      case '!points':
+      case settings.bot.cmdPoints.alias:
+        if (!settings.bot.cmdPoints.enabled) return
+        if (settings.bot.cmdPoints.alias == '' && data2.cmd == '!points' || data2.cmd == settings.bot.cmdPoints.alias)
+        {
+          if (data1.data != null) for(let data of data1.data) {
+            fetch(`https://wasd.tv/api/search/profiles?limit=999&offset=0&search_phrase=${data.split('@').join('').toLowerCase().trim()}`)
+            .then(res => res?.json())
+            .then((out) => {
+              if (out.result) {
+                var finded = false;
+                for (let value of out.result.rows) {
+
+                  if (value.user_login?.trim()?.toLowerCase() == data.split('@').join('').toLowerCase().trim()) {
+                    finded = true;
+                    let points = settings.coins.users[value.user_id]
+                    socket.send(`@${user_login} у @${data.split('@').join('').trim()} ${points ? points.count : 'нет'} монет`)
+                    break;
+                  }
+                }
+                if (!finded) {
+                  socket.send(`@${user_login} Пользователь не найден`)
+                }
+              }
+            })
+          } else {
+            let data = settings.coins.users[JSData[1].user_id]
+            socket.send(`@${user_login} у вас ${data ? data.count : 'нет'} монет`)
+            return;
+          }
+        }
+        return;
+
     }
 
     for (let cmd in settings.bot.usercmds) {
@@ -1131,24 +1170,23 @@ const protection = {
   },
 
   // Настройки защиты от ссылок
-  findLink(message, data = { blacklist: { 'wasd.tv': {hostname: 'wasd.tv'} } } ) {
-    // data.blacklist
+  findLink(message) {
     var links = linkify.find(message)
     var removed = false
 
     for (let link of links) {
-
-      let find = link.type = "url" ? data.blacklist[new URL(link.href).hostname] : false
-      if (find) {
-        removed = true
-        console.log('find', find.hostname)
-        break;
+      for(let blacklink in settings.protectionLink.blacklist) {
+        blacklink = settings.protectionLink.blacklist[blacklink]
+        if (new URL(blacklink.url)[blacklink.type] == new URL(link.href)[blacklink.type]) {
+          removed = true
+          break;
+        }
       }
-
+      let find = link.type = "url" ? settings.protectionLink.blacklist[new URL(link.href).hostname] : false
     }
     
-    console.log(`${removed ? 'removed' : 'not removed'}`, 'links:', links)
-    
+    // console.log(`${removed ? 'removed' : 'not removed'}`, 'links:', links)
+    if (links.length && settings.protectionLink.blockType.toString() == '1') removed = !removed
     return removed
   },
 
@@ -1161,7 +1199,7 @@ const protection = {
   },
 
   protect(JSData) {
-    if (JSData.user_login != socket.current.user_profile.user_login) {
+    // if (JSData.user_login != socket.current.user_profile.user_login) {
 
       if (settings.protectionCaps?.status && this.findCaps(JSData.message)) {
         if (this.permit(settings.protectionCaps.autoPermit, JSData)) return
@@ -1179,9 +1217,15 @@ const protection = {
         socket.punishment(settings.protectionSymbol.punishment, JSData)
       }
 
-      // this.findLink(JSData.message, )
+      if (settings.protectionLink?.status && this.findLink(JSData.message)) {
+        if (this.permit(settings.protectionLink.autoPermit, JSData)) return
+        if (settings.protectionLink.sendPunishmentMessage[1]) {
+          socket.send(settings.protectionLink.sendPunishmentMessage[0].replace('{user_login}', '@'+JSData.user_login))
+        }
+        socket.punishment(settings.protectionLink.punishment, JSData)
+      }
 
-    }
+    // }
     
   }
 }

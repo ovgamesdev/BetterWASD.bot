@@ -16,6 +16,27 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.0',
+        date: '2022-02-12',
+        items: [{
+          text: [
+            `Журнал`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `!points команда`,
+            `Защита чата - Защита от ссылок`
+          ],
+          label: 'added'
+        }, {
+          text: [
+            `Пользовательские команды - Добавить команду`,
+            `Таймеры бота - Добавить таймер`
+          ],
+          label: 'optimized'
+        }]
+      },{
         version: '1.0.9',
         date: '2022-02-10',
         items: [{
@@ -599,6 +620,10 @@ const BetterStreamChat = {
       </main>
 
       <main class="" data-tab="protection">
+        <div style="display: flex;justify-content: space-between;">
+          <h1 style="padding-left: 10px;padding-top: 10px;"> Защита от спама </h1>
+        </div>
+
         <div class="links_to">
 
           <div class="option link_to" data-tab="protectionCaps">
@@ -637,12 +662,31 @@ const BetterStreamChat = {
             </div>
           </div>
 
+          <div class="option link_to" data-tab="protectionLink" >
+            <div class="ovg-option">
+              <div class="option-line">
+                <div class="labelField">
+                  <span class="title"> Защита от ссылок </span>
+                </div>
+                <div class="formField">
+                  <ol class="flexibleButtonGroup optionTypeBoolean">
+                    <label class="switch-ovg">
+                      <input option-type="boolean" type="checkbox" id="boolean_protectionLink_status" name="boolean_protectionLink_status" value="0" class="optionField" data-name="protectionLink_status" ${settings.protectionLink.status ? 'checked' : ''}>
+                      <span class="slider-ovg"> <div class="switcher_thumb-ovg"></div> </span>
+                    </label>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
 
       <main class="" id="protectionCaps" data-tab="protectionCaps">
-        <ovg-button class="flat-btn links_to ovg">
-          <button style="margin: 10px 0 5px 10px;" data-tab="protection" class="link_to ovg basic show small"> назад </button>
+        <ovg-button class="flat-btn links_to ovg" style="display: flex; align-items: center;">
+          <button style="margin: 10px 10px 5px 10px;" data-tab="protection" class="link_to ovg basic show small"> назад </button>
+          <p style="margin: 5px 0 0 0;"> Защита от заглавных букв </p>
         </ovg-button>
 
         <!--p> Настройки защиты от заглавных букв </p-->
@@ -650,12 +694,52 @@ const BetterStreamChat = {
       </main>
 
       <main class="" id="protectionSymbol" data-tab="protectionSymbol">
-        <ovg-button class="flat-btn links_to ovg">
-          <button style="margin: 10px 0 5px 10px;" data-tab="protection" class="link_to ovg basic show small"> назад </button>
+        <ovg-button class="flat-btn links_to ovg" style="display: flex; align-items: center;">
+          <button style="margin: 10px 10px 5px 10px;" data-tab="protection" class="link_to ovg basic show small"> назад </button>
+          <p style="margin: 5px 0 0 0;"> Защита от длинных сообщений </p>
         </ovg-button>
 
         <!--p> Настройки защиты от длинных сообщений </p-->
         ${HelperSettings.build('protectionSymbol')}
+      </main>
+
+      <main class="" id="protectionLink" data-tab="protectionLink">
+        <div style="display: flex;justify-content: space-between;margin: 10px 0 0px 10px;">
+          <ovg-button class="flat-btn links_to ovg" style="display: flex; align-items: center;">
+            <button style="margin: 0 10px 0 0;" data-tab="protection" class="link_to ovg basic show small"> назад </button>
+            <p style="margin: 0;"> Защита от ссылок </p>
+          </ovg-button>
+        </div>
+
+
+        <!--p> Настройки защиты от ссылок </p-->
+        ${HelperSettings.build('protectionLink')}
+
+        <div style="display: flex;justify-content: space-between; margin: 0 10px;">
+          <h1> Список ссылок </h1>
+          <ovg-button class="flat-btn ovg">
+            <button id="showFormBlackList" class="primary medium ovg"> Добавить ссылку </button>
+          </ovg-button>
+        </div>
+
+        <table class="table-ovg" style="width: 100%; margin: 0;">
+
+          <thead class="thead-ovg">
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Ссылка</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Тип</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg" style="text-align: right;">Действия</div>
+            </th>
+          </thead>
+
+          <tbody class="blacklist ovg-items">
+          </tbody>
+        </table>
+
       </main>
 
       <main class="active" id="bot" data-tab="bot">
@@ -1316,6 +1400,58 @@ const BetterStreamChat = {
         </div>
       </ovg-modal-window>
 
+      <ovg-modal-window class="blackList">
+        <div class="modal-block modal-block_medium" style="width: 440px;">
+
+          <div class="modal-block__title">
+            <span> Добавить ссылку </span>
+          </div>
+
+          <div class="modal-block__content" style="padding: 0 24px;">
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Ссылка </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="blackListUrl" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="https://wasd.tv" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="fname"> Тип </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
+                    <div ovg="" class="wasd-input">
+                      <select id="blackListType">
+                        <option value="host" selected > host </option>
+                        <!--option value="origin" > origin </option-->
+                        <option value="href" > href </option>
+                      </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div>
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-block__footer">
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addBlackListUrl" class="primary medium ovg updateUser"> сохранить </button>
+            </ovg-button>
+          </div>
+
+        </div>
+      </ovg-modal-window>
+
       <main class="text" data-tab="changelog" style="height: calc(100vh - 68px)">
         <h1>Журнал изменений</h1>
         <!--h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;margin-bottom: 0px;"> Информацию о будущих версиях можно найти <a href="https://wasd.tv/ovgames/posts" target="_blank">тут</a></h4-->
@@ -1708,6 +1844,10 @@ const BetterStreamChat = {
     }
     Helper.setNotFoundUserTimeout()
 
+    for (let cmd in settings.protectionLink.blacklist) {
+      Helper.addLink(settings.protectionLink.blacklist[cmd])
+    }
+
     addCmdModBtn.addEventListener('click', (e) => {
       let alias = aliasName.value.trim()
       let split = aliasName.dataset.name.split('_');
@@ -1755,6 +1895,24 @@ const BetterStreamChat = {
       Helper.hideModal()
     })
 
+    addBlackListUrl.addEventListener('click', () => {
+      try {
+        let url = blackListUrl.value.trim()
+        new URL(url)
+
+        let type = blackListType.selectedOptions[0].getAttribute('value')
+
+        let value = {url: url, type: type, enabled: true}
+
+        if (Helper.tryAddLink(value) == 'err') return
+
+        Helper.hideModal()
+      } catch (err) {
+        HelperSettings.showMessage('Invalid URL', 'error')
+      }
+
+    })
+
     showFormTimeoutBtn.addEventListener('click', () => {
       timeoutName.value = ''
       timeoutMessage.value = ''
@@ -1782,8 +1940,40 @@ const BetterStreamChat = {
       if (e.target.className == 'cmdbot show') Helper.hideModal()
     })
 
+    showFormBlackList.addEventListener('click', () => {
+      blackListUrl.value = ''
+      blackListType.selectedIndex = 0
+
+      blackListType.querySelector('[value="host"]')  .textContent = ` host `
+      // blackListType.querySelector('[value="origin"]').textContent = ` origin `
+      blackListType.querySelector('[value="href"]')  .textContent = ` href `
+
+      Helper.showModal('blackList')
+
+      document.querySelector('ovg-modal-window.blackList .modal-block__title span').textContent = ' Добавить ссылку '
+    })
+
+    blackListUrl.addEventListener('change', () => {
+      try {
+        let url = new URL(blackListUrl.value)
+        
+        blackListType.querySelector('[value="host"]')  .textContent = ` host: ${url.host}`
+        // blackListType.querySelector('[value="origin"]').textContent = ` origin: ${url.origin}`
+        blackListType.querySelector('[value="href"]')  .textContent = ` href: ${url.href}`
+      } catch (err) {
+        blackListType.querySelector('[value="host"]')  .textContent = ` host `
+        // blackListType.querySelector('[value="origin"]').textContent = ` origin `
+        blackListType.querySelector('[value="href"]')  .textContent = ` href `
+      }
+
+    })
+
     document.querySelector('ovg-modal-window.coinschange').addEventListener('click', (e) => {
       if (e.target.className == 'coinschange show') Helper.hideModal()
+    })
+
+    document.querySelector('ovg-modal-window.blackList').addEventListener('click', (e) => {
+      if (e.target.className == 'blackList show') Helper.hideModal()
     })
 
     remCoinCount.addEventListener('click', () => {
@@ -2355,6 +2545,7 @@ const getUpdateSettings = () => {
       cmdUserTitle: { enabled: settings.bot.cmdUserTitle, alias: '!title' },
       cmdUserGame: { enabled: settings.bot.cmdUserGame, alias: '!game' },
       cmdCommands: { enabled: true, alias: '!commands' },
+      cmdPoints: { enabled: true, alias: '!points' },
 
       eventFollow: settings.bot.eventFollow,
       eventSub: settings.bot.eventSub,
@@ -2365,7 +2556,19 @@ const getUpdateSettings = () => {
     },
     protectionCaps: settings.protectionCaps,
     protectionSymbol: settings.protectionSymbol,
-    log: settings.log
+    protectionLink: {
+      status: false,
+      autoPermit: '0',
+      punishment: '0',
+      blockType: '0',
+      sendPunishmentMessage: ['{user_login} -> Пожалуйста, воздержитесь от публикации ссылок.', true],
+      blacklist: {}
+    },
+    log: settings.log,
+    coins: {
+      addCoinCount: 1,
+      users: {}
+    }
   };
 }
 
