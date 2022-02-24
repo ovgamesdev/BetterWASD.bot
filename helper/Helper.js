@@ -249,6 +249,8 @@ const Helper = {
 	  html.append(item)
 	},
 	tryAddUserCmd(data) {
+		let maxLength = data.result
+
 	  if (data.cmd.trim() == '') {
 	    HelperSettings.showMessage('Не Хватает команды', 'error')
 	    return 'err'
@@ -259,6 +261,41 @@ const Helper = {
 	  }
 	  if (data.result.trim() == '') {
 	    HelperSettings.showMessage('Не Хватает ответа', 'error')
+	    return 'err'
+	  }
+
+    maxLength  = maxLength.replace(/(randomInt\(([^)]+[^ ]))/ig, (match) => {
+      match = match.replace('randomInt', '').replace(/([()])/ig, '').split(',')
+      if (match[0] && match[1]) {
+        return match[1]
+      } else {
+        return '0'
+      }
+    })
+    maxLength = maxLength.replace('randomUser\(\)', () => {
+      return '@max_username=21______' // username
+    })
+    maxLength = maxLength.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
+      match = match.replace('randomVar', '').replace(/([()])/ig, '').split('&')
+      match.forEach((value, index) => { match[index] = value.replace('U+0029', ')').replace('U+0026', '&') })
+      match = match.sort(function (a, b) { return b.length - a.length })[0];
+      // console.log(match)
+      return match
+    })
+    maxLength = maxLength.replace(/user\(\)/ig, () => {
+      return '@max_username=21______' // username
+    })
+    maxLength = maxLength.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
+      return '@max_username=22_______' // несколько секунд назад
+    })
+    maxLength = maxLength.replace(/uptime\(\)/ig, () => {
+      return `000:00:00`
+    })
+
+    // console.log(maxLength, maxLength.length)
+
+	  if (maxLength.length > 240) {
+	    HelperSettings.showMessage(`Ответ превышает 240 символов (${maxLength.length})`, 'error')
 	    return 'err'
 	  }
 
@@ -279,6 +316,8 @@ const Helper = {
 	  }
 	},
 	tryAddUserTimeout(data) {
+		let maxLength = data.message
+
 	  if (data.name.trim() == '') {
 	    HelperSettings.showMessage('Не Хватает имени', 'error')
 	    return 'err'
@@ -293,6 +332,41 @@ const Helper = {
 	  }
 	  if (data.minMessages < 1) {
 	    HelperSettings.showMessage('Минимум линии меньше 1го', 'error')
+	    return 'err'
+	  }
+
+    maxLength  = maxLength.replace(/(randomInt\(([^)]+[^ ]))/ig, (match) => {
+      match = match.replace('randomInt', '').replace(/([()])/ig, '').split(',')
+      if (match[0] && match[1]) {
+        return match[1]
+      } else {
+        return '0'
+      }
+    })
+    maxLength = maxLength.replace('randomUser\(\)', () => {
+      return '@max_username=21______' // username
+    })
+    maxLength = maxLength.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
+      match = match.replace('randomVar', '').replace(/([()])/ig, '').split('&')
+      match.forEach((value, index) => { match[index] = value.replace('U+0029', ')').replace('U+0026', '&') })
+      match = match.sort(function (a, b) { return b.length - a.length })[0];
+      // console.log(match)
+      return match
+    })
+    maxLength = maxLength.replace(/user\(\)/ig, () => {
+      return '@max_username=21______' // username
+    })
+    maxLength = maxLength.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
+      return '@max_username=22_______' // несколько секунд назад
+    })
+    maxLength = maxLength.replace(/uptime\(\)/ig, () => {
+      return `000:00:00`
+    })
+
+    // console.log(maxLength, maxLength.length)
+
+	  if (maxLength.length > 240) {
+	    HelperSettings.showMessage(`Ответ превышает 240 символов (${maxLength.length})`, 'error')
 	    return 'err'
 	  }
 

@@ -1111,16 +1111,16 @@ const wasd = {
         }
       })
 
-      res = res.replace('randomUser()', () => {
+      res = res.replace(/randomUser\(\)/ig, () => {
         return wasd.getRndUser()
       })
       
       res = res.replace(/(randomVar\(([^)]+[^ ]))/ig, (match) => {
         match = match.replace('randomVar', '').replace(/([()])/ig, '').split('&')
-        return match[wasd.getRndInteger(0, match.length-1)].trim()
+        return match[wasd.getRndInteger(0, match.length-1)].trim() .replace('U+0029', ')').replace('U+0026', '&')
       })
 
-      res = res.replace('user()', () => {
+      res = res.replace(/user\(\)/ig, () => {
         if (JSData) {
           return '@' + JSData[1].user_login
         } else {
@@ -1137,7 +1137,7 @@ const wasd = {
         }
       })
 
-      res = res.replace('uptime()', () => {
+      res = res.replace(/uptime\(\)/ig, () => {
         var date1 = new Date(socket.currentChannel.media_container.published_at)
         var dater = new Date(new Date() - date1);
         return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
@@ -1399,11 +1399,12 @@ const poll = {
     }, 100)
 
     let s = ''
-    for (let arg in args) {s += ` ${Number(arg)+1} - ${args[arg]};`}
+    for (let arg in args) {s += `(${Number(arg)+1}) - ${args[arg]} `}
     let o_time = `${duration==1?'1 минута':''}${duration==2?'2 минуты':''}${duration==3?'3 минуты':''}${duration==5?'5 минут':''}${duration==10?'10 минут':''}`
 
     console.log(`Голосование ${question} с ответами:${s} запущено, !vote [id] чтобы проголосовать, у вас ${o_time}.`)
-    socket.send(`Голосование ${question} с ответами:${s} запущено, !vote [id] чтобы проголосовать, у вас ${o_time}.`);
+    socket.send(`Открыт опрос для &quot;${question}&quot;, используйте !vote [id] для голосования.`);
+    socket.send(`Варианты голосования: ${s}.`);
 
     chrome.runtime.sendMessage({ from: 'background_bot', createdPoll: { question: question, args: args, duration: duration, startTime: this.startTime, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} } })
     return true
@@ -1454,6 +1455,19 @@ const poll = {
     let max = -1
     let arr = []
 
+
+    let percent = {}
+    let sum = 0
+
+    for (let vote in this.votes) {
+      sum += this.votes[vote].length
+    }
+
+    for (let vote in this.votes) {
+      percent[Number(vote)] = {percent: ( this.votes[vote].length / sum ) * 100, title: this.pollArgs[vote], id: Number(vote), votes: this.votes[vote] }
+    }
+
+
     for (let vote in this.votes) { arr.push(this.votes[vote].length) }
     max = Math.max(...arr)
 
@@ -1466,15 +1480,19 @@ const poll = {
     console.log('Голосование завершено победитель:', this.wins)
 
     let s = ''
+    let amount = 50
+
+    this.wins.forEach((value, index, array) => {
+      s += `${index == 1 ? ' и' : ''} &quot;${value.title}&quot;`
+      amount = percent[value.id].percent
+    });
+
+
     if (this.wins.length == 1) {
-      s += `Голосование завершено победитель:`
+      socket.send(`Вариант ${s} получил наибольшее количество голосов в опросе, набрав ${Math.round(amount)}% голосов.`)
     } else {
-      s += `Голосование завершено победители:`
+      socket.send(`Опрос привел к ничьей между ${s}.`)
     }
-
-    for (let w of this.wins) {s += ` '${w.title}' с ${w.votes.length} голосами!`}
-
-    socket.send(s)
 
     clearTimeout(this.timeout)
     clearInterval(this.sendDataInterval)
@@ -1552,7 +1570,7 @@ chrome.runtime.onConnectExternal.addListener(function(port) {
     console.log(msg)
     if (msg.from == "betterwasd_tv" && msg.getCoinUsers) {
 
-      let port = chrome.runtime.connect("bmcnekpmigcpbjdjcolfkjgjplmaeede")
+      let port = chrome.runtime.connect("cokaeiijnnpcfaoehijmdfcgbkpffgbh")
       port.postMessage({ from: 'background_betterwasd_bot', userCoins: settings.coins.users[msg.getCoinUsers] });
 
     }

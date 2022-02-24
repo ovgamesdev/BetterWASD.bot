@@ -16,6 +16,27 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.1',
+        date: '2022-02-24',
+        items: [{
+          text: [
+            `Монеты`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Голосование`
+          ],
+          label: 'changed'
+        }, {
+          text: [
+            `Переменные`,
+            `Пользовательские команды`,
+            `Таймеры бота`
+          ],
+          label: 'optimized'
+        }]
+      },{
         version: '1.1.0',
         date: '2022-02-12',
         items: [{
@@ -268,7 +289,9 @@ const BetterStreamChat = {
             <a role="tab" class="item active" data-tab="protection">Защита от спама</a>
             <a role="tab" class="item active" data-tab="bot">Команды чата</a>
             <a role="tab" class="item" data-tab="cmdbot">Пользовательские команды</a>
-            <a role="tab" class="item" data-tab="coins">Монеты</a>
+            <a role="tab" class="item" data-tab="coins">Лояльность</a>
+            <!--a role="tab" class="item" data-tab="loyaltyStore">Магазин лояльности</a>
+            <a role="tab" class="item" data-tab="betting">Ставки</a-->
             <a role="tab" class="item" data-tab="giveaway">Подарки</a>
             <a role="tab" class="item" data-tab="poll">Голосование</a>
             <a role="tab" class="item" data-tab="log">Журнал</a>
@@ -308,14 +331,36 @@ const BetterStreamChat = {
             <li ovg="">
               <a ovg="" class="nav-sidebar__link" data-tab="coins" style="position: relative;">
                 <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
-                <span ovg="">Монеты</span>
+                <span ovg="">Лояльность</span>
                 <ovg-tooltip>
                   <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
-                    <div class="tooltip-content tooltip-content_left"> Монеты </div>
+                    <div class="tooltip-content tooltip-content_left"> Лояльность </div>
                   </div>
                 </ovg-tooltip>
               </a>
             </li>
+            <!--li ovg="">
+              <a ovg="" class="nav-sidebar__link" data-tab="loyaltyStore" style="position: relative;">
+                <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
+                <span ovg="">Магазин лояльности</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Магазин лояльности </div>
+                  </div>
+                </ovg-tooltip>
+              </a>
+            </li>
+            <li ovg="">
+              <a ovg="" class="nav-sidebar__link" data-tab="betting" style="position: relative;">
+                <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
+                <span ovg="">Ставки</span>
+                <ovg-tooltip>
+                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
+                    <div class="tooltip-content tooltip-content_left"> Ставки </div>
+                  </div>
+                </ovg-tooltip>
+              </a>
+            </li-->
             <li ovg="">
               <a ovg="" class="nav-sidebar__link" data-tab="poll" style="position: relative;">
                 <i ovg="" class="ovg-icon-poll"></i>
@@ -529,7 +574,7 @@ const BetterStreamChat = {
       <main class="text" data-tab="coins" style="height: calc(100vh - 68px)">
 
         <div style="display: flex;justify-content: space-between;">
-          <h1> Монеты </h1>
+          <h1> Лояльность </h1>
         </div>
         
         <!--div class="not-found" style="position: absolute; width: 728px; height: 364px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Активных голосований пока нет.. Нажмите кнопку «Создать голосование», чтобы создать его.</div></div-->
@@ -569,6 +614,20 @@ const BetterStreamChat = {
         </table>
 
         <div class="pagination"></div>
+      </main>
+
+      <main class="text" data-tab="loyaltyStore" style="height: calc(100vh - 68px)">
+
+        <div style="display: flex;justify-content: space-between;">
+          <h1> Магазин лояльности </h1>
+        </div>
+      </main>
+
+      <main class="text" data-tab="betting" style="height: calc(100vh - 68px)">
+
+        <div style="display: flex;justify-content: space-between;">
+          <h1> Ставки </h1>
+        </div>
       </main>
 
       <main class="text" data-tab="log" style="height: calc(100vh - 68px)">
@@ -865,10 +924,10 @@ const BetterStreamChat = {
               <td><div><p> @OvGames </p></div></td>
             </tr>
             <tr class="table-menu__block" style="justify-content: space-between;">
-              <td><div><p> randomVar(...arg) </p></div></td>
+              <td><div><p> randomVar(${Helper.tooltip('...arg', 'Вы можете использовать этот Юникод: <br> "U+0029" для отображения ")" <br> "U+0026" для отображения "&"')}) </p></div></td>
               <td><div><p> Отображает случайный аргумент, отправленный в скобках через знак " &" </p></div></td>
-              <td><div><p> randomVar(1&ку&3 банан&56 - 1&кто) </p></div></td>
-              <td><div><p> 56 - 1 </p></div></td>
+              <td><div><p> randomVar(1&ку&3 банан U+0026 я&56 - 1&кто-тоU+0029) </p></div></td>
+              <td><div><p> банан & я </p></div></td>
             </tr>
             <tr class="table-menu__block" style="justify-content: space-between;">
               <td><div><p> user() </p></div></td>
@@ -940,7 +999,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="userCmdResult" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;" maxlength="240"></textarea>
+                      <textarea id="userCmdResult" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -1006,7 +1065,7 @@ const BetterStreamChat = {
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;" maxlength="240"></textarea>
+                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -2143,7 +2202,11 @@ const BetterStreamChat = {
     });
 
     giveaway_draw.addEventListener('click', () => {
-      chrome.runtime.sendMessage({ from: 'popup_bot', draw: 'click' })
+      if (document.querySelector('.block__users.users').childElementCount >= 2) {
+        chrome.runtime.sendMessage({ from: 'popup_bot', draw: 'click' })
+      } else {
+        HelperSettings.showMessage('Недостаточно пользователей', 'error')
+      }
     });
 
   },
