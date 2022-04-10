@@ -1,0 +1,238 @@
+.dropdown-ovg {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  align-content: flex-end;
+  align-items: flex-end;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, sans-serif;
+  position: relative;
+  user-select: none
+}
+
+.dropdown-ovg .dropdown-placeholder {
+  background-color: rgba(var(--color-switch), .08);
+  border-radius: 4px;
+  width: 160px
+}
+
+.dropdown-ovg .dropdown-title {
+  background-color: transparent;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  max-width: 100%;
+  text-align: right
+}
+
+.dropdown-ovg .dropdown-title,
+.dropdown-ovg .dropdown-title i {
+  align-items: center;
+  color: rgba(var(--color-switch), .64)
+}
+
+.dropdown-ovg .dropdown-title i {
+  display: flex;
+  font-size: 14px;
+  height: 14px;
+  justify-content: center;
+  transform: scale(1);
+  transition: all .3s;
+  width: 14px;
+  pointer-events: none;
+}
+
+.dropdown-ovg .dropdown-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.dropdown-ovg .dropdown-title__text {
+  margin-right: 6px
+}
+
+.dropdown-ovg .dropdown-title:hover {
+  background-color: rgba(var(--color-switch), .08);
+  color: rgb(var(--color-switch))
+}
+
+.dropdown-ovg .dropdown-title:hover i {
+  color: rgb(var(--color-switch))
+}
+
+.dropdown-ovg .dropdown-title:active {
+  background-color: rgba(var(--color-switch), .16);
+  color: rgb(var(--color-switch))
+}
+
+.dropdown-ovg .dropdown-title:focus {
+  box-shadow: 0 0 0 3px rgba(var(--color-system-blue), .48)
+}
+
+.dropdown-ovg .dropdown-list {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background-color: var(--color-second-layer);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px 0 rgba(var(--color-shadow), .16);
+  cursor: pointer;
+  display: block;
+  padding: 4px 0;
+  position: absolute;
+  text-align: end;
+  top: 36px;
+  z-index: 1
+}
+
+.dropdown-ovg .dropdown-list__item {
+  align-items: center;
+  box-sizing: border-box;
+  color: rgba(var(--color-switch), .64);
+  display: flex;
+  height: 48px;
+  white-space: nowrap
+}
+
+.dropdown-ovg .dropdown-list__item:hover:not(.active) {
+  background-color: rgba(var(--color-switch), .08);
+  color: var(--wasd-color-switch)
+}
+
+.dropdown-ovg .dropdown-list__item.active,
+.dropdown-ovg .dropdown-list__item:active:not(.active) {
+  background-color: rgba(var(--color-switch), .16);
+  color: var(--wasd-color-switch)
+}
+
+.dropdown-ovg .dropdown-list__item.active {
+  cursor: default
+}
+
+.dropdown-ovg .dropdown-list__item i {
+  font-size: 12px;
+  margin-right: 8px
+}
+
+.dropdown-ovg .dropdown-list__item span {
+  font-size: 14px;
+  white-space: nowrap
+}
+
+.dropdown-ovg.is-open .dropdown-title i {
+  transform: scaleY(-1);
+  transition: all .3s
+}
+
+.dropdown-ovg.is-action .dropdown-placeholder {
+  height: 32px;
+  width: 32px
+}
+
+.dropdown-ovg.is-action .dropdown-title {
+  height: 32px;
+  justify-content: center;
+  padding: 0;
+  width: 32px
+}
+
+.dropdown-ovg.is-action .dropdown-title i {
+  color: rgba(var(--color-switch), .64);
+  transform: none;
+  transition: none
+}
+
+.dropdown-ovg.disabled .dropdown-title {
+  background-color: rgba(var(--color-switch), .08);
+  cursor: default;
+  opacity: .4
+}
+
+.dropdown-ovg.disabled .dropdown-title:active,
+.dropdown-ovg.disabled .dropdown-title:active i,
+.dropdown-ovg.disabled .dropdown-title:hover,
+.dropdown-ovg.disabled .dropdown-title:hover i {
+  color: rgba(var(--color-switch), .64)
+}
+
+.dropdown-ovg.small .dropdown-title {
+  font-size: 12px;
+  height: 24px;
+  padding: 4px 10px 4px 12px
+}
+
+.dropdown-ovg.small .dropdown-title i {
+  font-size: 10px;
+  height: 12px;
+  width: 12px
+}
+
+.dropdown-ovg.small .dropdown-list__item {
+  height: 32px;
+  padding: 6px 16px
+}
+
+.dropdown-ovg.small .dropdown-placeholder {
+  height: 24px
+}
+
+.dropdown-ovg.medium .dropdown-title {
+  font-size: 14px;
+  height: 32px;
+  padding: 8px 14px
+}
+
+.dropdown-ovg.medium .dropdown-list__item {
+  height: 32px;
+  padding: 6px 16px
+}
+
+.dropdown-ovg.medium .dropdown-placeholder {
+  height: 32px
+}
+
+.dropdown-ovg.large .dropdown-title {
+  font-size: 16px;
+  height: 40px;
+  padding: 10px 16px 10px 24px
+}
+
+.dropdown-ovg.large .dropdown-list {
+  top: 44px
+}
+
+.dropdown-ovg.large .dropdown-list__item {
+  height: 40px;
+  padding: 6px 16px
+}
+
+.dropdown-ovg.large .dropdown-placeholder {
+  height: 40px
+}
+
+.dropdown-ovg.extra-large .dropdown-title {
+  font-size: 16px;
+  height: 48px;
+  padding: 12px 24px
+}
+
+.dropdown-ovg.extra-large .dropdown-list {
+  top: 52px
+}
+
+.dropdown-ovg.extra-large .dropdown-list__item {
+  height: 48px;
+  padding: 6px 16px
+}
+
+.dropdown-ovg.extra-large .dropdown-placeholder {
+  height: 48px
+}
+
+
+
+.dropdown-ovg:not(.is-open) .dropdown-list {
+  display: none !important;
+}

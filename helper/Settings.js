@@ -298,7 +298,54 @@ const HelperSettings = {
         min: 1,
         max: 100000
       },
-    }
+      cmdStore: {
+        title: '!store',
+        description: 'Получить список товаров',
+        type: 'cmd'
+      },
+      cmdStoreInfo: {
+        title: '!storeinfo {ID}',
+        description: 'Получить информацию о товаре',
+        type: 'cmd'
+      },
+      cmdRedeem: {
+        title: '!redeem {ID}',
+        description: 'Используестя для покупки товара',
+        type: 'cmd'
+      }
+    },
+    // loyaltyStore: {
+    //   addCustomBlock: {
+    //     title: `Добавить пользовательский блок в панели канала (sorting_number панели)`,
+    //     type: 'numberWithBoolean',
+    //     min: 0,
+    //     max: 100,
+    //     onChange: (value) => {
+    //       // console.log('change', value)
+    //       if (value[1]) {
+    //         chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyStore: value })
+    //       } else {
+    //         chrome.runtime.sendMessage({ from: 'popup_bot', deleteCustomizeBlockLoyaltyStore: true })
+    //       }
+    //     }
+    //   },
+    // },
+    // loyaltyUsers: {
+    //   addCustomBlock: {
+    //     title: `Добавить пользовательский блок в панели канала (sorting_number панели)`,
+    //     type: 'numberWithBoolean',
+    //     min: 0,
+    //     max: 100,
+    //     onChange: (value) => {
+    //       // console.log('change', value)
+    //       if (value[1]) {
+    //         chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: value })
+    //       } else {
+    //         chrome.runtime.sendMessage({ from: 'popup_bot', deleteCustomizeBlockLoyaltyUsers: true })
+    //       }
+    //     }
+    //   },
+    // }
   },
   showMessage(message, type = 'success') {
     if (this.messageTimeout) {
@@ -335,46 +382,55 @@ const HelperSettings = {
       </div>
     </div>`;
   },
-  save(optionElements) {
-    let newSettings = JSON.parse(JSON.stringify(settings));
-    for (let option of optionElements) {
-      if (!option.dataset.name) continue;
-      console.log(option)
-      let split = option.dataset.name.split('_');
-      let value = null;
+  async save(optionElements) {
+    return new Promise((resolve, reject) => {
+      let newSettings = JSON.parse(JSON.stringify(settings));
+      for (let option of optionElements) {
+        if (!option.dataset.name) continue;
+        // console.log(option, newSettings)
+        let split = option.dataset.name.split('_');
+        let value = null;
 
-      if (option.type === 'checkbox' && option.classList.contains('botevent')) {
-        value = [settings[split[0]][split[1]][0], option.checked]
-      } else if (option.type === 'text' && option.classList.contains('botevent')) {
-        value = [option.value, settings[split[0]][split[1]][1]]
-      } else if (option.dataset.type === 'boolean') {
-        value = option.checked;
-      } else if (option.dataset.type === 'cmd') {
-        value = {enabled: option.checked, alias: settings[split[0]][split[1]].alias || ''};
-      } else if (option.dataset.type === 'cmd2') {
-        value = {enabled: option.checked, alias: settings[split[0]][split[1]].alias || '', unalias: settings[split[0]][split[1]].unalias || ''};
-      } else if (option.type === 'radio') {
-        value = option.checked && option.value === '1';
-      } else if (option.type === 'checkbox') {
-        value = option.checked;
-      } else if (option.dataset.type === 'number' || option.type === 'number') {
-        value = parseFloat(option.value);
-      } else {
-        value = option.value;
+        if (option.type === 'checkbox' && option.classList.contains('botevent')) {
+          value = [newSettings[split[0]][split[1]][0], option.checked]
+        } else if (option.type === 'text' && option.classList.contains('botevent')) {
+          value = [option.value, newSettings[split[0]][split[1]][1]]
+        } else if (option.type === 'checkbox' && option.classList.contains('numberWithBoolean')) {
+          value = [newSettings[split[0]][split[1]][0], option.checked]
+        } else if (option.dataset.type === 'number' || option.type === 'number' && option.classList.contains('numberWithBoolean')) {
+          value = [option.value, newSettings[split[0]][split[1]][1]]
+        } else if (option.dataset.type === 'boolean') {
+          value = option.checked;
+        } else if (option.dataset.type === 'cmd') {
+          value = {enabled: option.checked, alias: newSettings[split[0]][split[1]].alias || ''};
+        } else if (option.dataset.type === 'cmd2') {
+          value = {enabled: option.checked, alias: newSettings[split[0]][split[1]].alias || '', unalias: newSettings[split[0]][split[1]].unalias || ''};
+        } else if (option.type === 'radio') {
+          value = option.checked && option.value === '1';
+        } else if (option.type === 'checkbox') {
+          value = option.checked;
+        } else if (option.dataset.type === 'number' || option.type === 'number') {
+          value = parseFloat(option.value);
+        } else {
+          value = option.value;
+        }
+
+        // console.log(value, split[0], split[1], settings[split[0]][split[1]])
+
+        if (!newSettings[split[0]]) newSettings[split[0]] = {};
+
+        newSettings[split[0]][split[1]] = value;
+
+        let onChange = this.availableSettings[split[0]][split[1]]?.onChange;
+        if (typeof onChange === 'function') onChange(value);
       }
 
-      console.log(value, split[0], split[1], settings[split[0]][split[1]])
+      chrome.storage[storageType].set(newSettings, () => {
+        this.showMessage('параметры сохранены', 'success');
+        resolve()
+      });
 
-      if (!newSettings[split[0]]) newSettings[split[0]] = {};
-
-      newSettings[split[0]][split[1]] = value;
-
-      let onChange = this.availableSettings[split[0]][split[1]]?.onChange;
-      if (typeof onChange === 'function') onChange(value);
-    }
-    chrome.storage[storageType].set(newSettings, () => {
-      this.showMessage('параметры сохранены', 'success');
-    });
+    })
   },
   saveSettings(newSettings) {
     chrome.storage[storageType].set(newSettings, () => {
@@ -383,6 +439,7 @@ const HelperSettings = {
   },
   loaded() {
     chrome.storage.onChanged.addListener(async function(changes, namespace) {
+      settings[Object.entries(changes)[0][0]] = Object.entries(changes)[0][1].newValue
       if (namespace === 'local') {
         // Helper.WASD.update();
       } else if (namespace === 'sync') {
@@ -419,6 +476,8 @@ const HelperSettings = {
           html += this.color(fieldName, setting.title, setting.description, settings[category][name]);
         } else if (type === 'botevent') {
           html += this.botevent(fieldName, setting.title, setting.description, settings[category][name]);
+        } else if (type === 'numberWithBoolean') {
+          html += this.numberWithBoolean(fieldName, setting.title, setting.description, settings[category][name], setting.min, setting.max);
         }
       }
     }
@@ -548,4 +607,25 @@ const HelperSettings = {
       </ol>`
     );
   },
+  numberWithBoolean(name, title, description, defaultValue = [0, false], yesButton = 'Вкл', noButton = 'Откл', min = 0, max = 0) {
+    return this._basic(title, description, `
+      <ol class="flexibleButtonGroup optionTypeBoolean">
+        <div class="def">
+          <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+            <div ovg="" class="wasd-input-wrapper">
+              <div ovg="" class="wasd-input" style="margin-right: 15px;">
+                <input ovg="" class="ng-pristine optionField numberWithBoolean ng-untouched ng-valid" type="number" option-type="numberWithBoolean" data-name="${name}" style="margin: 0;" value="${defaultValue[0]}" ${min ? 'min="' + min + '" ' : ''}${max ? 'max="' + max + '"' : ''}>
+              </div>
+            </div>
+          </wasd-input>
+          <ovg-tooltip><div class="tooltip tooltip_position-topRight tooltip_size-small" style="width: 260px;right: 40px;"><div class="tooltip-content tooltip-content_left"> Правая кнопка мыши для сброса </div></div></ovg-tooltip>
+        </div>
+        <label class="switch-ovg">
+          <input option-type="boolean" type="checkbox" id="boolean_${name}" name="boolean_${name}" value="0" class="optionField numberWithBoolean" data-name="${name}" ${defaultValue[1] ? 'checked' : ''}>
+          <span class="slider-ovg"> <div class="switcher_thumb-ovg"></div> </span>
+        </label>
+        <!--button class="optionField def" data-name="${name}" option-type="numberWithBoolean"><div class="tooltip-ovg"> Сбросить по умолчанию </div><i _ngcontent-khk-c259="" class="wasd-icons-close"></i></button-->
+      </ol>`
+    );
+  }
 }

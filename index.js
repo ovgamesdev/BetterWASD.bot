@@ -16,6 +16,35 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.3',
+        date: '2022-04-11',
+        items: [{
+          text: [
+            `События - Пользователь платно подписался`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Магазин лояльности`,
+            `Переменная userOrMention()`
+          ],
+          label: 'added'
+        }, {
+          text: [
+            `Голосование`
+          ],
+          label: 'optimized'
+        }]
+      },{
+        version: '1.1.2',
+        date: '2022-03-05',
+        items: [{
+          text: [
+            `Добавить монет за 5 минут просмотра`
+          ],
+          label: 'fixed'
+        }]
+      },{
         version: '1.1.1',
         date: '2022-02-24',
         items: [{
@@ -290,8 +319,6 @@ const BetterStreamChat = {
             <a role="tab" class="item active" data-tab="bot">Команды чата</a>
             <a role="tab" class="item" data-tab="cmdbot">Пользовательские команды</a>
             <a role="tab" class="item" data-tab="coins">Лояльность</a>
-            <!--a role="tab" class="item" data-tab="loyaltyStore">Магазин лояльности</a>
-            <a role="tab" class="item" data-tab="betting">Ставки</a-->
             <a role="tab" class="item" data-tab="giveaway">Подарки</a>
             <a role="tab" class="item" data-tab="poll">Голосование</a>
             <a role="tab" class="item" data-tab="log">Журнал</a>
@@ -339,28 +366,6 @@ const BetterStreamChat = {
                 </ovg-tooltip>
               </a>
             </li>
-            <!--li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="loyaltyStore" style="position: relative;">
-                <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
-                <span ovg="">Магазин лояльности</span>
-                <ovg-tooltip>
-                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
-                    <div class="tooltip-content tooltip-content_left"> Магазин лояльности </div>
-                  </div>
-                </ovg-tooltip>
-              </a>
-            </li>
-            <li ovg="">
-              <a ovg="" class="nav-sidebar__link" data-tab="betting" style="position: relative;">
-                <i ovg="" class="ovg-icon-coin" style="font-size: 22px;"></i>
-                <span ovg="">Ставки</span>
-                <ovg-tooltip>
-                  <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
-                    <div class="tooltip-content tooltip-content_left"> Ставки </div>
-                  </div>
-                </ovg-tooltip>
-              </a>
-            </li-->
             <li ovg="">
               <a ovg="" class="nav-sidebar__link" data-tab="poll" style="position: relative;">
                 <i ovg="" class="ovg-icon-poll"></i>
@@ -431,7 +436,7 @@ const BetterStreamChat = {
           <ul ovg="" class="nav-sidebar__list bottom" style="position: fixed;top: auto;">
             <li ovg="">
               <a ovg="" class="nav-sidebar__link" data-tab="about" style="position: relative;">
-                <i ovg="" class="wasd-icons-sidebar-faq"></i>
+                <i ovg="" class="ovg-icon-question"></i>
                 <span ovg="">О нас</span>
                 <ovg-tooltip>
                   <div class="tooltip tooltip_position-right tooltip_size-small" style="width: 260px;">
@@ -573,6 +578,12 @@ const BetterStreamChat = {
 
       <main class="text" data-tab="coins" style="height: calc(100vh - 68px)">
 
+        <ovg-button class="flat-btn links_to ovg" style="padding-bottom: 5px; display: flex;">
+          <button data-tab="coins" class="link_to ovg primary show small"> Лояльность </button>
+          <button data-tab="loyaltyUsers" class="link_to ovg basic show small" style="margin-left: 5px;"> Пользователи лояльности </button>
+          <button data-tab="loyaltyStore" class="link_to ovg basic show small" style="margin-left: 5px;"> Магазин лояльности </button>
+        </ovg-button>
+
         <div style="display: flex;justify-content: space-between;">
           <h1> Лояльность </h1>
         </div>
@@ -583,6 +594,25 @@ const BetterStreamChat = {
           ${HelperSettings.build('coins')}
         </div>
 
+        <div class="pagination"></div>
+      </main>
+
+      <main class="text" data-tab="loyaltyUsers" style="height: calc(100vh - 68px)">
+
+        <ovg-button class="flat-btn links_to ovg" style="padding-bottom: 5px; display: flex;">
+          <button data-tab="coins" class="link_to ovg basic show small"> Лояльность </button>
+          <button data-tab="loyaltyUsers" class="link_to ovg primary show small" style="margin-left: 5px;"> Пользователи лояльности </button>
+          <button data-tab="loyaltyStore" class="link_to ovg basic show small" style="margin-left: 5px;"> Магазин лояльности </button>
+        </ovg-button>
+
+        <div style="display: flex;justify-content: space-between;">
+          <h1> Пользователи лояльности </h1>
+        </div>
+
+        <div class="options" style="margin: 0 -10px;">
+          ${HelperSettings.build('loyaltyUsers')}
+        </div>
+        
         <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-valid ng-dirty ng-touched">
           <div ovg="" class="wasd-input-wrapper">
             <div ovg="" class="wasd-input">
@@ -618,9 +648,50 @@ const BetterStreamChat = {
 
       <main class="text" data-tab="loyaltyStore" style="height: calc(100vh - 68px)">
 
+        <ovg-button class="flat-btn links_to ovg" style="padding-bottom: 5px; display: flex;">
+          <button data-tab="coins" class="link_to ovg basic show small"> Лояльность </button>
+          <button data-tab="loyaltyUsers" class="link_to ovg basic show small" style="margin-left: 5px;"> Пользователи лояльности </button>
+          <button data-tab="loyaltyStore" class="link_to ovg primary show small" style="margin-left: 5px;"> Магазин лояльности </button>
+        </ovg-button>
+
         <div style="display: flex;justify-content: space-between;">
           <h1> Магазин лояльности </h1>
+          <ovg-button class="flat-btn ovg">
+            <button id="showFormloyaltyStoreBtn" class="primary medium ovg"> создать новый товар </button>
+          </ovg-button>
         </div>
+
+        <div class="options" style="margin: 0 -10px;">
+          ${HelperSettings.build('loyaltyStore')}
+        </div>
+
+        <table class="table-ovg">
+
+          <thead class="thead-ovg">
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Имя</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Описание</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Цена</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Количество</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Продано</div>
+            </th>
+            <th class="table-heading-ovg">
+              <div class="table-heading-text-ovg">Действия</div>
+            </th>
+          </thead>
+
+          <tbody class="loyaltyStore ovg-items">
+          </tbody>
+        </table>
+
       </main>
 
       <main class="text" data-tab="betting" style="height: calc(100vh - 68px)">
@@ -798,7 +869,6 @@ const BetterStreamChat = {
           <tbody class="blacklist ovg-items">
           </tbody>
         </table>
-
       </main>
 
       <main class="active" id="bot" data-tab="bot">
@@ -911,6 +981,12 @@ const BetterStreamChat = {
               <div class="table-heading-text-ovg">Результат</div>
             </th>
           </thead>
+            <tr class="table-menu__block" style="justify-content: space-between;">
+              <td><div><p> userOrMention() </p></div></td>
+              <td><div><p> Отображает имя пользователя которого упомянули, а если нет, вернет того кто вызвал команду </p></div></td>
+              <td><div><p> userOrMention() </p></div></td>
+              <td><div><p><a target="_blank" href="https://raw.githubusercontent.com/ovgamesdev/BetterWASD.data/release/userOrMention.png"> @Mention </a></p></div></td>
+            </tr>
             <tr class="table-menu__block" style="justify-content: space-between;">
               <td><div><p> randomInt(0,100) </p></div></td>
               <td><div><p> Отображает случайное число от 1 до 100 </p></div></td>
@@ -1511,6 +1587,151 @@ const BetterStreamChat = {
         </div>
       </ovg-modal-window>
 
+      <ovg-modal-window class="loyaltyStore">
+        <div class="modal-block modal-block_medium" style="width: 440px;">
+
+          <div class="modal-block__title">
+            <span> Добавить товар </span>
+          </div>
+
+          <div class="modal-block__content" style="padding: 0 24px;">
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Имя </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStoreName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Имя товара" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> id ${Helper.tooltip('', '!redeem {ID}')} </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStoreId" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Id товара" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Описание </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStoreDescription" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Описание товара" type="text" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Цена </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStorePrice" ovg="" class="ng-pristine ng-untouched ng-valid" value="100" type="number" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Количество ${Helper.tooltip('', 'Используйте -1 для неограниченного количества')} </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStoreQuantity" ovg="" class="ng-pristine ng-untouched ng-valid" value="-1" type="number" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
+                <label for="subject"> Количество на пользователя ${Helper.tooltip('', 'Используйте -1 для неограниченного количества')} </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <div ovg="" class="wasd-input-wrapper">
+                    <div ovg="" class="wasd-input">
+                      <input id="loyaltyStoreBuyOnUser" ovg="" class="ng-pristine ng-untouched ng-valid" value="-1" type="number" autocomplete="off">
+                    </div>
+                  </div>
+                 </wasd-input>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-block__footer">
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="medium ovg warning hide" style="margin-right: 5px;"> отмена </button>
+              <button id="addLoyaltyStore" class="primary medium ovg updateUser"> сохранить </button>
+            </ovg-button>
+          </div>
+
+        </div>
+      </ovg-modal-window>
+
+      <ovg-modal-window class="loyaltyStoreUsers">
+        <div class="modal-block modal-block_medium" style="width: 440px;">
+
+          <div class="modal-block__title">
+            <span> Покупатели товара </span>
+          </div>
+
+          <div class="modal-block__content scroller-element" style="padding: 0 24px;overflow-x: hidden;overflow-y: auto;">
+            <table class="table-ovg">
+
+              <thead class="thead-ovg">
+                <th class="table-heading-ovg">
+                  <div class="table-heading-text-ovg">Статус</div>
+                </th>
+                <th class="table-heading-ovg">
+                  <div class="table-heading-text-ovg">Пользователь</div>
+                </th>
+                <th class="table-heading-ovg">
+                  <div class="table-heading-text-ovg">Время</div>
+                </th>
+                <th class="table-heading-ovg">
+                  <div class="table-heading-text-ovg" style="text-align: right;">Действия</div>
+                </th>
+              </thead>
+
+              <tbody class="loyaltyStoreUsers ovg-items">
+              </tbody>
+            </table>
+
+          </div>
+
+          <div class="modal-block__footer">
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="primary medium ovg hide"> Понятно </button>
+            </ovg-button>
+          </div>
+
+        </div>
+      </ovg-modal-window>
+
       <main class="text" data-tab="changelog" style="height: calc(100vh - 68px)">
         <h1>Журнал изменений</h1>
         <!--h4 style="margin-top:10px;padding-left: 10px;padding-right: 0px;margin-bottom: 0px;"> Информацию о будущих версиях можно найти <a href="https://wasd.tv/ovgames/posts" target="_blank">тут</a></h4-->
@@ -1519,7 +1740,7 @@ const BetterStreamChat = {
     document.body.append(settingsDiv);
     BetterStreamChat.changelog = changelogList[0]
 
-    settingsDiv.querySelector('[data-tab="about"] button.backup').addEventListener('click', () => window.open(chrome.runtime.getURL("backup.html")))
+    settingsDiv.querySelector('[data-tab="about"] button.backup').addEventListener('click', () => window.open(chrome.runtime.getURL("/backup.html")))
 
     settingsDiv.querySelector('#settingsSearchDiv button').addEventListener('click', () => {
       settingsSearchDiv.classList.remove('notfocused')
@@ -1562,6 +1783,10 @@ const BetterStreamChat = {
 
     document.querySelector('ovg-modal-window.poll').addEventListener('click', (e) => {
       if (e.target.className == 'poll show') Helper.hideModal()
+    })
+
+    document.querySelector('ovg-modal-window.loyaltyStoreUsers').addEventListener('click', (e) => {
+      if (e.target.className == 'loyaltyStoreUsers show') Helper.hideModal()
     })
 
     addPollBtn.addEventListener('click', () => {
@@ -1637,9 +1862,9 @@ const BetterStreamChat = {
     fontStyle.innerHTML = '';
     fontStyle.appendChild(document.createTextNode(`@font-face {
       font-family: 'ovg-icons';
-      src:  url(${chrome.runtime.getURL("css/fonts/ovg-icons.ttf")}?6w1vn5) format('truetype'),
-        url(${chrome.runtime.getURL("css/fonts/ovg-icons.woff")}?6w1vn5) format('woff'),
-        url(${chrome.runtime.getURL("css/fonts/ovg-icons.svg")}?6w1vn5#ovg-icons) format('svg');
+      src:  url(${chrome.runtime.getURL("/css/fonts/ovg-icons.ttf")}?lqdikz) format('truetype'),
+        url(${chrome.runtime.getURL("/css/fonts/ovg-icons.woff")}?lqdikz) format('woff'),
+        url(${chrome.runtime.getURL("/css/fonts/ovg-icons.svg")}?lqdikz#ovg-icons) format('svg');
       font-weight: normal;
       font-style: normal;
       font-display: block;
@@ -1683,6 +1908,10 @@ const BetterStreamChat = {
             event.target.parentElement.querySelector('input[type="text"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
             event.target.parentElement.querySelector('input[type="text"]').dispatchEvent(new Event('change'));
             break;
+          case 'numberWithBoolean':
+            event.target.parentElement.querySelector('input[type="number"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
+            event.target.parentElement.querySelector('input[type="number"]').dispatchEvent(new Event('change'));
+            break;
           default:
             console.log('def')
             break;
@@ -1711,6 +1940,10 @@ const BetterStreamChat = {
           case 'botevent':
             event.target.parentElement.querySelector('input[type="text"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
             event.target.parentElement.querySelector('input[type="text"]').dispatchEvent(new Event('change'));
+            break;
+          case 'numberWithBoolean':
+            event.target.parentElement.querySelector('input[type="number"]').value = Helper.getDefaultSettings()[split[0]][split[1]][0]
+            event.target.parentElement.querySelector('input[type="number"]').dispatchEvent(new Event('change'));
             break;
           default:
             console.log('def', event.target.getAttribute('option-type'), event.target)
@@ -2043,6 +2276,10 @@ const BetterStreamChat = {
       document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
+
+      // setTimeout(() => {
+      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      // }, 250)
     })
     setCoinCount.addEventListener('click', () => {
       let data = settings.coins.users[coinsCount.getAttribute('user_id')]
@@ -2052,6 +2289,10 @@ const BetterStreamChat = {
       document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
+
+      // setTimeout(() => {
+      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      // }, 250)
     })
     addCoinCount.addEventListener('click', () => {
       let data = settings.coins.users[coinsCount.getAttribute('user_id')]
@@ -2061,6 +2302,54 @@ const BetterStreamChat = {
       document.querySelector(`.table-menu__block[user_id="${data.user_id}"] [count]`).textContent = data.count
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
+
+      // setTimeout(() => {
+      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      // }, 250)
+    })
+
+    showFormloyaltyStoreBtn.addEventListener('click', () => {
+      loyaltyStoreName.value = ''
+      loyaltyStoreId.value = ''
+      loyaltyStoreDescription.value = ''
+      loyaltyStorePrice.value = '100'
+      loyaltyStoreQuantity.value = '-1'
+
+      Helper.showModal('loyaltyStore')
+
+      document.querySelector('ovg-modal-window.loyaltyStore .modal-block__title span').textContent = ' Добавить товар '
+    })
+
+    addLoyaltyStore.addEventListener('click', () => {
+
+      let def = settings.coins.store[loyaltyStoreId.value]
+      let data = {
+        name: loyaltyStoreName.value,
+        id: loyaltyStoreId.value,
+        description: loyaltyStoreDescription.value,
+        price: Number(loyaltyStorePrice.value),
+        quantity: Number(loyaltyStoreQuantity.value),
+        sold: def ? def.sold : 0,               // Продано
+        buyers: def ? def.buyers : [],          // Покупатели
+        buyOnUser: Number(loyaltyStoreBuyOnUser.value), // Количество на пользователя
+        enabled: def ? def.enabled : true
+      }
+
+      if (Helper.tryAddLoyaltyStore(data) == 'err') return
+
+      Helper.hideModal()
+
+    })
+
+
+    for (let cmd in settings.coins.store) {
+      Helper.addLoyaltyStore(settings.coins.store[cmd])
+    }
+    Helper.setNotFoundLoyaltyStore()
+
+
+    document.querySelector('ovg-modal-window.loyaltyStore').addEventListener('click', (e) => {
+      if (e.target.className == 'loyaltyStore show') Helper.hideModal()
     })
 
     // bind wasd-input
@@ -2161,6 +2450,9 @@ const BetterStreamChat = {
         settings.coins.users = msg.coinUsers
         Helper.paginationCoin( document.querySelector('[data-tab="coins"] .pagination .active') ? Number(document.querySelector('[data-tab="coins"] .pagination .active').getAttribute("index")) : 0 )
       }
+
+      return true;
+
     });
     
     var tooltips = settingsDiv.querySelectorAll(".tooltip-wrapper");
@@ -2208,6 +2500,12 @@ const BetterStreamChat = {
         HelperSettings.showMessage('Недостаточно пользователей', 'error')
       }
     });
+
+    bscSettingsPanel.addEventListener('click', (value) => {
+      if (value.target.className !== 'dropdown-title') {
+        document.querySelectorAll('.dropdown-ovg.is-open').forEach((i) => { i.classList.remove('is-open') })
+      }
+    })
 
   },
 };
@@ -2630,7 +2928,8 @@ const getUpdateSettings = () => {
     log: settings.log,
     coins: {
       addCoinCount: 1,
-      users: {}
+      users: {},
+      store: {}
     }
   };
 }

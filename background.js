@@ -71,6 +71,7 @@ const socket = {
         this.start(out.result.channel_name)
         console.log('bot inited to channel')
         chrome.browserAction.setIcon({path: "img/icon48.png"});
+        // chrome.action.setTitle({title: `Запущено: ${out.result.channel_name}`});
       } else if (this.isBotInited && !out.result.channel_is_live) {
         this.isBotInited = false
         // this.socketd.close(1000, 'LIVE_CLOSED')
@@ -80,6 +81,7 @@ const socket = {
       } else {
         console.log('bot not worked')
         chrome.browserAction.setIcon({path: "img/noactive48.png"});
+        // chrome.action.setTitle({title: `BetterWASD.bot`});
       }
       setTimeout(() => {
         this.initBot()
@@ -235,7 +237,7 @@ const socket = {
               console.log(`[${JSData[0]}] ${JSData[1].user_login} - ${JSData[1].product_name}`, JSData);
               if (settings.bot.eventSub[1]) {
                 let text = settings.bot.eventSub[0].replace('{user_login}', '@'+JSData[1].user_login);
-                prname = `${(JSData[1].product_name == '30') ? '1 месяц' : ''}${(JSData[1].product_name == '60') ? '2 месяца' : ''}`
+                prname = `${(JSData[1].validity_months == 1) ? '1 месяц' : JSData[1].validity_months + ' месяца'}`
                 text.replace('{product_name}', prname);
                 socket.send(text)
               }
@@ -926,6 +928,69 @@ const socket = {
           }
         }
         return;
+      case '!store':
+      case settings.coins.cmdStore.alias:
+        if (!settings.coins.cmdStore.enabled) return
+        if (settings.coins.cmdStore.alias == '' && data2.cmd == '!store' || data2.cmd == settings.coins.cmdStore.alias)
+        {
+          let store = Object.values(settings.coins.store)
+          let result = ''
+
+          store = store.sort(function(a, b) { return b.price - a.price; });
+          store = store.filter(item => item.quantity != 0 && item.enabled);
+
+          if (store.length == 0) {
+            socket.send(`@${user_login} Магазин пуст.`)
+            return;
+          }
+
+          store.forEach((value, index) => {
+            result += `${value.name} (id: ${value.id}) - ${value.description}; `
+          })
+
+          socket.send(`@${user_login} Доступные товары: ${result}`)
+        }
+        return;
+      case '!storeinfo':
+      case settings.coins.cmdStoreInfo.alias:
+        if (!settings.coins.cmdStoreInfo.enabled) return
+        if (settings.coins.cmdStoreInfo.alias == '' && data2.cmd == '!storeinfo' || data2.cmd == settings.coins.cmdStoreInfo.alias)
+        {
+          let store = Object.values(settings.coins.store)
+          let result = ''
+
+          store = store.filter(item => item.id == data1.data);
+
+          if (store.length) {
+            socket.send(`@${user_login} ${store[0].name} (${store[0].description}), цена: ${store[0].price} ${store[0].quantity == -1 ? '' : ', осталось: ' + (store[0].quantity - store[0].sold)}`)
+          } else {
+            socket.send(`@${user_login} товар не найден :(`)
+          }
+        }
+        return;
+      case '!redeem':
+      case settings.coins.cmdRedeem.alias:
+        if (!settings.coins.cmdRedeem.enabled) return
+        if (settings.coins.cmdRedeem.alias == '' && data2.cmd == '!redeem' || data2.cmd == settings.coins.cmdRedeem.alias)
+        {
+          let store = Object.values(settings.coins.store)
+          store = store.filter(item => item.id == data1.data);
+
+          if (store.length) {
+
+            let buy = coins.buyLoyaltyStore(JSData, store[0].id)
+
+            if (typeof buy === 'string') {
+              socket.send(`@${user_login} ${buy}`)
+            } else {
+              socket.send(`@${user_login} Куплено: ${store[0].name}`)
+            }
+
+          } else {
+            socket.send(`@${user_login} Товар не найден :(`)
+          }
+        }
+        return;
 
     }
 
@@ -962,13 +1027,14 @@ const socket = {
     }
   },
   onOpen() {
-    socket.intervalSave = setInterval(() => {
-      wasd.saveUserList()
-    }, 30000)
+    socket.intervalSave = setInterval(async () => {
+      await wasd.saveUserList()
+    }, 50000)
 
-    socket.intervalSaveCoins = setInterval(() => {
-      coins.saveUserCoins()
-    }, 300000)
+    socket.intervalSaveCoins = setInterval(async () => {
+      await wasd.saveUserList()
+      await coins.saveUserCoins()
+    }, 300000) // 300000
 
     wasd.saveUserList()
   },
@@ -1069,24 +1135,28 @@ const wasd = {
   users: [],
   lastFiveMessages: [],
   messages: [],
-  saveUserList() {
-    wasd.users = []
-    getall = (limit, offset) => {
-      fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=${limit}&offset=${offset}`)
-      .then(res => res?.json())
-      .then((out) => {
-        if (socket.streamId == 0) return
-        wasd.users.push(...out.result)
-        if(out && out.result && out.result.length == limit) {
-          getall(limit, offset+1)
-        } else {
-          console.log('saveUserList', wasd.users)
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
-    }
-    getall(10000, 0)
+  async saveUserList() {
+    return new Promise(async (resolve, reject) => {
+      wasd.users = []
+      getall = (limit, offset) => {
+        fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=${limit}&offset=${offset}`)
+        .then(res => res?.json())
+        .then((out) => {
+          if (socket.streamId == 0) return
+          wasd.users.push(...out.result)
+          if(out && out.result && out.result.length == limit) {
+            getall(limit, offset+1)
+          } else {
+            console.log('saveUserList', wasd.users)
+            resolve(wasd.users)
+          }
+        }).catch((err) => {
+          console.log(err)
+          reject(err)
+        })
+      }
+      getall(10000, 0)
+    })
   },
   getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
@@ -1142,6 +1212,20 @@ const wasd = {
         var dater = new Date(new Date() - date1);
         return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
       })
+
+      res = res.replace(/userOrMention\(\)/ig, () => {
+        if (JSData) {
+          let data = socket.parseCmd(JSData[1].message, true)
+
+          let mention = ''
+          if (data && data.data) data.data[0]?.replace(/@[a-zA-Z0-9_-]+/gi, ($0) => { mention = $0 })
+
+          return (mention != '' ? mention : '@' + JSData[1].user_login)
+        } else {
+          return '@undefined'
+        }
+      })
+
     } catch (err) {
       console.log(err)
     }
@@ -1199,7 +1283,7 @@ const protection = {
   },
 
   protect(JSData) {
-    // if (JSData.user_login != socket.current.user_profile.user_login) {
+    if (JSData.user_login != socket.current.user_profile.user_login) {
 
       if (settings.protectionCaps?.status && this.findCaps(JSData.message)) {
         if (this.permit(settings.protectionCaps.autoPermit, JSData)) return
@@ -1225,76 +1309,108 @@ const protection = {
         socket.punishment(settings.protectionLink.punishment, JSData)
       }
 
-    // }
+    }
     
   }
 }
 
-chrome.runtime.onMessage.addListener(
-  (request, sender, sendResponse) => {
-    if (request.from == "popup_bot" && request.log == true) {
-      chrome.runtime.sendMessage({
-        from: 'background_bot',
-        logs: [...socket.logs]
-      })
-    }
-    if (request.from == "popup_bot" && request.keyWord) {
-      giveaway.keyWord = request.keyWord
-    }
-    if (request.from == "popup_bot" && request.start) {
-      giveaway.start()
-    }
-    if (request.from == "popup_bot" && request.draw) {
-      chrome.runtime.sendMessage({ from: 'background_bot', winner: giveaway.draw() })
-    }
-    if (request.from == "popup_bot" && request.reset) {
-      giveaway.reset()
-    }
-    if (request.from == "popup_bot" && request.getData) {
-      chrome.runtime.sendMessage({ from: 'background_bot', getData: giveaway.getData() })
-    }
-    if (request.from == "popup_bot" && request.end) {
-      giveaway.end()
-    }
-    if (request.from == "popup_bot" && request.clearWinner) {
-      giveaway.clearWinner()
-    }
-    if (request.from == "popup_bot" && request.getGiveaweySettings) {
-      chrome.runtime.sendMessage({ from: 'background_bot', getGiveaweySettings: {channel_name: socket.current?.user_profile?.user_login, stream_id: socket.streamId, private_link: socket.closedId} })
-    }
-    if (request.from == "popup_bot" && request.stopTimeout) {
-      let t = socket.startedTimeouts[request.stopTimeout]
-      if (t) {
-        clearTimeout(t.timeout)
-        delete socket.startedTimeouts[request.stopTimeout]
-      }
-    }
-    if (request.from == "popup_bot" && request.settings) {
-      chrome.runtime.sendMessage({ from: 'background_bot', settings: settings })
-    }
-    if (request.from == "popup_bot" && request.defsettings) {
-      chrome.runtime.sendMessage({ from: 'background_bot', defsettings: Helper.getDefaultSettings() })
-    }
-    if (request.from == "popup_bot" && request.createPoll) {
-      poll.create(request.createPoll.question, request.createPoll.arr, request.createPoll.duration)
-    }
-    if (request.from == "popup_bot" && request.getPollSettings) {
-      chrome.runtime.sendMessage({ from: 'background_bot', getPollSettings: {question: poll.question, args: poll.pollArgs, duration: poll.duration, startTime: poll.startTime, wins: poll.wins, data: {timeoutWin: poll.timeoutWin, duration: poll.winDuration} } })
-      chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: poll.get() })
-    }
-    if (request.from == "popup_bot" && request.endPoll) {
-      poll.end()
-    }
-    if (request.from == "popup_bot" && request.removePoll) {
-      poll.remove()
-    }
-    if (request.from == "popup_bot" && request.init) {
-      settings = request.init
-      if (socket.channelId == 0) socket.getCurrent()
-    }
+chrome.runtime.onMessage.addListener(async (request) => {
 
+  if (request.from == "popup_bot" && request.log == true) {
+    chrome.runtime.sendMessage({
+      from: 'background_bot',
+      logs: [...socket.logs]
+    }, function(response) {
+      console.log(response);
+    })
   }
-);
+  if (request.from == "popup_bot" && request.keyWord) {
+    giveaway.keyWord = request.keyWord
+  }
+  if (request.from == "popup_bot" && request.start) {
+    giveaway.start()
+  }
+  if (request.from == "popup_bot" && request.draw) {
+    chrome.runtime.sendMessage({ from: 'background_bot', winner: giveaway.draw() }, function(response) {
+      console.log(response);
+    })
+  }
+  if (request.from == "popup_bot" && request.reset) {
+    giveaway.reset()
+  }
+  if (request.from == "popup_bot" && request.getData) {
+    chrome.runtime.sendMessage({ from: 'background_bot', getData: giveaway.getData() }, function(response) {
+      console.log(response);
+    })
+  }
+  if (request.from == "popup_bot" && request.end) {
+    giveaway.end()
+  }
+  if (request.from == "popup_bot" && request.clearWinner) {
+    giveaway.clearWinner()
+  }
+  if (request.from == "popup_bot" && request.getGiveaweySettings) {
+    chrome.runtime.sendMessage({ from: 'background_bot', getGiveaweySettings: {channel_name: socket.current?.user_profile?.user_login, stream_id: socket.streamId, private_link: socket.closedId} }, function(response) {
+    console.log(response);
+  })
+  }
+  if (request.from == "popup_bot" && request.stopTimeout) {
+    let t = socket.startedTimeouts[request.stopTimeout]
+    if (t) {
+      clearTimeout(t.timeout)
+      delete socket.startedTimeouts[request.stopTimeout]
+    }
+  }
+  if (request.from == "popup_bot" && request.settings) {
+    chrome.runtime.sendMessage({ from: 'background_bot', settings: settings }, function(response) {
+      console.log(response);
+    })
+  }
+  if (request.from == "popup_bot" && request.defsettings) {
+    chrome.runtime.sendMessage({ from: 'background_bot', defsettings: Helper.getDefaultSettings() }, function(response) {
+      console.log(response);
+    })
+  }
+  if (request.from == "popup_bot" && request.createPoll) {
+    poll.create(request.createPoll.question, request.createPoll.arr, request.createPoll.duration)
+  }
+  if (request.from == "popup_bot" && request.getPollSettings) {
+    chrome.runtime.sendMessage({ from: 'background_bot', getPollSettings: {question: poll.question, args: poll.pollArgs, duration: poll.duration, startTime: poll.startTime, wins: poll.wins, data: {timeoutWin: poll.timeoutWin, duration: poll.winDuration} } }, function(response) {
+      console.log(response);
+    })
+    chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: poll.get() }, function(response) {
+      console.log(response);
+    })
+  }
+  if (request.from == "popup_bot" && request.endPoll) {
+    poll.end()
+  }
+  if (request.from == "popup_bot" && request.removePoll) {
+    poll.remove()
+  }
+  if (request.from == "popup_bot" && request.init) {
+    settings = request.init
+    if (socket.channelId == 0) socket.getCurrent()
+  }
+  if (request.from == "popup_bot" && request.sendMessage) {
+    socket.send(request.sendMessage)
+  }
+  // if (request.from == "popup_bot" && request.updateCustomizeBlockLoyaltyStore) {
+  //   coins.updateCustomizeBlockLoyaltyStore(request.updateCustomizeBlockLoyaltyStore)
+  // }
+  // if (request.from == "popup_bot" && request.deleteCustomizeBlockLoyaltyStore) {
+  //   coins.deleteCustomizeBlockLoyaltyStore(request.deleteCustomizeBlockLoyaltyStore)
+  // }
+  // if (request.from == "popup_bot" && request.updateCustomizeBlockLoyaltyUsers) {
+  //   coins.updateCustomizeBlockLoyaltyUsers(request.updateCustomizeBlockLoyaltyUsers)
+  // }
+  // if (request.from == "popup_bot" && request.deleteCustomizeBlockLoyaltyUsers) {
+  //   coins.deleteCustomizeBlockLoyaltyUsers(request.deleteCustomizeBlockLoyaltyUsers)
+  // }
+
+  return true
+
+});
 
 const giveaway = {
   registerStart: false,
@@ -1403,7 +1519,7 @@ const poll = {
     let o_time = `${duration==1?'1 минута':''}${duration==2?'2 минуты':''}${duration==3?'3 минуты':''}${duration==5?'5 минут':''}${duration==10?'10 минут':''}`
 
     console.log(`Голосование ${question} с ответами:${s} запущено, !vote [id] чтобы проголосовать, у вас ${o_time}.`)
-    socket.send(`Открыт опрос для &quot;${question}&quot;, используйте !vote [id] для голосования.`);
+    socket.send(`Открыт опрос «${question}», используйте !vote [id] для голосования.`);
     socket.send(`Варианты голосования: ${s}.`);
 
     chrome.runtime.sendMessage({ from: 'background_bot', createdPoll: { question: question, args: args, duration: duration, startTime: this.startTime, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} } })
@@ -1423,7 +1539,7 @@ const poll = {
     }
 
     for (let i in this.pollArgs) {
-      if (this.votes[i].filter(word => word == user_id).length == 1) {
+      if (this.votes[i].filter(vote => vote == user_id).length == 1) {
         console.log(`@${user_login} вы уже проголосовали за`, i)
         return false
       }
@@ -1483,7 +1599,7 @@ const poll = {
     let amount = 50
 
     this.wins.forEach((value, index, array) => {
-      s += `${index == 1 ? ' и' : ''} &quot;${value.title}&quot;`
+      s += `${index == 1 ? ' и' : ''} «${value.title}»`
       amount = percent[value.id].percent
     });
 
@@ -1523,21 +1639,160 @@ const poll = {
 
 const coins = {
 
-  saveUserCoins() {
-    for (let data of wasd.users) {
-      if (!settings.coins.users[data.user_id]) {
-        settings.coins.users[data.user_id] = { count: Number(settings.coins.addCoinCount), user_login: data.user_login, user_id: data.user_id }
-      } else {
-        settings.coins.users[data.user_id].count = Number(settings.coins.addCoinCount) + settings.coins.users[data.user_id].count
+  async saveUserCoins() {
+    return new Promise(async (resolve, reject) => {
+      wasd.users.forEach((data, index) => {
+        if (!settings.coins.users[data.user_id]) {
+          settings.coins.users[data.user_id] = { count: Number(settings.coins.addCoinCount), user_login: data.user_login, user_id: data.user_id }
+        } else {
+          settings.coins.users[data.user_id].count = Number(settings.coins.addCoinCount) + settings.coins.users[data.user_id].count
+        }
+      })
+
+      chrome.storage['sync'].set(settings, () => {
+        console.log('saveUserCoins', settings.coins.users);
+        chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
+
+        // setTimeout(() => {
+        //   this.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
+        // }, 250)
+
+      });
+
+    })
+  },
+
+  buyLoyaltyStore(JSData, id) {
+
+    // console.log(JSData, id)
+
+    try {
+
+      let buyOnUser = settings.coins.store[id].buyOnUser
+      let quantity = settings.coins.store[id].quantity
+      let buyUser = settings.coins.store[id].buyers.filter(item => item.user_id == JSData[1].user_id);
+      let sold = settings.coins.store[id].sold
+
+      if (sold >= quantity && quantity != -1) return 'Уже распродано'
+
+      if ( !(buyOnUser == -1 || buyOnUser > buyUser.length) ) {
+        return `Вы уже купили ${buyUser.length}/${buyOnUser}`
       }
-    }
 
-    chrome.storage['sync'].set(settings, () => {
-      console.log('saveUserCoins', settings.coins.users);
+
+      let left = settings.coins.users[JSData[1].user_id]?.count - settings.coins.store[id].price
+      if (settings.coins.users[JSData[1].user_id] && left < 0) return `Недостаточно монет`
+
+      settings.coins.users[JSData[1].user_id].count = left
       chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
-    });
 
-  }
+
+      settings.coins.store[id].buyers.push({
+        user_id: JSData[1].user_id,
+        user_login: JSData[1].user_login,
+        created_at: JSData[1].date_time,
+        status: 1,
+        price: settings.coins.store[id].price,
+        id: id
+      })
+
+      settings.coins.store[id].sold ++
+
+
+      chrome.storage['sync'].set(settings, () => {
+        console.log('saveStoreCoins', settings.coins.store[id]);
+      });
+
+      return true
+    } catch (err) {
+      return false
+    }
+  },
+  // updateCustomizeBlockLoyaltyStore(value) {
+  //   // console.log(value)
+  //   if (!value[1] && !settings.coins.store_custom_block_id) {
+  //     this.deleteCustomizeBlockLoyaltyStore()
+  //     return
+  //   }
+
+  //   if (!value[1]) return
+
+  //   let test = Object.values(settings.coins.store)
+  //   let text = '| Имя | id | Цена |\\n| ----- | ----- | ----- |'
+
+  //   test = test.sort(function(a, b) { return a.price - b.price; });
+  //   test = test.filter(item => item.quantity != 0 && item.enabled);
+
+  //   test.forEach((value, index) => {
+  //     text += `\\n| ${value.name}. | ${value.id} | ${value.price} |`
+  //   })
+
+  //   customizeBlock.update(settings.coins.store_custom_block_id, `Магазин ${settings.coins.cmdStoreInfo?.alias == '' ? '!storeinfo' : settings.coins.cmdStoreInfo?.alias} {id}`, text, value[0]).then(
+  //     (result) => {
+  //       settings.coins.store_custom_block_id = result.id
+  //       chrome.storage['sync'].set(settings, () => {});
+  //       // console.log('result', result)
+  //     },
+  //     (error) => {
+  //       console.log('error', error)
+  //     }
+  //   )
+
+  //   // if (settings.coins.users_custom_blocks)
+  // },
+  // deleteCustomizeBlockLoyaltyStore() {
+  //   customizeBlock.delete(settings.coins.store_custom_block_id).then(
+  //     (result) => {
+  //       settings.coins.store_custom_block_id = result.id
+  //       chrome.storage['sync'].set(settings, () => {});
+  //       // console.log('result', result)
+  //     },
+  //     (error) => {
+  //       console.log('error', error)
+  //     }
+  //   )
+  // },
+  // updateCustomizeBlockLoyaltyUsers(value) {
+  //   if (!value[1] && !settings.coins.users_custom_block_id) {
+  //     this.deleteCustomizeBlockLoyaltyStore()
+  //     return
+  //   }
+
+  //   if (!value[1]) return
+
+  //   let test = Object.values(settings.coins.users)
+  //   test = test.sort(function(a, b) { return b.count - a.count; });
+  //   test = test.slice(0, 10)
+
+  //   let text = '| № | Пользователь | Монет |\\n| ----- | ----- | ----- |'
+
+  //   test.forEach((value, index) => {
+  //     text += `\\n| ${index+1}. | ${value.user_login} | ${value.count} |`
+  //   })
+
+  //   customizeBlock.update(settings.coins.users_custom_block_id, `Лояльность ${settings.bot.cmdPoints?.alias == '' ? '!points' : settings.bot.cmdPoints?.alias}`, text, value[0]).then(
+  //     (result) => {
+  //       settings.coins.users_custom_block_id = result.id
+  //       chrome.storage['sync'].set(settings, () => {});
+  //       // console.log('result', result)
+  //     },
+  //     (error) => {
+  //       console.log('error', error)
+  //     }
+  //   )
+  // },
+  // deleteCustomizeBlockLoyaltyUsers() {
+  //   customizeBlock.delete(settings.coins.users_custom_block_id).then(
+  //     (result) => {
+  //       settings.coins.users_custom_block_id = result.id
+  //       chrome.storage['sync'].set(settings, () => {});
+  //       // console.log('result', result)
+  //     },
+  //     (error) => {
+  //       console.log('error', error)
+  //     }
+  //   )
+  // },
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
@@ -1562,18 +1817,104 @@ chrome.runtime.onInstalled.addListener(function(details) {
 });
 
 
-let tvPort = null
-chrome.runtime.onConnectExternal.addListener(function(port) {
-  tvPort = port
+// let tvPort = null
+// chrome.runtime.onConnectExternal.addListener(function(port) {
+//   tvPort = port
 
-  tvPort.onMessage.addListener(function(msg) {
-    console.log(msg)
-    if (msg.from == "betterwasd_tv" && msg.getCoinUsers) {
+//   tvPort.onMessage.addListener(function(msg) {
+//     console.log(msg)
+//     if (msg.from == "betterwasd_tv" && msg.getCoinUsers) {
 
-      let port = chrome.runtime.connect("cokaeiijnnpcfaoehijmdfcgbkpffgbh")
-      port.postMessage({ from: 'background_betterwasd_bot', userCoins: settings.coins.users[msg.getCoinUsers] });
+//       chrome.management.getAll((info) => {
+//         for (let extension of info) {
+//           if (extension.id == "cokaeiijnnpcfaoehijmdfcgbkpffgbh" || extension.id == "bmcnekpmigcpbjdjcolfkjgjplmaeede") {
 
-    }
-  });
+//             // chrome.runtime.sendMessage(extension.id, { from: 'background_betterwasd_bot', userCoins: settings.coins.users[msg.getCoinUsers] })
 
-});
+//             console.log('send to', extension.id)
+
+//             chrome.runtime.connect(extension.id).postMessage({ from: 'background_betterwasd_bot', userCoins: settings.coins.users[msg.getCoinUsers] });
+//           // } else if (extension.id == "bmcnekpmigcpbjdjcolfkjgjplmaeede") {
+//           //   chrome.runtime.connect("bmcnekpmigcpbjdjcolfkjgjplmaeede").postMessage({ from: 'background_betterwasd_bot', userCoins: settings.coins.users[msg.getCoinUsers] });
+//           }
+//         }
+//       });
+
+
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   });
+
+// });
+
+// const customizeBlock = {
+//   async create(title, text, sorting_number) {
+//     return new Promise(async (resolve, reject) => {
+
+//       try {
+//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
+//           method: 'POST',
+//           body: `{"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
+//           headers: {'Content-Type': 'application/json'},
+//         })
+//         const out = await response.json();
+
+//         if (out?.result?.id) {
+//           resolve({id: out.result.id})
+//         } else {
+//           reject(out)
+//         }
+
+//       } catch (err) {
+//         reject(err)
+//       }
+
+//     })
+//   },
+//   async update(id, title, text, sorting_number) {
+//     return new Promise(async (resolve, reject) => {
+
+//       try {
+//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
+//           method: 'PATCH',
+//           body: `{"id":${id},"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
+//           headers: {'Content-Type': 'application/json'},
+//         })
+//         const out = await response.json();
+
+//         if (out?.result?.id) {
+//           resolve({id: out.result.id})
+//         } else {
+//           customizeBlock.create(title, text, sorting_number).then(
+//             (result) => {
+//               resolve(result)
+//             },
+//             (error) => {
+//               reject(error)
+//             }
+//           )
+//         }
+
+//       } catch (err) {
+//         reject(err)
+//       }
+      
+//     })
+//   },
+//   async delete(id) {
+//     return new Promise(async (resolve, reject) => {
+
+//       try {
+//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks/${id}`, {method: 'DELETE'})
+//         const out = await response.json();
+
+//         resolve({id: null})
+//       } catch (err) {
+//         reject(err)
+//       }
+
+//     })
+//   }
+// }

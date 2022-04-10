@@ -71,8 +71,20 @@ const Helper = {
       },
       coins: {
       	addCoinCount: 1,
-      	users: {}
-      }
+      	cmdStore: { enabled: true, alias: '!store' },
+      	cmdStoreInfo: { enabled: true, alias: '!storeinfo' },
+      	cmdRedeem: { enabled: true, alias: '!redeem' },
+      	users: {},
+      	store: {},
+      	// store_custom_block_id: null,
+      	// users_custom_block_id: null,
+      },
+      // loyaltyStore: {
+      // 	addCustomBlock: [0, false],
+      // },
+      // loyaltyUsers: {
+      // 	addCustomBlock: [0, false],
+      // }
     };
   },
   getSettings() {
@@ -107,8 +119,25 @@ const Helper = {
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
 	  item.innerHTML = `<td><div><p cmd="${data.cmd}">${data.cmd}</p></div></td> <!--td><div><p attributes="${data.attributes}">${data.attributes}</p></div></td--> <td><div><p result="${data.result}">${data.result}</p></div></td> <td><div><p privilege="${data.privilege}">${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}</p></div></td> <td class="td-btns" style="text-align: end;"><div> 
-	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
-	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  
+		<ovg-dropdown class="">
+		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
+		    <div class="dropdown-title">
+		      <i class="wasd-icons-dots-vert"></i>
+		    </div>
+		    <div class="dropdown-list">
+		      <div class="dropdown-list__item change">
+		        <span>Редактировать</span>
+		      </div>
+		      <div class="dropdown-list__item remove">
+		        <span>Удалить</span>
+		      </div>
+		    </div>
+		  </div>
+		</ovg-dropdown>
+
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
     
     <label class="switch-ovg" style="align-self: center;">
       <input type="checkbox" class="optionField" ${data.enabled ? 'checked' : ''}>
@@ -130,18 +159,26 @@ const Helper = {
 	  })
 
 	  item.querySelector('.remove').addEventListener('click', () => {
-	    console.log('1', settings.bot.usercmds)
+	  	this.showDelete(`Удалить команду?`, `Вы точно хотите удалить команду «${data.cmd}»?`).then((value) => {
+	  		if (value) {
+			    console.log('1', settings.bot.usercmds)
 
-	    let deleted = settings.bot.usercmds[data.cmd]
-	    delete settings.bot.usercmds[data.cmd]
+			    let deleted = settings.bot.usercmds[data.cmd]
+			    delete settings.bot.usercmds[data.cmd]
 
-	    item.remove()
-			this.setNotFoundUserCmd()
-	    HelperSettings.showMessage(`Команда ${deleted?.cmd} удалена`, 'success')
+			    item.remove()
+					this.setNotFoundUserCmd()
+			    HelperSettings.showMessage(`Команда ${deleted?.cmd} удалена`, 'success')
 
-	    console.log('2', settings.bot.usercmds)
-	    HelperSettings.save([document.querySelector('.optionField')]);
+			    console.log('2', settings.bot.usercmds)
+			    HelperSettings.save([document.querySelector('.optionField')]);
+	  		}
+	  	})
 	  })
+
+		item.querySelector('.dropdown-ovg').addEventListener('click', () => {
+			item.querySelector('.dropdown-ovg').classList.add('is-open')
+		})
 
 	  let input = item.querySelector('input')
 	  input.addEventListener('change', ({e}) => {
@@ -168,8 +205,25 @@ const Helper = {
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
 	  item.innerHTML = `<td><div><p name="${data.name}">${data.name}</p></div></td> <td><div><p message="${data.message}">${data.message}</p></div></td> <td><div><p interval="${data.interval}">${data.interval}</p></div></td> <td><div><p minMessages="${data.minMessages ? data.minMessages : "5"}">${data.minMessages ? data.minMessages : "5"}</p></div></td> <td class="td-btns"><div> 
-	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
-	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  
+		<ovg-dropdown class="">
+		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
+		    <div class="dropdown-title">
+		      <i class="wasd-icons-dots-vert"></i>
+		    </div>
+		    <div class="dropdown-list">
+		      <div class="dropdown-list__item change">
+		        <span>Редактировать</span>
+		      </div>
+		      <div class="dropdown-list__item remove">
+		        <span>Удалить</span>
+		      </div>
+		    </div>
+		  </div>
+		</ovg-dropdown>
+
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
 	  
     <label class="switch-ovg" style="align-self: center;">
       <input type="checkbox" class="optionField" ${data.enabled ? 'checked' : ''}>
@@ -193,18 +247,26 @@ const Helper = {
 	  })
 
 	  item.querySelector('.remove').addEventListener('click', () => {
-	    console.log('1', settings.bot.usercmdstimeout)
+	  	this.showDelete(`Удалить таймер?`, `Вы точно хотите удалить таймер «${data.name}»?`).then((value) => {
+	  		if (value) {
+			    console.log('1', settings.bot.usercmdstimeout)
 
-	    let deleted = settings.bot.usercmdstimeout[data.name]
-	    delete settings.bot.usercmdstimeout[data.name]
+			    let deleted = settings.bot.usercmdstimeout[data.name]
+			    delete settings.bot.usercmdstimeout[data.name]
 
-	    item.remove()
-	    this.setNotFoundUserTimeout()
-	    HelperSettings.showMessage(`Команда ${deleted.name} удалена`, 'success')
+			    item.remove()
+			    this.setNotFoundUserTimeout()
+			    HelperSettings.showMessage(`Команда ${deleted.name} удалена`, 'success')
 
-	    console.log('2', settings.bot.usercmdstimeout)
-	    HelperSettings.save([document.querySelector('.optionField')]);
+			    console.log('2', settings.bot.usercmdstimeout)
+			    HelperSettings.save([document.querySelector('.optionField')]);
+	  		}
+	  	})
 	  })
+
+		item.querySelector('.dropdown-ovg').addEventListener('click', () => {
+			item.querySelector('.dropdown-ovg').classList.add('is-open')
+		})
 
 	  let input = item.querySelector('input')
 	  input.addEventListener('change', ({e}) => {
@@ -387,9 +449,10 @@ const Helper = {
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  }
 	},
-  hideModal() {
-    document.querySelector('ovg-modal-window.show')?.classList.remove('show')
-    document.querySelector('ovg-modal-backdrop.show')?.classList.remove('show')
+  hideModal(text='') {
+    document.querySelector(`ovg-modal-window.show${text}`)?.classList.remove('show')
+    if (document.querySelector(`ovg-modal-window.show`)) return
+    document.querySelector(`ovg-modal-backdrop.show`)?.classList.remove('show')
   },
   showModal(modal, alias, unalias) {
   	if (modal == 'cmdmod') {
@@ -409,8 +472,8 @@ const Helper = {
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
 	  item.innerHTML = `<td><div><p user_login="${data.user_login}">${data.user_login}</p></div></td> <td><div><p count="${data.count}">${data.count}</p></div></td><td class="td-btns" style="text-align: end;"><div> 
-	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button-->
-	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button-->
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button>
 		</div></td>`;
 	  item.setAttribute("user_id", data.user_id)
 	  html.append(item)
@@ -536,8 +599,8 @@ const Helper = {
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
 	  item.innerHTML = `<td><div><p url="${data.url}">${data.url}</p></div></td> <td><div><p count="${data.type}">${data.type}</p></div></td><td class="td-btns" style="text-align: end;"><div> 
-	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data="22814674"><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
-	  <!--ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data="22814674"><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
+	  <ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <!--ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
 		</div></td>`;
 	  item.setAttribute("itemurlkey", data.url)
 	  html.append(item)
@@ -551,14 +614,19 @@ const Helper = {
 
 	  item.querySelector('.remove').addEventListener('click', () => {
 
-	    let deleted = settings.protectionLink.blacklist[data.url]
-	    delete settings.protectionLink.blacklist[data.url]
+	  	this.showDelete(`Удалить ссылку?`, `Вы точно хотите удалить ссылку «${data.url}»?`).then((value) => {
+	  		if (value) {
+			    let deleted = settings.protectionLink.blacklist[data.url]
+			    delete settings.protectionLink.blacklist[data.url]
 
-	    item.remove()
-			this.setNotFoundUserCount()
-	    HelperSettings.showMessage(`Ссылка ${deleted?.url} удалена`, 'success')
+			    item.remove()
+					this.setNotFoundUserCount()
+			    HelperSettings.showMessage(`Ссылка ${deleted?.url} удалена`, 'success')
 
-	    HelperSettings.save([document.querySelector('.optionField')]);
+			    HelperSettings.save([document.querySelector('.optionField')]);
+	  		}
+	  	})
+
 	  })
 
 		document.querySelector('.blacklist.ovg-items .not-found')?.remove()
@@ -578,5 +646,286 @@ const Helper = {
 
 	    HelperSettings.save([document.querySelector('.optionField')]);
 	  }
-	}
+	},
+	tryAddLoyaltyStore(data) {
+		console.log(settings.coins.store, data.id)
+	  if (!settings.coins.store[data.id]) {
+	    settings.coins.store[data.id] = data
+	    Helper.addLoyaltyStore(data)
+	    HelperSettings.save([document.querySelector('.optionField')]).then(() => {
+	    	// setTimeout(() => {
+				  // chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyStore: settings.loyaltyStore.addCustomBlock })
+	    	// }, 250)
+	    })
+	  } else {
+	    settings.coins.store[data.id] = data
+
+	    let item = document.querySelector(`[itemLoyaltyStore="${data.id}"]`)
+
+	    item.querySelector('[name]').textContent = data.name
+	    item.querySelector('[name]').title = 'id:' + data.id
+	    item.querySelector('[description]').textContent = data.description
+	    item.querySelector('[price]').textContent = data.price
+	    item.querySelector('[quantity]').textContent = data.quantity == -1 ? '∞' : data.quantity
+	    item.querySelector('[sold]').textContent = data.sold
+
+	    HelperSettings.save([document.querySelector('.optionField')]).then(() => {
+	    	// setTimeout(() => {
+				  // chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyStore: settings.loyaltyStore.addCustomBlock })
+	    	// }, 250)
+	    })
+	  }
+
+	},
+	addLoyaltyStore(data, index) {
+	  console.log(data)
+	  let html = document.querySelector('.loyaltyStore.ovg-items')
+	  let item = document.createElement('tr')
+	  item.classList.add(`table-menu__block`)
+	  item.style = 'justify-content: space-between;'
+	  item.innerHTML = `<td><div><p name="${data.name}" title="id: ${data.id}">${data.name}</p></div></td> 
+	  <td><div><p description="${data.description}">${data.description}</p></div></td> 
+	  <td><div><p price="${data.price}">${data.price}</p></div></td> 
+	  <td><div><p quantity="${data.quantity}">${data.quantity == -1 ? '∞' : data.quantity}</p></div></td> 
+	  <td><div><p sold="${data.sold}">${data.sold}</p></div></td> 
+
+	  <td class="td-btns"><div> 
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
+	  
+	  <ovg-dropdown class="">
+		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
+		    <div class="dropdown-title">
+		      <i class="wasd-icons-dots-vert"></i>
+		    </div>
+		    <div class="dropdown-list">
+		      <div class="dropdown-list__item change">
+		        <span>Редактировать</span>
+		      </div>
+		      <div class="dropdown-list__item redeems">
+		        <span>Покупки</span>
+		      </div>
+		      <div class="dropdown-list__item remove">
+		        <span>Удалить</span>
+		      </div>
+		    </div>
+		  </div>
+		</ovg-dropdown>
+
+    <label class="switch-ovg" style="align-self: center;">
+      <input type="checkbox" class="optionField" ${data.enabled ? 'checked' : ''}>
+      <span class="slider-ovg"> <div class="switcher_thumb-ovg"></div> </span>
+    </label>
+
+	  </div></td>`;
+	  item.setAttribute("itemLoyaltyStore", data.id)
+	  html.append(item)
+
+	  item.querySelector('.change').addEventListener('click', () => {
+	    let changed = settings.coins.store[data.id]
+	    console.log(changed)
+	    loyaltyStoreName.value = changed.name
+	    loyaltyStoreId.value = changed.id
+	    loyaltyStoreDescription.value = changed.description
+	    loyaltyStorePrice.value = changed.price
+	    loyaltyStoreQuantity.value = changed.quantity
+	    loyaltyStoreBuyOnUser.value = changed.buyOnUser
+
+	    Helper.showModal('loyaltyStore')
+	    document.querySelector('ovg-modal-window.loyaltyStore .modal-block__title span').textContent = ' Изменить товар '
+	  })
+
+	  item.querySelector('.remove').addEventListener('click', () => {
+
+	  	this.showDelete(`Удалить товар?`, `Вы точно хотите удалить товар «${data.name}»?`).then((value) => {
+	  		if (value) {
+
+			    console.log('1', settings.coins.store)
+
+			    let deleted = settings.coins.store[data.id]
+			    delete settings.coins.store[data.id]
+
+			    item.remove()
+			    this.setNotFoundLoyaltyStore()
+			    HelperSettings.showMessage(`Товар ${deleted.name} удален`, 'success')
+
+			    console.log('2', settings.coins.store)
+			    HelperSettings.save([document.querySelector('.optionField')]).then(() => {
+			    	// setTimeout(() => {
+						  // chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyStore: settings.loyaltyStore.addCustomBlock })
+			    	// }, 250)
+			    }).catch((err) => {
+			    	console.log(err)
+			    })
+
+	  		}
+	  	})
+
+	  })
+
+	  item.querySelector('.redeems').addEventListener('click', () => {
+	  	document.querySelector('.loyaltyStoreUsers.ovg-items').innerHTML = ''
+	  	settings.coins.store[data.id].buyers.forEach((value, index) => {
+	  		Helper.addLoyaltyStoreUsers(value, index)
+	  	})
+	  	if (settings.coins.store[data.id].sold == 0) Helper.setNotFoundLoyaltyStoreUsers()
+	  	Helper.showModal('loyaltyStoreUsers')
+	  })
+
+		item.querySelector('.dropdown-ovg').addEventListener('click', () => {
+			item.querySelector('.dropdown-ovg').classList.add('is-open')
+		})
+
+	  let input = item.querySelector('input')
+	  input.addEventListener('change', ({e}) => {
+	    settings.coins.store[data.id].enabled = input.checked
+
+	    HelperSettings.save([document.querySelector('.optionField')]);
+	  })
+
+		document.querySelector('.loyaltyStore.ovg-items .not-found')?.remove()
+	},
+	setNotFoundLoyaltyStore() {
+    if (document.querySelector('.loyaltyStore.ovg-items').childElementCount == 0) {
+      let div = document.createElement('div')
+      document.querySelector('.loyaltyStore.ovg-items').append(div)
+      div.outerHTML = '<div class="not-found" style="position: absolute;width: 748px;height: 321px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">У вас нет товаров в магазине</div></div>'
+    }
+	},
+	async showDelete(title, description, buttonOk = 'Удалить') {
+		return new Promise((resolve, reject) => {
+			let data = document.createElement('ovg-modal-window')
+			data.classList.add('delete')
+			data.style.zIndex = '6000'
+
+			let modalBlock = `
+				<div class="modal-block modal-block_small">
+
+          <div class="modal-block__title">
+            <span> ${title} </span>
+          </div>
+
+          <div class="modal-block__content"> ${description} </div>
+
+          <div class="modal-block__footer">
+            <ovg-button class="ghost-btn ovg" style="display: flex;">
+              <button class="medium ovg primary hide" style="margin-right: 5px;">
+                <span> Отмена </span>
+              </button>
+            </ovg-button>
+            <ovg-button class="flat-btn ovg" style="display: flex;">
+              <button class="warning medium ovg remove">
+                <span> ${buttonOk} </span>
+              </button>
+            </ovg-button>
+          </div>
+
+        </div>`
+
+      data.innerHTML = modalBlock
+
+      bscSettingsPanel.append(data)
+
+      this.showModal('delete')
+      document.querySelector('ovg-modal-backdrop').style.zIndex = '5990'
+
+
+      document.querySelector('ovg-modal-window.delete button.hide').addEventListener('click', () => {
+      	Helper.hideModal('.delete')
+      	document.querySelector('ovg-modal-window.delete')?.remove()
+      	document.querySelector('ovg-modal-backdrop').style.zIndex = ''
+      	resolve(false)
+	    })
+
+	    document.querySelector('ovg-modal-window.delete button.remove').addEventListener('click', () => {
+	    	Helper.hideModal('.delete')
+	    	document.querySelector('ovg-modal-window.delete')?.remove()
+	    	document.querySelector('ovg-modal-backdrop').style.zIndex = ''
+	    	resolve(true)
+	    })
+
+      document.querySelector('ovg-modal-window.delete').addEventListener('click', (e) => {
+	      if (e.target.className == 'delete show') {
+	      	Helper.hideModal('.delete')
+	      	document.querySelector('ovg-modal-window.delete')?.remove()
+	      	document.querySelector('ovg-modal-backdrop').style.zIndex = ''
+	      	resolve(false)
+	      }
+	    })
+
+		})
+	},
+	addLoyaltyStoreUsers(data, index) {
+	  console.log(data)
+	  let html = document.querySelector('.loyaltyStoreUsers.ovg-items')
+	  let item = document.createElement('tr')
+	  item.classList.add(`table-menu__block`)
+	  item.style = 'justify-content: space-between;'
+	  item.innerHTML = `<td><div><p status="${data.status}" title="${data.status == 1 ? 'Куплено' : 'Возвращено'}">${data.status == 1 ? '<i class="wasd-icons-done" style="font-size: 18px;position: relative;left: -2px;"></i>' : '<i class="wasd-icons-ban"></i>'}</p></div></td> <td><div><p user_login="${data.user_login}">${data.user_login}</p></div></td> <td><div><p created_at="${data.created_at}" title="${moment(data.created_at).format('lll')}">${moment(data.created_at).format('H:mm:ss')}</p></div></td> <td class="td-btns" style="text-align: end;"><div> 
+	  
+	  ${data.status == 1 ?  `<ovg-dropdown class="">
+		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
+		    <div class="dropdown-title">
+		      <i class="wasd-icons-dots-vert"></i>
+		    </div>
+		    <div class="dropdown-list">
+		      <div class="dropdown-list__item return">
+		        <span>Вернуть монеты</span>
+		      </div>
+		    </div>
+		  </div>
+		</ovg-dropdown>` : '' }
+		
+
+	  <!--ovg-button class="flat-btn ovg remove" style="right: 20px;"> <button class="medium ovg removeUser warning" data=""><i class="wasd-icons-delete" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Удалить </div></div></ovg-tooltip> </ovg-button>
+	  <ovg-button class="flat-btn ovg change" style="right: 10px;"> <button class="basic medium ovg updateUser" data=""><i class="wasd-icons-edit" style="pointer-events: none;"></i></button> <ovg-tooltip><div class="tooltip tooltip_position-top tooltip_size-small" style="width: 260px;"><div class="tooltip-content tooltip-content_left"> Изменить </div></div></ovg-tooltip> </ovg-button-->
+
+	  </div></td>`;
+	  // item.setAttribute("index", index)
+	  html.append(item)
+
+	  item.querySelector('.return')?.addEventListener('click', () => {
+
+	  	this.showDelete(`Вернуть монеты?`, `Вы точно хотите вернуть ${data.price} монет пользователю «${data.user_login}»?`, 'Вернуть').then((value) => {
+	  		if (!value) return
+		  	settings.coins.users[data.user_id].count += data.price
+		    settings.coins.store[data.id].buyers[index].status = 0
+		    settings.coins.store[data.id].sold --
+
+		    HelperSettings.save([document.querySelector('.optionField')]);
+
+		    chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
+		    chrome.runtime.sendMessage({ from: 'popup_bot', sendMessage: `"@${data.user_login} Вам возвращено ${data.price} монет` })
+
+		  	document.querySelector('.loyaltyStoreUsers.ovg-items').innerHTML = ''
+		  	settings.coins.store[data.id].buyers.forEach((value, index) => {
+		  		Helper.addLoyaltyStoreUsers(value, index)
+		  	})
+
+		  	document.querySelector('.loyaltyStore.ovg-items').innerHTML = ''
+		    for (let cmd in settings.coins.store) {
+		      Helper.addLoyaltyStore(settings.coins.store[cmd])
+		    }
+		    Helper.setNotFoundLoyaltyStore()
+
+		    Helper.buildUsersCount()
+
+	  	})
+
+	  })
+
+		item.querySelector('.dropdown-ovg')?.addEventListener('click', () => {
+			item.querySelector('.dropdown-ovg').classList.add('is-open')
+		})
+
+		document.querySelector('.loyaltyStoreUsers .not-found')?.remove()
+	},
+	setNotFoundLoyaltyStoreUsers() {
+    if (document.querySelector('.loyaltyStoreUsers.ovg-items').childElementCount == 0) {
+    	if (document.querySelector('.loyaltyStoreUsers .not-found')) return
+      let div = document.createElement('div')
+      document.querySelector('.loyaltyStoreUsers .modal-block__content').append(div)
+      div.outerHTML = '<div class="not-found" style="position: relative;width: 412px;height: 121px;"><div style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">Нет покупателей</div></div>'
+    }
+	},
 };
