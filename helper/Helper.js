@@ -77,14 +77,14 @@ const Helper = {
       	users: {},
       	store: {},
       	// store_custom_block_id: null,
-      	// users_custom_block_id: null,
+      	users_custom_block_id: null,
       },
       // loyaltyStore: {
       // 	addCustomBlock: [0, false],
       // },
-      // loyaltyUsers: {
-      // 	addCustomBlock: [0, false],
-      // }
+      loyaltyUsers: {
+      	addCustomBlock: [0, false],
+      }
     };
   },
   getSettings() {
@@ -648,6 +648,32 @@ const Helper = {
 	  }
 	},
 	tryAddLoyaltyStore(data) {
+
+	  if (data.name.trim() == '') {
+	    HelperSettings.showMessage('Не Хватает имени', 'error')
+	    return 'err'
+	  }
+	  if (data.id.trim() == '') {
+	    HelperSettings.showMessage('Не Хватает id', 'error')
+	    return 'err'
+	  }
+	  if (data.description.trim() == '') {
+	    HelperSettings.showMessage('Не Хватает описания', 'error')
+	    return 'err'
+	  }
+	  if ((data.quantity != 0 && data.quantity < -1) || data.quantity == 0) {
+	    HelperSettings.showMessage('Количество не может быть меньше одного 3', 'error')
+	    return 'err'
+	  }
+	  if ((data.buyOnUser != 0 && data.buyOnUser < -1) || data.buyOnUser == 0) {
+	    HelperSettings.showMessage('Количество на пользователя не может быть меньше одного', 'error')
+	    return 'err'
+	  }
+	  if (data.price < 1) {
+	    HelperSettings.showMessage('Цена не может быть меньше одного', 'error')
+	    return 'err'
+	  }
+
 		console.log(settings.coins.store, data.id)
 	  if (!settings.coins.store[data.id]) {
 	    settings.coins.store[data.id] = data
@@ -861,18 +887,29 @@ const Helper = {
 	  let item = document.createElement('tr')
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
-	  item.innerHTML = `<td><div><p status="${data.status}" title="${data.status == 1 ? 'Куплено' : 'Возвращено'}">${data.status == 1 ? '<i class="wasd-icons-done" style="font-size: 18px;position: relative;left: -2px;"></i>' : '<i class="wasd-icons-ban"></i>'}</p></div></td> <td><div><p user_login="${data.user_login}">${data.user_login}</p></div></td> <td><div><p created_at="${data.created_at}" title="${moment(data.created_at).format('lll')}">${moment(data.created_at).format('H:mm:ss')}</p></div></td> <td class="td-btns" style="text-align: end;"><div> 
+
+	  item.innerHTML = `<td><div><p status="${data.status}" title="${data.status == 1 ? 'Выполнено' : data.status == 2 ? 'Возвращено' : 'В ожидании'}">${data.status == 1 ? '<i class="wasd-icons-done" style="font-size: 18px;position: relative;left: -2px;"></i>' : data.status == 2 ? '<i class="wasd-icons-ban"></i>' : '<i class="wasd-icons-freez"></i>'}</p></div></td> <td><div><p user_login="${data.user_login}">${data.user_login}</p></div></td> <td><div><p created_at="${data.created_at}" title="${moment(data.created_at).format('lll')}">${moment(data.created_at).format('H:mm:ss')}</p></div></td> <td class="td-btns" style="text-align: end;"><div> 
 	  
-	  ${data.status == 1 ?  `<ovg-dropdown class="">
+	  ${data.status != 2 ?  `<ovg-dropdown class="">
 		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
 		    <div class="dropdown-title">
 		      <i class="wasd-icons-dots-vert"></i>
-		    </div>
-		    <div class="dropdown-list">
-		      <div class="dropdown-list__item return">
-		        <span>Вернуть монеты</span>
-		      </div>
-		    </div>
+				</div>
+		    ${
+		    	data.status == 0 ? 
+		    	`<div class="dropdown-list">
+			      <div class="dropdown-list__item completed">
+			        <span>Выполнить</span>
+			      </div>
+			    </div>`
+		    	:
+		    	`<div class="dropdown-list">
+			      <div class="dropdown-list__item return">
+			        <span>Вернуть монеты</span>
+			      </div>
+			    </div>`
+		    }
+
 		  </div>
 		</ovg-dropdown>` : '' }
 		
@@ -889,10 +926,14 @@ const Helper = {
 	  	this.showDelete(`Вернуть монеты?`, `Вы точно хотите вернуть ${data.price} монет пользователю «${data.user_login}»?`, 'Вернуть').then((value) => {
 	  		if (!value) return
 		  	settings.coins.users[data.user_id].count += data.price
-		    settings.coins.store[data.id].buyers[index].status = 0
+		    settings.coins.store[data.id].buyers[index].status = 2
 		    settings.coins.store[data.id].sold --
 
 		    HelperSettings.save([document.querySelector('.optionField')]);
+
+	      setTimeout(() => {
+	        chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+	      }, 250)
 
 		    chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
 		    chrome.runtime.sendMessage({ from: 'popup_bot', sendMessage: `"@${data.user_login} Вам возвращено ${data.price} монет` })
@@ -911,7 +952,22 @@ const Helper = {
 		    Helper.buildUsersCount()
 
 	  	})
+	  })
 
+	  item.querySelector('.completed')?.addEventListener('click', () => {
+
+	  	this.showDelete(`Выполнить?`, `Вы точно хотите завершить задание пользователя «${data.user_login}»?`, 'Выполнить').then((value) => {
+	  		if (!value) return
+		    settings.coins.store[data.id].buyers[index].status = 1
+
+		    HelperSettings.save([document.querySelector('.optionField')]);
+
+		  	document.querySelector('.loyaltyStoreUsers.ovg-items').innerHTML = ''
+		  	settings.coins.store[data.id].buyers.forEach((value, index) => {
+		  		Helper.addLoyaltyStoreUsers(value, index)
+		  	})
+
+	  	})
 	  })
 
 		item.querySelector('.dropdown-ovg')?.addEventListener('click', () => {

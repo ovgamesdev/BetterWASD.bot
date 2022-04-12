@@ -16,6 +16,28 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.4',
+        date: '2022-04-12',
+        items: [{
+          text: [
+            `!commands`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Переменная *ban*`,
+            `Переменная *timeout*time*`,
+            `Переменная *remove*`,
+            `Пользователи лояльности - Добавить пользовательский блок в панели канала`
+          ],
+          label: 'added'
+        }, {
+          text: [
+            `Магазин лояльности`
+          ],
+          label: 'optimized'
+        }]
+      },{
         version: '1.1.3',
         date: '2022-04-11',
         items: [{
@@ -964,7 +986,8 @@ const BetterStreamChat = {
       </main>
 
       <main class="text" data-tab="variables" style="height: calc(100vh - 68px)">
-        <h1> Переменные команд </h1>
+        <h1> Переменные команд <a target="_blank" href="https://github.com/ovgamesdev/BetterWASD.data/blob/release/example_commands.md#%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B">Пример</a> </h1>
+
         <table class="table-ovg">
 
           <thead class="thead-ovg">
@@ -981,6 +1004,24 @@ const BetterStreamChat = {
               <div class="table-heading-text-ovg">Результат</div>
             </th>
           </thead>
+            <tr class="table-menu__block" style="justify-content: space-between;">
+              <td><div><p> *remove* </p></div></td>
+              <td><div><p> Удалит сообщение пользователя, который вызвал команду </p></div></td>
+              <td><div><p> *remove* </p></div></td>
+              <td><div><p>  </p></div></td>
+            </tr>
+            <tr class="table-menu__block" style="justify-content: space-between;">
+              <td><div><p> *timeout*[1/10/60]* </p></div></td>
+              <td><div><p> Временно заблокировать пользователя, который вызвал команду </p></div></td>
+              <td><div><p> *timeout*10* </p></div></td>
+              <td><div><p>  </p></div></td>
+            </tr>
+            <tr class="table-menu__block" style="justify-content: space-between;">
+              <td><div><p> *ban* </p></div></td>
+              <td><div><p> Забанит пользователя, который вызвал команду </p></div></td>
+              <td><div><p> *ban* </p></div></td>
+              <td><div><p>  </p></div></td>
+            </tr>
             <tr class="table-menu__block" style="justify-content: space-between;">
               <td><div><p> userOrMention() </p></div></td>
               <td><div><p> Отображает имя пользователя которого упомянули, а если нет, вернет того кто вызвал команду </p></div></td>
@@ -1002,8 +1043,8 @@ const BetterStreamChat = {
             <tr class="table-menu__block" style="justify-content: space-between;">
               <td><div><p> randomVar(${Helper.tooltip('...arg', 'Вы можете использовать этот Юникод: <br> "U+0029" для отображения ")" <br> "U+0026" для отображения "&"')}) </p></div></td>
               <td><div><p> Отображает случайный аргумент, отправленный в скобках через знак " &" </p></div></td>
-              <td><div><p> randomVar(1&ку&3 банан U+0026 я&56 - 1&кто-тоU+0029) </p></div></td>
-              <td><div><p> банан & я </p></div></td>
+              <td><div><p> randomVar(Ты не получил бан:U+0029&*timeout*10*) </p></div></td>
+              <td><div><p> Ты не получил бан:) </p></div></td>
             </tr>
             <tr class="table-menu__block" style="justify-content: space-between;">
               <td><div><p> user() </p></div></td>
@@ -1135,13 +1176,13 @@ const BetterStreamChat = {
             </div>
             <div class="row">
               <div class="col-36">
-                <label for="subject"> Сообщение ${Helper.tooltip('', 'Если вы используете переменные длина сообщения может измениться, </br> и если превысит 240 символов сообщение не отобразится в чате')} </label>
+                <label for="subject"> Сообщение </label>
               </div>
               <div class="col-64">
                 <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
+                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -2277,9 +2318,9 @@ const BetterStreamChat = {
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
 
-      // setTimeout(() => {
-      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
-      // }, 250)
+      setTimeout(() => {
+        chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      }, 250)
     })
     setCoinCount.addEventListener('click', () => {
       let data = settings.coins.users[coinsCount.getAttribute('user_id')]
@@ -2290,9 +2331,9 @@ const BetterStreamChat = {
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
 
-      // setTimeout(() => {
-      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
-      // }, 250)
+      setTimeout(() => {
+        chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      }, 250)
     })
     addCoinCount.addEventListener('click', () => {
       let data = settings.coins.users[coinsCount.getAttribute('user_id')]
@@ -2303,10 +2344,22 @@ const BetterStreamChat = {
       HelperSettings.save([document.querySelector('.optionField')]);
       Helper.hideModal()
 
-      // setTimeout(() => {
-      //   chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
-      // }, 250)
+      setTimeout(() => {
+        chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: settings.loyaltyUsers.addCustomBlock })
+      }, 250)
     })
+
+    loyaltyStoreId.onkeydown = () => {
+      let mention = ''
+      loyaltyStoreId.value.replace(/[a-zа-яA-ZА-Я0-9_-]+/gi, ($0) => mention = $0 )
+      loyaltyStoreId.value = mention
+    }
+
+    loyaltyStoreId.onchange = () => {
+      let mention = ''
+      loyaltyStoreId.value.replace(/[a-zа-яA-ZА-Я0-9_-]+/gi, ($0) => mention = $0 )
+      loyaltyStoreId.value = mention
+    }
 
     showFormloyaltyStoreBtn.addEventListener('click', () => {
       loyaltyStoreName.value = ''
@@ -2324,9 +2377,9 @@ const BetterStreamChat = {
 
       let def = settings.coins.store[loyaltyStoreId.value]
       let data = {
-        name: loyaltyStoreName.value,
-        id: loyaltyStoreId.value,
-        description: loyaltyStoreDescription.value,
+        name: loyaltyStoreName.value.trim(),
+        id: loyaltyStoreId.value.trim(),
+        description: loyaltyStoreDescription.value.trim(),
         price: Number(loyaltyStorePrice.value),
         quantity: Number(loyaltyStoreQuantity.value),
         sold: def ? def.sold : 0,               // Продано

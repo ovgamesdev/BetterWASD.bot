@@ -330,22 +330,23 @@ const HelperSettings = {
     //     }
     //   },
     // },
-    // loyaltyUsers: {
-    //   addCustomBlock: {
-    //     title: `Добавить пользовательский блок в панели канала (sorting_number панели)`,
-    //     type: 'numberWithBoolean',
-    //     min: 0,
-    //     max: 100,
-    //     onChange: (value) => {
-    //       // console.log('change', value)
-    //       if (value[1]) {
-    //         chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: value })
-    //       } else {
-    //         chrome.runtime.sendMessage({ from: 'popup_bot', deleteCustomizeBlockLoyaltyUsers: true })
-    //       }
-    //     }
-    //   },
-    // }
+    loyaltyUsers: {
+      addCustomBlock: {
+        title: `Добавить пользовательский блок в панели канала`,
+        description: 'Номер сортировки',
+        type: 'numberWithBoolean',
+        min: 0,
+        max: 100,
+        onChange: (value) => {
+          // console.log('change', value)
+          if (value[1]) {
+            chrome.runtime.sendMessage({ from: 'popup_bot', updateCustomizeBlockLoyaltyUsers: value })
+          } else {
+            chrome.runtime.sendMessage({ from: 'popup_bot', deleteCustomizeBlockLoyaltyUsers: true })
+          }
+        }
+      },
+    }
   },
   showMessage(message, type = 'success') {
     if (this.messageTimeout) {

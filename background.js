@@ -209,7 +209,7 @@ const socket = {
               socket.setTimeouts(JSData)
               protection.protect(JSData[1])
               giveaway.add(JSData)
-              if (JSData[1].user_id == giveaway.winner?.user_id) chrome.runtime.sendMessage({ from: 'background_bot', giveawayWinnerMgs: JSData })
+              if (JSData[1].user_id == giveaway.winner?.user_id) sendMessage({ from: 'background_bot', giveawayWinnerMgs: JSData })
               break;
             case "sticker":
               console.log(`[${JSData[0]}] ${JSData[1].user_login}: ${JSData[1].sticker.sticker_alias}`, JSData);
@@ -278,7 +278,7 @@ const socket = {
     };
   },
   send(message) {
-    if (this.socketd) {
+    if (this.socketd && message.trim() != '') {
       // console.log('send', message)
       this.socketd.send(`42["message",{"hash":"${this.hash(25)}","streamId":${this.streamId},"channelId":${this.channelId},"jwt":"${this.jwt}","message":"${message}"}]`)
     }
@@ -871,24 +871,30 @@ const socket = {
           let game = settings.bot.cmdUserGame.alias == '' ? '!game' : settings.bot.cmdUserGame.alias
           let title = settings.bot.cmdUserTitle.alias == '' ? '!title' : settings.bot.cmdUserTitle.alias
           let points = settings.bot.cmdPoints.alias == '' ? '!points' : settings.bot.cmdPoints.alias
+          let store = settings.coins.cmdStore.alias == '' ? '!store' : settings.coins.cmdStore.alias
+          let storeinfo = settings.coins.cmdStoreInfo.alias == '' ? '!storeinfo' : settings.coins.cmdStoreInfo.alias
+          let redeem = settings.coins.cmdRedeem.alias == '' ? '!redeem' : settings.coins.cmdRedeem.alias
 
           let allcommands = [
             settings.bot.cmdUptime.enabled ? uptime : '',
             settings.bot.cmdUserGame.enabled ? game : '',
             settings.bot.cmdUserTitle.enabled ? title : '',
-            settings.bot.cmdPoints.enabled ? points : ''
+            settings.bot.cmdPoints.enabled ? points + ' [USERNAME]' : '',
+            settings.coins.cmdStore.enabled ? store : '',
+            settings.coins.cmdStoreInfo.enabled ? storeinfo + ' {ID}' : '',
+            settings.coins.cmdRedeem.enabled ? redeem + ' {ID}' : ''
           ]
 
           for( let cmd of allcommands) {
-            commands += ' ' + cmd
+            commands += ' ' + cmd + ','
           }
 
           for (let cmd in settings.bot.usercmds) {
-            commands += settings.bot.usercmds[cmd].enabled ? ' ' + settings.bot.usercmds[cmd].cmd : ''
+            commands += settings.bot.usercmds[cmd].enabled ? ' ' + settings.bot.usercmds[cmd].cmd + ',' : ''
           }
 
           if (commands.trim() != '') {
-            socket.send(`@${user_login} команды чата: ${commands}`)
+            socket.send(`@${user_login} команды чата: ${commands.replaceLast(',', '')}`)
           } else {
             socket.send(`@${user_login} команды не найдены :(`)
           }
@@ -999,11 +1005,10 @@ const socket = {
 
       let data3 = socket.parseCmd(JSData[1].message, false)
 
-      let res = wasd.replacetext(item.result, JSData)
-
       if (item.enabled) {
         if (item.privilege == 0 && socket.isMod(JSData)) {
           if (data3.cmd == item.cmd) {
+            let res = wasd.replacetext(item.result, JSData)
             socket.send(res)
             return;
           }
@@ -1011,6 +1016,7 @@ const socket = {
 
         if (item.privilege == 1 && socket.isSub(JSData) || socket.isMod(JSData)) {
           if (data3.cmd == item.cmd) {
+            let res = wasd.replacetext(item.result, JSData)
             socket.send(res)
             return;
           }
@@ -1018,6 +1024,7 @@ const socket = {
 
         if (item.privilege == 2) {
           if (data3.cmd == item.cmd) {
+            let res = wasd.replacetext(item.result, JSData)
             socket.send(res)
             return;
           }
@@ -1067,7 +1074,7 @@ const socket = {
       console.log('startedTimeouts', socket.startedTimeouts, 'intervalLastMessages', socket.intervalLastMessages)
     }
   },
-  punishment(type, JSData) {
+  punishment(type, JSData, duration = '1') {
     let user_login = JSData.user_login
 
     if (type.toString() == '0') {
@@ -1079,34 +1086,34 @@ const socket = {
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/delete-messages`, response)
-      .then(res => res?.json())
-      .then((out) => {
+      // .then(res => res?.json())
+      // .then((out) => {
         // console.log(out)
         // if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
         //   console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
         // } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
         //   console.log(`@${user_login} Вы не можете этого сделать`);
         // }
-      })
+      // })
 
     } else if (type.toString() == '1') {
       // socket. Тайм-аут
 
       let response = {
         method: 'PUT',
-        body: `{"user_id":${JSData.user_id},"stream_id":${socket.streamId}, "keep_messages": true, "duration": 1}`,
+        body: `{"user_id":${JSData.user_id},"stream_id":${socket.streamId}, "keep_messages": true, "duration": ${duration}}`,
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
-      .then(res => res?.json())
-      .then((out) => {
-        //console.log(out)
-        if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
-          console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
-        } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
-          console.log(`@${user_login} Вы не можете этого сделать`);
-        }
-      })
+      // .then(res => res?.json())
+      // .then((out) => {
+      //   //console.log(out)
+      //   if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+      //     console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
+      //   } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+      //     console.log(`@${user_login} Вы не можете этого сделать`);
+      //   }
+      // })
 
     } else if (type.toString() == '2') {
       // socket. Бан
@@ -1117,15 +1124,15 @@ const socket = {
         headers: {'Content-Type': 'application/json'},
       }
       fetch(`https://wasd.tv/api/channels/${socket.channelId}/banned-users`, response)
-      .then(res => res?.json())
-      .then((out) => {
-        //console.log(out)
-        if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
-            console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
-        } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
-            console.log(`@${user_login} Вы не можете этого сделать`);
-        }
-      })
+      // .then(res => res?.json())
+      // .then((out) => {
+      //   //console.log(out)
+      //   if (out.error.code == 'STREAMER_BAN_ALREADY_EXISTS') {
+      //       console.log(`@${user_login} Пользователь @${JSData.user_login} уже заблокирован`);
+      //   } else if (out.error.code == 'USER_BAD_BAN_PERMISSIONS') {
+      //       console.log(`@${user_login} Вы не можете этого сделать`);
+      //   }
+      // })
 
     }
   }
@@ -1142,7 +1149,7 @@ const wasd = {
         fetch(`https://wasd.tv/api/chat/streams/${socket.streamId}/participants?limit=${limit}&offset=${offset}`)
         .then(res => res?.json())
         .then((out) => {
-          if (socket.streamId == 0) return
+          if (socket.streamId == 0 || out.error) return
           wasd.users.push(...out.result)
           if(out && out.result && out.result.length == limit) {
             getall(limit, offset+1)
@@ -1224,6 +1231,23 @@ const wasd = {
         } else {
           return '@undefined'
         }
+      })
+
+      res = res.replace(/\*ban\*/ig, () => {
+        socket.punishment(2, JSData[1])
+        return ''
+      })
+
+      res = res.replace(/(\*timeout\*([^*]+[^ ]))/ig, (match) => {
+        let duration = match.replace(/\*timeout\*/ig, '').replace(/\*/ig, '')
+        if (duration != '1' && duration != '10' && duration != '60') { duration = '10' }
+        socket.punishment(1, JSData[1], duration)
+        return ''
+      })
+
+      res = res.replace(/\*remove\*/ig, () => {
+        socket.punishment(0, JSData[1])
+        return ''
       })
 
     } catch (err) {
@@ -1317,12 +1341,7 @@ const protection = {
 chrome.runtime.onMessage.addListener(async (request) => {
 
   if (request.from == "popup_bot" && request.log == true) {
-    chrome.runtime.sendMessage({
-      from: 'background_bot',
-      logs: [...socket.logs]
-    }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', logs: [...socket.logs] })
   }
   if (request.from == "popup_bot" && request.keyWord) {
     giveaway.keyWord = request.keyWord
@@ -1331,17 +1350,13 @@ chrome.runtime.onMessage.addListener(async (request) => {
     giveaway.start()
   }
   if (request.from == "popup_bot" && request.draw) {
-    chrome.runtime.sendMessage({ from: 'background_bot', winner: giveaway.draw() }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', winner: giveaway.draw() })
   }
   if (request.from == "popup_bot" && request.reset) {
     giveaway.reset()
   }
   if (request.from == "popup_bot" && request.getData) {
-    chrome.runtime.sendMessage({ from: 'background_bot', getData: giveaway.getData() }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', getData: giveaway.getData() })
   }
   if (request.from == "popup_bot" && request.end) {
     giveaway.end()
@@ -1350,9 +1365,7 @@ chrome.runtime.onMessage.addListener(async (request) => {
     giveaway.clearWinner()
   }
   if (request.from == "popup_bot" && request.getGiveaweySettings) {
-    chrome.runtime.sendMessage({ from: 'background_bot', getGiveaweySettings: {channel_name: socket.current?.user_profile?.user_login, stream_id: socket.streamId, private_link: socket.closedId} }, function(response) {
-    console.log(response);
-  })
+    sendMessage({ from: 'background_bot', getGiveaweySettings: {channel_name: socket.current?.user_profile?.user_login, stream_id: socket.streamId, private_link: socket.closedId} })
   }
   if (request.from == "popup_bot" && request.stopTimeout) {
     let t = socket.startedTimeouts[request.stopTimeout]
@@ -1362,25 +1375,17 @@ chrome.runtime.onMessage.addListener(async (request) => {
     }
   }
   if (request.from == "popup_bot" && request.settings) {
-    chrome.runtime.sendMessage({ from: 'background_bot', settings: settings }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', settings: settings })
   }
   if (request.from == "popup_bot" && request.defsettings) {
-    chrome.runtime.sendMessage({ from: 'background_bot', defsettings: Helper.getDefaultSettings() }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', defsettings: Helper.getDefaultSettings() })
   }
   if (request.from == "popup_bot" && request.createPoll) {
     poll.create(request.createPoll.question, request.createPoll.arr, request.createPoll.duration)
   }
   if (request.from == "popup_bot" && request.getPollSettings) {
-    chrome.runtime.sendMessage({ from: 'background_bot', getPollSettings: {question: poll.question, args: poll.pollArgs, duration: poll.duration, startTime: poll.startTime, wins: poll.wins, data: {timeoutWin: poll.timeoutWin, duration: poll.winDuration} } }, function(response) {
-      console.log(response);
-    })
-    chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: poll.get() }, function(response) {
-      console.log(response);
-    })
+    sendMessage({ from: 'background_bot', getPollSettings: {question: poll.question, args: poll.pollArgs, duration: poll.duration, startTime: poll.startTime, wins: poll.wins, data: {timeoutWin: poll.timeoutWin, duration: poll.winDuration} } })
+    sendMessage({ from: 'background_bot', pollPercent: poll.get() })
   }
   if (request.from == "popup_bot" && request.endPoll) {
     poll.end()
@@ -1401,12 +1406,12 @@ chrome.runtime.onMessage.addListener(async (request) => {
   // if (request.from == "popup_bot" && request.deleteCustomizeBlockLoyaltyStore) {
   //   coins.deleteCustomizeBlockLoyaltyStore(request.deleteCustomizeBlockLoyaltyStore)
   // }
-  // if (request.from == "popup_bot" && request.updateCustomizeBlockLoyaltyUsers) {
-  //   coins.updateCustomizeBlockLoyaltyUsers(request.updateCustomizeBlockLoyaltyUsers)
-  // }
-  // if (request.from == "popup_bot" && request.deleteCustomizeBlockLoyaltyUsers) {
-  //   coins.deleteCustomizeBlockLoyaltyUsers(request.deleteCustomizeBlockLoyaltyUsers)
-  // }
+  if (request.from == "popup_bot" && request.updateCustomizeBlockLoyaltyUsers) {
+    coins.updateCustomizeBlockLoyaltyUsers(request.updateCustomizeBlockLoyaltyUsers)
+  }
+  if (request.from == "popup_bot" && request.deleteCustomizeBlockLoyaltyUsers) {
+    coins.deleteCustomizeBlockLoyaltyUsers(request.deleteCustomizeBlockLoyaltyUsers)
+  }
 
   return true
 
@@ -1435,7 +1440,7 @@ const giveaway = {
       if(userFound == false) {
         console.log(`@${JSData[1].user_login}, You are now registered!`);
         giveaway.registrationArr.push({ user_login: JSData[1].user_login, user_id: JSData[1].user_id, user_avatar: JSData[1].user_avatar, user_channel_role: JSData[1].user_channel_role, other_roles: JSData[1].other_roles});
-        chrome.runtime.sendMessage({ from: 'background_bot', register_data: JSData })
+        sendMessage({ from: 'background_bot', register_data: JSData })
       }
     }
   },
@@ -1511,7 +1516,7 @@ const poll = {
       this.end()
     }, duration * 1000*60)
     this.sendDataInterval = setInterval(() => {
-      chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
+      sendMessage({ from: 'background_bot', pollPercent: this.get() })
     }, 100)
 
     let s = ''
@@ -1522,7 +1527,7 @@ const poll = {
     socket.send(`Открыт опрос «${question}», используйте !vote [id] для голосования.`);
     socket.send(`Варианты голосования: ${s}.`);
 
-    chrome.runtime.sendMessage({ from: 'background_bot', createdPoll: { question: question, args: args, duration: duration, startTime: this.startTime, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} } })
+    sendMessage({ from: 'background_bot', createdPoll: { question: question, args: args, duration: duration, startTime: this.startTime, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} } })
     return true
   },
   addVote(user_id, arg, user_login) {
@@ -1548,7 +1553,7 @@ const poll = {
     console.log(`@${user_login} ваш голос за`, arg, 'защитан')
     this.votes[arg].push(user_id)
     
-    // chrome.runtime.sendMessage({ from: 'background_bot', pollPercent: this.get() })
+    // sendMessage({ from: 'background_bot', pollPercent: this.get() })
     
     return true
   },
@@ -1618,7 +1623,7 @@ const poll = {
       this.remove()
     }, this.winDuration)
 
-    chrome.runtime.sendMessage({ from: 'background_bot', winPoll: this.wins, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} })
+    sendMessage({ from: 'background_bot', winPoll: this.wins, data: {timeoutWin: this.timeoutWin, duration: this.winDuration} })
     return this.wins
   },
   remove() {
@@ -1633,7 +1638,7 @@ const poll = {
     clearTimeout(this.timeoutRemove)
     this.timeoutRemove = null
     this.timeoutWin = null
-    chrome.runtime.sendMessage({ from: 'background_bot', removePoll: true })
+    sendMessage({ from: 'background_bot', removePoll: true })
   }
 }
 
@@ -1651,11 +1656,11 @@ const coins = {
 
       chrome.storage['sync'].set(settings, () => {
         console.log('saveUserCoins', settings.coins.users);
-        chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
+        sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
 
-        // setTimeout(() => {
-        //   this.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
-        // }, 250)
+        setTimeout(() => {
+          this.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
+        }, 250)
 
       });
 
@@ -1684,14 +1689,14 @@ const coins = {
       if (settings.coins.users[JSData[1].user_id] && left < 0) return `Недостаточно монет`
 
       settings.coins.users[JSData[1].user_id].count = left
-      chrome.runtime.sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
+      sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
 
 
       settings.coins.store[id].buyers.push({
         user_id: JSData[1].user_id,
         user_login: JSData[1].user_login,
         created_at: JSData[1].date_time,
-        status: 1,
+        status: 0,
         price: settings.coins.store[id].price,
         id: id
       })
@@ -1701,6 +1706,10 @@ const coins = {
 
       chrome.storage['sync'].set(settings, () => {
         console.log('saveStoreCoins', settings.coins.store[id]);
+
+        setTimeout(() => {
+          coins.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
+        }, 250)
       });
 
       return true
@@ -1752,47 +1761,47 @@ const coins = {
   //     }
   //   )
   // },
-  // updateCustomizeBlockLoyaltyUsers(value) {
-  //   if (!value[1] && !settings.coins.users_custom_block_id) {
-  //     this.deleteCustomizeBlockLoyaltyStore()
-  //     return
-  //   }
+  updateCustomizeBlockLoyaltyUsers(value) {
+    if (!value[1] && !settings.coins.users_custom_block_id) {
+      this.deleteCustomizeBlockLoyaltyUsers()
+      return
+    }
 
-  //   if (!value[1]) return
+    if (!value[1]) return
 
-  //   let test = Object.values(settings.coins.users)
-  //   test = test.sort(function(a, b) { return b.count - a.count; });
-  //   test = test.slice(0, 10)
+    let test = Object.values(settings.coins.users)
+    test = test.sort(function(a, b) { return b.count - a.count; });
+    test = test.slice(0, 10)
 
-  //   let text = '| № | Пользователь | Монет |\\n| ----- | ----- | ----- |'
+    let text = '| № | Пользователь | Монет |\\n| ----- | ----- | ----- |'
 
-  //   test.forEach((value, index) => {
-  //     text += `\\n| ${index+1}. | ${value.user_login} | ${value.count} |`
-  //   })
+    test.forEach((value, index) => {
+      text += `\\n| ${index+1}. | ${value.user_login} | ${value.count} |`
+    })
 
-  //   customizeBlock.update(settings.coins.users_custom_block_id, `Лояльность ${settings.bot.cmdPoints?.alias == '' ? '!points' : settings.bot.cmdPoints?.alias}`, text, value[0]).then(
-  //     (result) => {
-  //       settings.coins.users_custom_block_id = result.id
-  //       chrome.storage['sync'].set(settings, () => {});
-  //       // console.log('result', result)
-  //     },
-  //     (error) => {
-  //       console.log('error', error)
-  //     }
-  //   )
-  // },
-  // deleteCustomizeBlockLoyaltyUsers() {
-  //   customizeBlock.delete(settings.coins.users_custom_block_id).then(
-  //     (result) => {
-  //       settings.coins.users_custom_block_id = result.id
-  //       chrome.storage['sync'].set(settings, () => {});
-  //       // console.log('result', result)
-  //     },
-  //     (error) => {
-  //       console.log('error', error)
-  //     }
-  //   )
-  // },
+    customizeBlock.update(settings.coins.users_custom_block_id, `Лояльность ${settings.bot.cmdPoints?.alias == '' ? '!points' : settings.bot.cmdPoints?.alias}`, text, value[0]).then(
+      (result) => {
+        settings.coins.users_custom_block_id = result.id
+        chrome.storage['sync'].set(settings, () => {});
+        // console.log('result', result)
+      },
+      (error) => {
+        console.log('error', error)
+      }
+    )
+  },
+  deleteCustomizeBlockLoyaltyUsers() {
+    customizeBlock.delete(settings.coins.users_custom_block_id).then(
+      (result) => {
+        settings.coins.users_custom_block_id = result.id
+        chrome.storage['sync'].set(settings, () => {});
+        // console.log('result', result)
+      },
+      (error) => {
+        console.log('error', error)
+      }
+    )
+  },
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
@@ -1849,72 +1858,93 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
 // });
 
-// const customizeBlock = {
-//   async create(title, text, sorting_number) {
-//     return new Promise(async (resolve, reject) => {
+const customizeBlock = {
+  async create(title, text, sorting_number) {
+    return new Promise(async (resolve, reject) => {
 
-//       try {
-//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
-//           method: 'POST',
-//           body: `{"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
-//           headers: {'Content-Type': 'application/json'},
-//         })
-//         const out = await response.json();
+      try {
+        const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
+          method: 'POST',
+          body: `{"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
+          headers: {'Content-Type': 'application/json'},
+        })
+        const out = await response.json();
 
-//         if (out?.result?.id) {
-//           resolve({id: out.result.id})
-//         } else {
-//           reject(out)
-//         }
+        if (out?.result?.id) {
+          resolve({id: out.result.id})
+        } else {
+          reject(out)
+        }
 
-//       } catch (err) {
-//         reject(err)
-//       }
+      } catch (err) {
+        reject(err)
+      }
 
-//     })
-//   },
-//   async update(id, title, text, sorting_number) {
-//     return new Promise(async (resolve, reject) => {
+    })
+  },
+  async update(id, title, text, sorting_number) {
+    return new Promise(async (resolve, reject) => {
 
-//       try {
-//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
-//           method: 'PATCH',
-//           body: `{"id":${id},"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
-//           headers: {'Content-Type': 'application/json'},
-//         })
-//         const out = await response.json();
+      try {
 
-//         if (out?.result?.id) {
-//           resolve({id: out.result.id})
-//         } else {
-//           customizeBlock.create(title, text, sorting_number).then(
-//             (result) => {
-//               resolve(result)
-//             },
-//             (error) => {
-//               reject(error)
-//             }
-//           )
-//         }
+        if (!id) {
+          customizeBlock.create(title, text, sorting_number).then(
+            (result) => resolve(result),
+            (error) => reject(error)
+          )
+        } else {
+          const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks`, {
+            method: 'PATCH',
+            body: `{"id":${id},"title":"${title}","image":{},"sorting_number":${sorting_number},"block_type":"CUSTOM_BLOCK","link":"","text":"${text}"}`,
+            headers: {'Content-Type': 'application/json'},
+          })
+          const out = await response.json();
 
-//       } catch (err) {
-//         reject(err)
-//       }
+          if (out?.result?.id) {
+            resolve({id: out.result.id})
+          } else {
+            customizeBlock.create(title, text, sorting_number).then(
+              (result) => resolve(result),
+              (error) => reject(error)
+            )
+          }
+        }
+
+      } catch (err) {
+        reject(err)
+      }
       
-//     })
-//   },
-//   async delete(id) {
-//     return new Promise(async (resolve, reject) => {
+    })
+  },
+  async delete(id) {
+    return new Promise(async (resolve, reject) => {
 
-//       try {
-//         const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks/${id}`, {method: 'DELETE'})
-//         const out = await response.json();
+      try {
+        const response = await fetch(`https://wasd.tv/api/v2/channels/${socket.channelId}/custom_blocks/${id}`, {method: 'DELETE'})
+        const out = await response.json();
 
-//         resolve({id: null})
-//       } catch (err) {
-//         reject(err)
-//       }
+        resolve({id: null})
+      } catch (err) {
+        reject(err)
+      }
 
-//     })
-//   }
-// }
+    })
+  }
+}
+
+if (!String.prototype.replaceLast) {
+  String.prototype.replaceLast = function(find, replace) {
+    var index = this.lastIndexOf(find);
+
+    if (index >= 0) {
+      return this.substring(0, index) + replace + this.substring(index + find.length);
+    }
+
+    return this.toString();
+  };
+}
+
+
+const sendMessage = (args) => {
+  if (chrome.runtime && chrome.runtime.id) chrome.runtime.sendMessage(args)
+}
