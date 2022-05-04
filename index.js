@@ -16,6 +16,25 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.5',
+        date: '2022-05-04',
+        items: [{
+          text: [
+            `Добавить монет за 5 минут просмотра`
+          ],
+          label: 'fixed'
+        }, {
+          text: [
+            `Магазин лояльности - Действие`
+          ],
+          label: 'added'
+        }, {
+          text: [
+            `Таймеры бота - Минимум линии`
+          ],
+          label: 'changed'
+        }]
+      },{
         version: '1.1.4',
         date: '2022-04-12',
         items: [{
@@ -313,10 +332,10 @@ const BetterStreamChat = {
             <div class="logo__mob" tabindex="0"></div>
           </a>
 
-          <wasd-input class="ng-valid ng-dirty ng-touched notfocused" id="settingsSearchDiv">
+          <wasd-input id="settingsSearchDiv" class="notfocused">
             <div ovg="" class="wasd-input-wrapper">
               <div ovg="" class="wasd-input">
-                <input ovg="" id="settingsSearch" class="has-button ng-pristine ng-untouched ng-valid ui-autocomplete-input" placeholder="Поиск настроек" type="text" autocomplete="off" style="margin: 0;">
+                <input ovg="" id="settingsSearch" class="has-button ui-autocomplete-input" placeholder="Поиск настроек" type="text" autocomplete="off" style="margin: 0;">
                 <button ovg="" type="button" class="button-icon">
                   <i ovg="" class="wasd-icons-search"></i>
                 </button>
@@ -509,10 +528,10 @@ const BetterStreamChat = {
             <h2> Пользователи: <span class="userList_Count">0</span> </h2>
 
             <div style="display: flex;justify-content: space-between;">
-              <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+              <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                 <div ovg="" class="wasd-input-wrapper" style="margin-bottom: 6px;">
                   <div ovg="" class="wasd-input">
-                    <input id="searchUser" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Поиск.." type="text" autocomplete="off">
+                    <input id="searchUser" ovg="" placeholder="Поиск.." type="text" autocomplete="off">
                   </div>
                 </div>
               </wasd-input>
@@ -556,10 +575,10 @@ const BetterStreamChat = {
                   <label for="subject" style="float: left;text-align: right;padding-right: 10px;margin-top: -8px;"> Ключевое слово </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input id="giveaway_keyword" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ключевое слово" type="text" autocomplete="off" value="!giveaway">
+                        <input id="giveaway_keyword" ovg="" placeholder="Ключевое слово" type="text" autocomplete="off" value="!giveaway">
                       </div>
                     </div>
                    </wasd-input>
@@ -635,11 +654,11 @@ const BetterStreamChat = {
           ${HelperSettings.build('loyaltyUsers')}
         </div>
         
-        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-valid ng-dirty ng-touched">
+        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
           <div ovg="" class="wasd-input-wrapper">
             <div ovg="" class="wasd-input">
               <label ovg="" class="">Поиск пользователя</label>
-              <input id="coinUsersSearch" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Поиск пользователя" type="text">
+              <input id="coinUsersSearch" ovg="" class="has-button" placeholder="Поиск пользователя" type="text">
               <button ovg="" type="button" class="button-icon">
                 <i ovg="" class="wasd-icons-close"></i>
               </button>
@@ -735,11 +754,11 @@ const BetterStreamChat = {
           <option> ban </option>
         </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div-->
 
-        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-valid ng-dirty ng-touched">
+        <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
           <div ovg="" class="wasd-input-wrapper">
             <div ovg="" class="wasd-input">
               <label ovg="" class="">Поиск пользователя</label>
-              <input id="logUsersSearch" ovg="" class="has-button ng-pristine ng-untouched ng-valid" placeholder="Поиск пользователя" type="text">
+              <input id="logUsersSearch" ovg="" class="has-button" placeholder="Поиск пользователя" type="text">
               <button ovg="" type="button" class="button-icon">
                 <i ovg="" class="wasd-icons-close"></i>
               </button>
@@ -1085,10 +1104,10 @@ const BetterStreamChat = {
                 <label for="fname"> Префикс </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="userCmdPrefix" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Префикс" type="text" autocomplete="off">
+                      <input id="userCmdPrefix" ovg="" placeholder="Префикс" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1099,10 +1118,10 @@ const BetterStreamChat = {
                 <label for="subject"> Команда </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="userCmdCmd" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="!команда" type="text" autocomplete="off">
+                      <input id="userCmdCmd" ovg="" placeholder="!команда" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1113,10 +1132,10 @@ const BetterStreamChat = {
                 <label  for="fname"> Ответ ${Helper.tooltip('', 'Если вы используете переменные длина сообщения может измениться, </br> и если превысит 240 символов сообщение не отобразится в чате')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="userCmdResult" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
+                      <textarea id="userCmdResult" ovg="" placeholder="Ответ на команду. (Поддерживает переменные)" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -1127,7 +1146,7 @@ const BetterStreamChat = {
                 <label for="fname"> Привилегия </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
                       <select id="userCmdPrivilege">
@@ -1165,10 +1184,10 @@ const BetterStreamChat = {
                 <label for="fname"> Имя </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Имя" type="text" autocomplete="off">
+                      <input id="timeoutName" ovg="" placeholder="Имя" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1179,10 +1198,10 @@ const BetterStreamChat = {
                 <label for="subject"> Сообщение </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <textarea id="timeoutMessage" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Сообщение" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
+                      <textarea id="timeoutMessage" ovg="" placeholder="Сообщение" type="text" autocomplete="off" style="height:100px;resize:none;"></textarea>
                     </div>
                   </div>
                  </wasd-input>
@@ -1193,10 +1212,10 @@ const BetterStreamChat = {
                 <label for="fname"> Интервал ${Helper.tooltip('', 'Значение в секундах')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutInterval" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="interval" type="number" value="300" min="5" autocomplete="off">
+                      <input id="timeoutInterval" ovg="" placeholder="interval" type="number" value="300" min="5" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1207,10 +1226,10 @@ const BetterStreamChat = {
                 <label for="fname"> Минимум линии ${Helper.tooltip('', 'Минимальное количество строк чата за последние 5 минут, необходимое для активации таймера')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="timeoutMinMessages" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="minMessages" type="number" value="5" min="1" max="1000" autocomplete="off">
+                      <input id="timeoutMinMessages" ovg="" placeholder="minMessages" type="number" value="5" min="1" max="1000" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1266,10 +1285,10 @@ const BetterStreamChat = {
                 <label for="fname"> Команда </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда" type="text" autocomplete="off">
+                      <input id="aliasName" ovg="" placeholder="Команда" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1300,10 +1319,10 @@ const BetterStreamChat = {
                 <label for="fname"> Команда вкл. </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName2_1" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда вкл." type="text" autocomplete="off">
+                      <input id="aliasName2_1" ovg="" placeholder="Команда вкл." type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1314,10 +1333,10 @@ const BetterStreamChat = {
                 <label for="fname"> Команда откл. </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
-                      <input id="aliasName2_2" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Команда откл." type="text" autocomplete="off">
+                      <input id="aliasName2_2" ovg="" placeholder="Команда откл." type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1348,10 +1367,10 @@ const BetterStreamChat = {
                 <label for="fname"> Вопрос </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="questionInput" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Вопрос" type="text" autocomplete="off">
+                      <input id="questionInput" ovg="" placeholder="Вопрос" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1362,10 +1381,10 @@ const BetterStreamChat = {
                 <label for="fname"> Вариант 1 </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input ovg="" class="respnose has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                      <input ovg="" class="respnose has-button" placeholder="" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1376,10 +1395,10 @@ const BetterStreamChat = {
                 <label for="fname"> Вариант 2 </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input ovg="" class="respnose has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                      <input ovg="" class="respnose has-button" placeholder="" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1392,10 +1411,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 3 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1406,10 +1425,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 4 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1420,10 +1439,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 5 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1434,10 +1453,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 6 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1448,10 +1467,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 7 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1462,10 +1481,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 8 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1476,10 +1495,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 9 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1490,10 +1509,10 @@ const BetterStreamChat = {
                   <label for="fname"> Вариант 10 </label>
                 </div>
                 <div class="col-64">
-                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                  <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                     <div ovg="" class="wasd-input-wrapper">
                       <div ovg="" class="wasd-input">
-                        <input ovg="" class="respnose-hide has-button ng-pristine ng-untouched ng-valid" placeholder="" type="text" autocomplete="off">
+                        <input ovg="" class="respnose-hide has-button" placeholder="" type="text" autocomplete="off">
                       </div>
                     </div>
                    </wasd-input>
@@ -1513,7 +1532,7 @@ const BetterStreamChat = {
                 <label for="fname"> Продолжительность </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
                       <select id="durationSelect">
@@ -1553,10 +1572,10 @@ const BetterStreamChat = {
                 <label for="fname"> Монет </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="coinsCount" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="interval" type="number" value="300" min="0" autocomplete="off">
+                      <input id="coinsCount" ovg="" placeholder="interval" type="number" value="300" min="0" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1589,10 +1608,10 @@ const BetterStreamChat = {
                 <label for="subject"> Ссылка </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="blackListUrl" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="https://wasd.tv" type="text" autocomplete="off">
+                      <input id="blackListUrl" ovg="" placeholder="https://wasd.tv" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1603,7 +1622,7 @@ const BetterStreamChat = {
                 <label for="fname"> Тип </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
                     <div ovg="" class="wasd-input">
                       <select id="blackListType">
@@ -1641,10 +1660,10 @@ const BetterStreamChat = {
                 <label for="subject"> Имя </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStoreName" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Имя товара" type="text" autocomplete="off">
+                      <input id="loyaltyStoreName" ovg="" placeholder="Имя товара" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1655,10 +1674,10 @@ const BetterStreamChat = {
                 <label for="subject"> id ${Helper.tooltip('', '!redeem {ID}')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStoreId" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Id товара" type="text" autocomplete="off">
+                      <input id="loyaltyStoreId" ovg="" placeholder="Id товара" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1669,10 +1688,10 @@ const BetterStreamChat = {
                 <label for="subject"> Описание </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStoreDescription" ovg="" class="ng-pristine ng-untouched ng-valid" placeholder="Описание товара" type="text" autocomplete="off">
+                      <input id="loyaltyStoreDescription" ovg="" placeholder="Описание товара" type="text" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1683,10 +1702,10 @@ const BetterStreamChat = {
                 <label for="subject"> Цена </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStorePrice" ovg="" class="ng-pristine ng-untouched ng-valid" value="100" type="number" autocomplete="off">
+                      <input id="loyaltyStorePrice" ovg="" value="100" type="number" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1694,13 +1713,34 @@ const BetterStreamChat = {
             </div>
             <div class="row">
               <div class="col-36">
+                <label for="subject"> Действие </label>
+              </div>
+              <div class="col-64">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
+                  <div ovg="" class="wasd-input-wrapper" style="padding: 0 0 8px 0;">
+                    <div ovg="" class="wasd-input">
+                      <select id="loyaltyStoreAction">
+                        <option value="0" selected> Нет </option>
+                        <option value="1" > Удалить сообщение </option>
+                        <option value="2" > Отстранить на 1мин </option>
+                        <option value="3" > Отстранить на 10мин </option>
+                        <option value="4" > Отстранить на 1час </option>
+                        <option value="5" > Забанить </option>
+                      </select> <div class="accordion-header-arrow-ovg"><i class="wasd-icons-dropdown-top"></i></div>
+                    </div>
+                  </div>
+                </wasd-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-36">
                 <label for="subject"> Количество ${Helper.tooltip('', 'Используйте -1 для неограниченного количества')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStoreQuantity" ovg="" class="ng-pristine ng-untouched ng-valid" value="-1" type="number" autocomplete="off">
+                      <input id="loyaltyStoreQuantity" ovg="" value="-1" type="number" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -1711,10 +1751,10 @@ const BetterStreamChat = {
                 <label for="subject"> Количество на пользователя ${Helper.tooltip('', 'Используйте -1 для неограниченного количества')} </label>
               </div>
               <div class="col-64">
-                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="" class="ng-dirty ng-touched ng-valid">
+                <wasd-input _ngcontent-gmb-c228="" _ngcontent-gmb-c28="">
                   <div ovg="" class="wasd-input-wrapper">
                     <div ovg="" class="wasd-input">
-                      <input id="loyaltyStoreBuyOnUser" ovg="" class="ng-pristine ng-untouched ng-valid" value="-1" type="number" autocomplete="off">
+                      <input id="loyaltyStoreBuyOnUser" ovg="" value="-1" type="number" autocomplete="off">
                     </div>
                   </div>
                  </wasd-input>
@@ -2366,6 +2406,7 @@ const BetterStreamChat = {
       loyaltyStoreId.value = ''
       loyaltyStoreDescription.value = ''
       loyaltyStorePrice.value = '100'
+      loyaltyStoreAction.selectedIndex = 0
       loyaltyStoreQuantity.value = '-1'
 
       Helper.showModal('loyaltyStore')
@@ -2381,6 +2422,7 @@ const BetterStreamChat = {
         id: loyaltyStoreId.value.trim(),
         description: loyaltyStoreDescription.value.trim(),
         price: Number(loyaltyStorePrice.value),
+        action: loyaltyStoreAction.selectedIndex,
         quantity: Number(loyaltyStoreQuantity.value),
         sold: def ? def.sold : 0,               // Продано
         buyers: def ? def.buyers : [],          // Покупатели

@@ -204,7 +204,7 @@ const Helper = {
 	  let item = document.createElement('tr')
 	  item.classList.add(`table-menu__block`)
 	  item.style = 'justify-content: space-between;'
-	  item.innerHTML = `<td><div><p name="${data.name}">${data.name}</p></div></td> <td><div><p message="${data.message}">${data.message}</p></div></td> <td><div><p interval="${data.interval}">${data.interval}</p></div></td> <td><div><p minMessages="${data.minMessages ? data.minMessages : "5"}">${data.minMessages ? data.minMessages : "5"}</p></div></td> <td class="td-btns"><div> 
+	  item.innerHTML = `<td><div><p name="${data.name}">${data.name}</p></div></td> <td><div><p message="${data.message}">${data.message}</p></div></td> <td><div><p interval="${data.interval}">${data.interval}</p></div></td> <td><div><p minMessages="${data.minMessages}">${data.minMessages}</p></div></td> <td class="td-btns"><div> 
 	  
 		<ovg-dropdown class="">
 		  <div class="dropdown-ovg is-action medium" style="right: 10px;">
@@ -364,7 +364,6 @@ const Helper = {
 	  if (!settings.bot.usercmds[data.cmd]) {
 	    settings.bot.usercmds[data.cmd] = data
 	    Helper.addUserCmd(data)
-	    HelperSettings.save([document.querySelector('.optionField')]);
 	  } else {
 	    settings.bot.usercmds[data.cmd] = data
 
@@ -373,9 +372,8 @@ const Helper = {
 	    item.querySelector('[cmd]').textContent = data.cmd
 	    item.querySelector('[result]').textContent = data.result
 	    item.querySelector('[privilege]').textContent = `${data.privilege == 0 ? 'Модератор' : ''}${data.privilege == 1 ? 'Подписчик' : ''}${data.privilege == 2 ? 'Каждый' : ''}`
-
-	    HelperSettings.save([document.querySelector('.optionField')]);
 	  }
+		HelperSettings.save([document.querySelector('.optionField')]);
 	},
 	tryAddUserTimeout(data) {
 		let maxLength = data.message
@@ -392,8 +390,8 @@ const Helper = {
 	    HelperSettings.showMessage('Интервал меньше 5ти секунд', 'error')
 	    return 'err'
 	  }
-	  if (data.minMessages < 1) {
-	    HelperSettings.showMessage('Минимум линии меньше 1го', 'error')
+	  if (data.minMessages < 0) {
+	    HelperSettings.showMessage('Минимум линии меньше 0', 'error')
 	    return 'err'
 	  }
 
@@ -754,6 +752,7 @@ const Helper = {
 	    loyaltyStoreId.value = changed.id
 	    loyaltyStoreDescription.value = changed.description
 	    loyaltyStorePrice.value = changed.price
+	    loyaltyStoreAction.selectedIndex = changed.action
 	    loyaltyStoreQuantity.value = changed.quantity
 	    loyaltyStoreBuyOnUser.value = changed.buyOnUser
 

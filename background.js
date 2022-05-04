@@ -1077,7 +1077,7 @@ const socket = {
   punishment(type, JSData, duration = '1') {
     let user_login = JSData.user_login
 
-    if (type.toString() == '0') {
+    if (type.toString() === '0') {
       // socket. Удалить
 
       let response = {
@@ -1096,7 +1096,7 @@ const socket = {
         // }
       // })
 
-    } else if (type.toString() == '1') {
+    } else if (type.toString() === '1') {
       // socket. Тайм-аут
 
       let response = {
@@ -1115,7 +1115,7 @@ const socket = {
       //   }
       // })
 
-    } else if (type.toString() == '2') {
+    } else if (type.toString() === '2') {
       // socket. Бан
 
       let response = {
@@ -1654,15 +1654,18 @@ const coins = {
         }
       })
 
-      chrome.storage['sync'].set(settings, () => {
+      const callback = () => {
         console.log('saveUserCoins', settings.coins.users);
         sendMessage({ from: 'background_bot', coinUsers: settings.coins.users })
 
         setTimeout(() => {
           this.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
         }, 250)
+      }
 
-      });
+      setTimeout(() => {
+        chrome.storage['sync'].set(settings, callback)
+      }, 50)
 
     })
   },
@@ -1711,6 +1714,24 @@ const coins = {
           coins.updateCustomizeBlockLoyaltyUsers(settings.loyaltyUsers.addCustomBlock)
         }, 250)
       });
+
+      switch (Number(settings.coins.store[id].action)) {
+        case 1:
+          socket.punishment('0', JSData[1])
+          break;
+        case 2:
+          socket.punishment('1', JSData[1], '1')
+          break;
+        case 3:
+          socket.punishment('1', JSData[1], '10')
+          break;
+        case 4:
+          socket.punishment('1', JSData[1], '60')
+          break;
+        case 5:
+          socket.punishment('2', JSData[1])
+          break;
+      }
 
       return true
     } catch (err) {
