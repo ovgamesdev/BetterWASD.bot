@@ -16,6 +16,16 @@ const BetterStreamChat = {
     };
     let changelogList = [
       {
+        version: '1.1.6',
+        date: '2022-05-09',
+        items: [{
+          text: [
+            '!uptime',
+            'Переменная uptime()'
+          ],
+          label: 'fixed'
+        }]
+      },{
         version: '1.1.5',
         date: '2022-05-04',
         items: [{

@@ -819,10 +819,9 @@ const socket = {
           .then(res => res?.json())
           .then((out) => {
             if (typeof out.result.media_container.published_at !== 'undefined') {
-              var date1 = new Date(out.result.media_container.published_at)
-              var dater = new Date(new Date() - date1);
-              var textdate = `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
-              socket.send(`@${user_login} стрим идет ${textdate}`)
+              var date = new Date(out.result.media_container.published_at)
+              let value = moment.utc(new Date(new Date() - date)).format('HH:mm:ss')
+              socket.send(`@${user_login} стрим идет ${value}`)
             }
           })
         }
@@ -1208,16 +1207,16 @@ const wasd = {
       res = res.replace(/(timer\(([^)]+[^ ]))/ig, (match) => {
         match = match.replace('timer', '').replace(/([()])/ig, '')
         if (match) {
-            return moment(new Date(match.trim())).fromNow();
+          return moment(new Date(match.trim())).fromNow();
         } else {
           return 'Invalid date'
         }
       })
 
       res = res.replace(/uptime\(\)/ig, () => {
-        var date1 = new Date(socket.currentChannel.media_container.published_at)
-        var dater = new Date(new Date() - date1);
-        return `${(dater.getUTCHours() < 10) ? '0' + dater.getUTCHours() : ((dater.getUTCDate()*24) + dater.getUTCHours())}:${(dater.getUTCMinutes() < 10) ? '0' + dater.getUTCMinutes() : dater.getUTCMinutes()}:${(dater.getUTCSeconds() < 10) ? '0' + dater.getUTCSeconds() : dater.getUTCSeconds()}`
+        var date = new Date(socket.currentChannel.media_container.published_at)
+        let value = moment.utc(new Date(new Date() - date)).format('HH:mm:ss')
+        return value
       })
 
       res = res.replace(/userOrMention\(\)/ig, () => {
